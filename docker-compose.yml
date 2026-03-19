@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5004:5004"
+    volumes:
+      - ./data/rgvl.db:/app/data/rgvl.db
+      - ./data/.backups:/app/.backups
+    environment:
+      - DATABASE_URL=sqlite:///data/rgvl.db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5004/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    ports:
+      - "5002:5002"
+    depends_on:
+      - api
+    environment:
+      - API_URL=http://api:5004
+    restart: unless-stopped
+
+  backup:
+    image: alpine:latest
+    volumes:
+      - ./data/rgvl.db:/source/rgvl.db:ro
+      - ./data/.backups:/backups
+    entrypoint: /bin/sh
+    command: -c "while true; do cp /source/rgvl.db /backups/rgvl_$$(date +%Y%m%d_%H%M%S).db; find /backups -name 'rgvl_*.db' -mtime +7 -delete; sleep 86400; done"
+    restart: unless-stopped

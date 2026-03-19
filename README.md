@@ -1,33 +1,117 @@
 # RGVL Platform
 
-This is the monorepo for the RGVL data and web platform.
+Personal data platform for family history and research.
 
-## Structure
+## Architecture
 
-- `data/` — RGVL Data API (Flask, SQLite, collectors)
-- `web/` — RGVL Web Dashboard (Flask, HTML/JS frontend)
-- `docs/` — Documentation and architecture
-- `scripts/` — Utility and dev scripts
-- `.github/`, `.vscode/`, etc. — Project configs
+```
+┌─────────────────────────────────────────────────────────┐
+│                    RGVL Platform                        │
+├─────────────────────────────────────────────────────────┤
+│  Frontend (Flask)                                       │
+│  ├── Dashboard (port 5002)                             │
+│  ├── Family Tree                                        │
+│  ├── Net Worth                                          │
+│  └── Documents                                          │
+├─────────────────────────────────────────────────────────┤
+│  API (FastAPI)                                          │
+│  ├── /api/family/* (persons, tree)                     │
+│  ├── /api/assets/* (properties, companies)             │
+│  ├── /api/documents/* (docs, legal)                    │
+│  └── /api/search/* (global search)                     │
+├─────────────────────────────────────────────────────────┤
+│  Database (SQLite)                                      │
+│  ├── rgvl.db (main database)                           │
+│  └── .backups/ (automatic backups)                     │
+└─────────────────────────────────────────────────────────┘
+```
 
 ## Quick Start
 
-### Data API
+### Local Development
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Start API (FastAPI)
+cd data
+python -m uvicorn src.api.main:app --reload --port 5004
+
+# Start Web (Flask)
+cd web
+python server.py
+# Access at http://localhost:5002
+```
+
+### Docker
+
+```bash
+# Build and run
+docker-compose up -d
+
+# Access:
+# API: http://localhost:5004/docs
+# Web: http://localhost:5002
+```
+
+### Tests
+
 ```bash
 cd data
-pip install -r requirements.txt
-python -m api.main
-# Runs on http://localhost:5004
+python -m pytest src/tests/ -v
 ```
 
-### Web Dashboard
-```bash
-cd web
-pip install -r requirements.txt
-python server.py
-# Runs on http://localhost:5003
-```
+## API Documentation
 
-## About
+- **Swagger UI:** http://localhost:5004/docs
+- **ReDoc:** http://localhost:5004/redoc
 
-RGVL is a personal data platform for family history and research.
+## Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/health` | Health check |
+| GET | `/api/stats` | Statistics |
+| GET | `/api/person` | Main person |
+| GET | `/api/spouse` | Spouse |
+| GET | `/api/siblings` | Siblings |
+| GET | `/api/nephews` | Nephews |
+| GET | `/api/children` | Children |
+| GET | `/api/family/summary` | Family summary |
+| GET | `/api/companies` | Companies |
+| GET | `/api/properties` | Properties |
+| GET | `/api/net-worth` | Net worth |
+| GET | `/api/contacts` | Contacts |
+| GET | `/api/documents` | Documents |
+| GET | `/api/legal/processes` | Legal processes |
+| GET | `/api/notes` | Notes |
+| GET | `/api/events` | Events |
+| GET | `/api/search?q=` | Global search |
+
+## Features
+
+- ✅ Family tree (5 generations)
+- ✅ Net worth tracking
+- ✅ Company management
+- ✅ Property valuation
+- ✅ Legal process tracking
+- ✅ Document management
+- ✅ Global search
+- ✅ Auto-backup
+- ✅ API documentation
+- ✅ Docker support
+- ✅ CI/CD pipeline
+- ✅ Test coverage
+
+## Security
+
+- API runs on 127.0.0.1 (localhost only)
+- Debug mode disabled in production
+- CORS configured
+- Input validation
+- SQL injection protection
+
+## License
+
+Private project - All rights reserved.
