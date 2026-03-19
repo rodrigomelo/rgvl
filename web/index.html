@@ -124,6 +124,16 @@
     function fmtDate(d) { if (!d) return '-'; try { return new Date(d).toLocaleDateString('pt-BR'); } catch(e) { return d; } }
     function fmtMoney(v) { if (!v) return '-'; return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v); }
     function fmtPhone(p) { if (!p) return '-'; if (Array.isArray(p)) return p.join(', '); return p; }
+    function fmtContent(c) {
+        if (!c) return '';
+        try {
+            const parsed = JSON.parse(c);
+            if (typeof parsed === 'object') {
+                return JSON.stringify(parsed, null, 2).substring(0, 500);
+            }
+        } catch(e) {}
+        return c.length > 500 ? c.substring(0, 500) + '...' : c;
+    }
     function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
     document.querySelectorAll('.nav-item').forEach(el => {
@@ -446,7 +456,7 @@
                         <h3>${esc(n.title || n.category || 'Nota')}</h3>
                         <div class="row"><span class="label">Fonte</span><span class="value">${esc(n.source)}</span></div>
                         <div class="row"><span class="label">Categoria</span><span class="value">${esc(n.category)}</span></div>
-                        ${n.content?`<p style="font-size:12px;color:var(--text-muted);margin-top:8px">${esc(n.content).substring(0,150)}...</p>`:''}
+                        ${n.content ? `<pre style="margin-top:8px;font-size:11px;color:var(--text-muted);background:var(--bg);padding:8px;border-radius:4px;overflow-x:auto;white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto">${esc(fmtContent(n.content))}</pre>` : ''}
                     </div>
                 `).join('')}
             </div>
