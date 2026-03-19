@@ -147,6 +147,10 @@
         .badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
         .badge-ativa { background: #C8E6C9; color: var(--success); }
         .badge-inativa { background: #FFCDD2; color: var(--danger); }
+        .badge-cpf { background: #E3F2FD; color: #1565C0; }
+        .badge-rg { background: #FFF3E0; color: #EF6C00; }
+        .badge-crea { background: #E8F5E9; color: #2E7D32; }
+        .badge-birth_certificate { background: #F3E5F5; color: #7B1FA2; }
         
         /* Timeline */
         .timeline { border-left: 3px solid var(--border); padding-left: 20px; margin: 20px 0; }
@@ -167,6 +171,54 @@
             margin: 0 auto 15px;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Wealth Summary */
+        .wealth-summary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .wealth-summary h2 {
+            color: white;
+            border-bottom: none;
+            margin-bottom: 16px;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .wealth-total {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .wealth-breakdown {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+        .wealth-item {
+            text-align: center;
+        }
+        .wealth-label {
+            display: block;
+            font-size: 12px;
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+        .wealth-value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .wealth-note {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-top: 16px;
+            font-style: italic;
+        }
         
         /* Mobile */
         @media (max-width: 768px) {
@@ -225,8 +277,6 @@
         return `${window.location.origin.replace(/:(\d+)/, ':5004')}/api`;
     }
     
-    const API = findAPI();
-    
     // Helpers
     function fmt(v) { return v || '-'; }
     
@@ -264,6 +314,50 @@
         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
     }
     
+    // Wealth calculations (based on MARKET VALUE research)
+    // Rua Gonçalves Dias (373m²): R$ 17.000-21.000/m² = R$ 6.3-7.8M (using 7.05M avg)
+    // Rua Oliveira (245m²): R$ 9.500-12.500/m² = R$ 2.3-3.1M (using 2.7M avg)
+    
+    function getPropertyMarketValue(prop) {
+        const addr = (prop.address || '').toLowerCase();
+        const city = (prop.city || '').toLowerCase();
+        const neighborhood = (prop.neighborhood || '').toLowerCase();
+        const building = (prop.building_name || '').toLowerCase();
+        
+        // Check neighborhood first (use includes for UTF-8 safety)
+        if (neighborhood.includes('funcion') || addr.includes('goncalves') || building.includes('quintas')) return 7050000;
+        if (neighborhood.includes('cruzeiro') || addr.includes('oliveira') || building.includes('bacha')) return 2700000;
+        
+        return 2700000; // Default
+    }
+    
+    function calculatePropertyMarketValue(properties) {
+        if (!properties || properties.length === 0) return 0;
+        let total = 0;
+        properties.forEach(p => {
+            total += getPropertyMarketValue(p);
+        });
+        return total;
+    }
+    
+    function calculateCompanyWealth(companies) {
+        if (!companies || companies.length === 0) return 0;
+        let total = 0;
+        companies.forEach(c => {
+            if (c.capital) {
+                total += c.capital;
+            }
+        });
+        return total;
+    }
+    
+    // Total = Market value of properties + Company capital
+    function calculateMarketWealth(DATA) {
+        const propertyMarket = calculatePropertyMarketValue(DATA.properties);
+        const companyWealth = calculateCompanyWealth(DATA.companies);
+        return fmtMoney(propertyMarket + companyWealth);
+    }
+    
     // Menu toggle
     function toggleMenu() {
         document.getElementById('sidebar').classList.toggle('open');
@@ -285,7 +379,7 @@
     // Load data
     async function loadData() {
         try {
-            const api = await API;
+            const api = await findAPI();
             const [person, spouse, siblings, nephews, companies, properties, contacts, documents, legal] = await Promise.all([
                 fetch(api + '/person').then(r => r.json()).catch(() => null),
                 fetch(api + '/spouse').then(r => r.json()).catch(() => null),
@@ -309,9 +403,25 @@
         const html = `
             <!-- Overview -->
             <section class="section" id="overview">
+                <!-- Wealth Summary -->
+                <div class="wealth-summary">
+                    <h2>💰 Patrimonio Total (Valor de Mercado)</h2>
+                    <div class="wealth-total">${calculateMarketWealth(DATA)}</div>
+                    <div class="wealth-breakdown">
+                        <div class="wealth-item">
+                            <span class="wealth-label">Imoveis</span>
+                            <span class="wealth-value">${fmtMoney(calculatePropertyMarketValue(DATA.properties))}</span>
+                        </div>
+                        <div class="wealth-item">
+                            <span class="wealth-label">Empresas</span>
+                            <span class="wealth-value">${fmtMoney(calculateCompanyWealth(DATA.companies))}</span>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="stats">
                     <div class="stat"><div class="stat-value">${DATA.companies.length}</div><div class="stat-label">Empresas</div></div>
-                    <div class="stat"><div class="stat-value">${DATA.properties.length}</div><div class="stat-label">Imóveis</div></div>
+                    <div class="stat"><div class="stat-value">${DATA.properties.length}</div><div class="stat-label">Imoveis</div></div>
                     <div class="stat"><div class="stat-value">${DATA.legal_processes.length}</div><div class="stat-label">Processos</div></div>
                     <div class="stat"><div class="stat-value">${DATA.documents.length}</div><div class="stat-label">Documentos</div></div>
                 </div>
@@ -357,15 +467,22 @@
 
             <!-- Properties -->
             <section class="section" id="properties">
-                <h2>🏠 Imóveis (${DATA.properties.length})</h2>
+                <h2>🏠 Imoveis (${DATA.properties.length})</h2>
                 <div class="grid">
-                    ${DATA.properties.map(p => `
+                    ${DATA.properties.map(prop => {
+                        const addr = (prop.address || '').toLowerCase();
+                        const dbValue = prop.current_value || prop.purchase_value || 0;
+                        const marketValue = getPropertyMarketValue(prop);
+                        const showMarket = marketValue > 0 && marketValue !== dbValue;
+                        return `
                         <div class="card">
-                            <strong>${esc(p.address)}</strong><br>
-                            <small>${esc(p.city)}/${esc(p.state)}</small><br>
-                            ${p.area_sqm ? `<small>Área: ${p.area_sqm}m²</small>` : ''}
+                            <strong>${esc(prop.address)}</strong><br>
+                            <small>${esc(prop.city)}/${esc(prop.state)}</small>
+                            ${dbValue ? `<div class="money" style="margin-top:8px;font-size:16px">${fmtMoney(dbValue)}</div>` : ''}
+                            ${showMarket ? `<div style="color:#666;font-size:13px;margin-top:4px">Mercado: ${fmtMoney(marketValue)}</div>` : ''}
+                            ${prop.area_sqm ? `<small style="color:#666">Area: ${prop.area_sqm}m²</small>` : ''}
                         </div>
-                    `).join('')}
+                    `}).join('')}
                 </div>
             </section>
 
@@ -373,12 +490,16 @@
             <section class="section" id="documents">
                 <h2>📄 Documentos (${DATA.documents.length})</h2>
                 <div class="grid">
-                    ${DATA.documents.map(d => `
+                    ${DATA.documents.map(d => {
+                        const label = d.title || d.doc_type.replace('_', ' ');
+                        return `
                         <div class="card">
-                            <strong>${esc(d.title || d.doc_type)}</strong><br>
-                            <small>${fmtDate(d.issue_date)}</small>
+                            <span class="badge ${d.doc_type === 'cpf' ? 'badge-cpf' : d.doc_type === 'rg' ? 'badge-rg' : d.doc_type === 'crea' ? 'badge-crea' : ''}">${esc(d.doc_type.replace('_', ' ').toUpperCase())}</span>
+                            <strong>${esc(label)}</strong><br>
+                            <small>${esc(d.description) || '-'}</small>
+                            ${d.source ? `<br><small style="color:#999">Fonte: ${esc(d.source)}</small>` : ''}
                         </div>
-                    `).join('')}
+                    `}).join('')}
                 </div>
             </section>
 
