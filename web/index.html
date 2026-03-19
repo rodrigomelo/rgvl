@@ -107,7 +107,7 @@
         <a class="nav-item active" data-section="overview">📊 Visão Geral</a>
         <a class="nav-item" data-section="family-tree">🌳 Árvore Familiar</a>
         <a class="nav-item" data-section="person">👤 Dados Pessoais</a>
-        <a class="nav-item" data-section="family">👨‍👩‍👧 Família</a>
+        <a class="nav-item" data-section="family">🌳 Árvore Genealógica</a>
         <a class="nav-item" data-section="companies">🏢 Empresas</a>
         <a class="nav-item" data-section="properties">🏠 Imóveis</a>
         <a class="nav-item" data-section="documents">📄 Documentos</a>
@@ -292,26 +292,56 @@
 
             <!-- Family -->
             <section class="section" id="family">
-                <h2>👨‍👩‍👧 Família</h2>
-                <div class="grid">
-                    <div class="card">
-                        <h3 style="margin:0 0 12px 0;color:var(--primary)">Irmãos (${DATA.siblings.length})</h3>
-                        ${DATA.siblings.map(s => `
-                            <div class="info-row">
-                                <span class="info-label">${esc(s.name)}</span>
-                                <span class="info-value">${s.facebook ? '📘 '+esc(s.facebook) : ''} ${s.instagram ? '📸 '+esc(s.instagram) : ''}</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                    <div class="card">
-                        <h3 style="margin:0 0 12px 0;color:var(--primary)">Sobrinhos (${DATA.nephews.length})</h3>
-                        ${DATA.nephews.map(n => `
-                            <div class="info-row">
-                                <span class="info-label">${esc(n.name)}</span>
-                                <span class="info-value">${esc(n.profession || n.school || '-')}</span>
-                            </div>
-                        `).join('')}
-                    </div>
+                <h2>👨‍👩‍👧 Árvore Genealógica (4 Gerações)</h2>
+                
+                <!-- Bisavós -->
+                <div class="card" style="margin-bottom:16px">
+                    <h3 style="margin:0 0 12px 0;color:var(--primary)">👴 Bisavós (Geração 4)</h3>
+                    <div class="info-row"><span class="info-label">Edmundo Mariano da Costa Lanna</span><span class="info-value">1878-1968</span></div>
+                    <div class="info-row"><span class="info-label">Maria da Glória de Vasconcellos</span><span class="info-value">-</span></div>
+                    <div style="margin-top:8px;padding-top:8px;border-top:1px solid #eee;font-size:12px;color:#888">Irmãs do avô: Thereza (1923-2006), Maria Auxiliadora (1925-2018)</div>
+                </div>
+                
+                <!-- Avós -->
+                <div class="card" style="margin-bottom:16px">
+                    <h3 style="margin:0 0 12px 0;color:var(--primary)">👴 Avós (Geração 3)</h3>
+                    <div class="info-row"><span class="info-label">Edmundo de Vasconcellos Lanna</span><span class="info-value">1922-1992 · Dentista</span></div>
+                    <div class="info-row"><span class="info-label">Nice Gorgulho de Vasconcellos Lanna</span><span class="info-value">1926-2019</span></div>
+                </div>
+                
+                <!-- Pais -->
+                <div class="card" style="margin-bottom:16px">
+                    <h3 style="margin:0 0 12px 0;color:var(--primary)">👨 Pais (Geração 2)</h3>
+                    <div class="info-row"><span class="info-label">Rodrigo Gorgulho de Vasconcellos Lanna</span><span class="info-value">Eng. Civil · CREA-MG 24.920/D</span></div>
+                    <div class="info-row"><span class="info-label">Rosália Fagundes Ladeira</span><span class="info-value">Arquiteta · MG-313.077</span></div>
+                </div>
+                
+                <!-- Você -->
+                <div class="card" style="margin-bottom:16px">
+                    <h3 style="margin:0 0 12px 0;color:var(--primary)">🧑 Você (Geração 1)</h3>
+                    <div class="info-row"><span class="info-label">Rodrigo Melo Lanna</span><span class="info-value">VP J.P. Morgan · São Paulo</span></div>
+                </div>
+                
+                <!-- Tios -->
+                <div class="card">
+                    <h3 style="margin:0 0 12px 0;color:var(--primary)">👨‍👧 Tios (Irmãos do Pai) (${DATA.siblings.length})</h3>
+                    ${DATA.siblings.map(s => `
+                        <div class="info-row">
+                            <span class="info-label">${esc(s.name)}</span>
+                            <span class="info-value">${esc(s.notes || '-')}</span>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <!-- Primos -->
+                <div class="card" style="margin-top:16px">
+                    <h3 style="margin:0 0 12px 0;color:var(--primary)">👥 Primos (Filhos dos Tios) (${DATA.nephews.length})</h3>
+                    ${DATA.nephews.map(n => `
+                        <div class="info-row">
+                            <span class="info-label">${esc(n.name)}</span>
+                            <span class="info-value">${esc(n.profession || n.school || '-')}</span>
+                        </div>
+                    `).join('')}
                 </div>
             </section>
 
