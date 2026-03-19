@@ -22,92 +22,87 @@
             --shadow: 0 2px 8px rgba(0,0,0,0.08);
             --shadow-hover: 0 4px 12px rgba(0,0,0,0.12);
         }
-        * { box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background: var(--bg); color: var(--text); }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); }
 
         /* Header */
-        .header { background: var(--primary); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; left: 0; right: 0; z-index: 100; box-shadow: var(--shadow); }
-        .header h1 { margin: 0; font-size: 20px; }
+        .header { background: var(--primary); color: white; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; left: 0; right: 0; z-index: 100; box-shadow: var(--shadow); }
+        .header h1 { font-size: 18px; }
         .menu-toggle { background: none; border: none; color: white; font-size: 24px; cursor: pointer; display: none; }
 
         /* Sidebar */
-        .sidebar { width: 220px; background: var(--primary); color: white; position: fixed; top: 56px; left: 0; bottom: 0; padding: 20px 0; overflow-y: auto; transition: transform 0.3s; z-index: 99; }
-        .nav-item { display: block; padding: 12px 20px; color: rgba(255,255,255,0.8); text-decoration: none; transition: background 0.2s; border-left: 3px solid transparent; cursor: pointer; }
+        .sidebar { width: 200px; background: var(--primary); position: fixed; top: 50px; left: 0; bottom: 0; padding: 16px 0; overflow-y: auto; z-index: 99; }
+        .nav-item { display: block; padding: 10px 18px; color: rgba(255,255,255,0.8); text-decoration: none; border-left: 3px solid transparent; cursor: pointer; font-size: 14px; }
         .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); color: white; border-left-color: var(--accent); }
 
         /* Main */
-        .main { margin-left: 220px; padding: 70px 24px 24px; max-width: 1200px; }
+        .main { margin-left: 200px; padding: 66px 20px 20px; max-width: 1100px; }
 
         /* Stats */
-        .stats { display: flex; gap: 16px; flex-wrap: wrap; margin: 20px 0; }
-        .stat { background: var(--card-bg); padding: 20px 24px; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); transition: transform 0.2s, box-shadow 0.2s; flex: 1; min-width: 140px; text-align: center; }
-        .stat:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
-        .stat-value { font-size: 28px; font-weight: bold; color: var(--primary); }
-        .stat-label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 24px; }
+        .stat { background: var(--card-bg); padding: 16px; border-radius: 10px; box-shadow: var(--shadow); border: 1px solid var(--border); text-align: center; }
+        .stat-value { font-size: 24px; font-weight: bold; color: var(--primary); }
+        .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
-        /* Sections */
-        .section { background: var(--card-bg); padding: 24px; border-radius: 12px; margin: 20px 0; box-shadow: var(--shadow); border: 1px solid var(--border); }
-        .section h2 { margin-top: 0; color: var(--primary); font-size: 18px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 16px; }
-
-        /* Cards */
-        .card { border: 1px solid var(--border); padding: 16px; margin: 12px 0; border-radius: 8px; background: var(--bg); transition: transform 0.2s, box-shadow 0.2s; }
-        .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-
-        /* Badges */
-        .badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; display: inline-block; }
-        .badge-ativa { background: #C8E6C9; color: var(--success); }
-        .badge-inativa { background: #FFCDD2; color: var(--danger); }
+        /* Section */
+        .section { background: var(--card-bg); padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+        .section-title { font-size: 16px; color: var(--primary); font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--accent); }
 
         /* Tree */
-        .tree { padding: 20px; }
-        .tree-node { display: flex; flex-direction: column; align-items: center; position: relative; }
-        .tree-person { background: var(--card-bg); border: 2px solid var(--primary); border-radius: 12px; padding: 16px 24px; text-align: center; min-width: 200px; box-shadow: var(--shadow); margin: 8px; cursor: pointer; transition: all 0.2s; }
-        .tree-person:hover { border-color: var(--accent); box-shadow: var(--shadow-hover); }
-        .tree-person.grandparent { border-color: var(--accent); background: #FFF8E1; }
-        .tree-person.spouse { border-color: #E91E63; background: #FCE4EC; }
-        .tree-person.sibling { border-color: var(--secondary); }
-        .tree-person.nephew { border-color: #9C27B0; background: #F3E5F5; }
-        .tree-person.main { border-color: var(--success); background: #E8F5E9; border-width: 3px; }
-        .tree-children { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 8px; }
-        .tree-connector { width: 2px; height: 30px; background: var(--border); margin: 0 auto; }
-        .tree-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
-        .tree-name { font-weight: 600; font-size: 14px; color: var(--text); }
-        .tree-detail { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+        .tree { text-align: center; }
+        .gen { margin: 12px 0; }
+        .gen-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .gen-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+        .node { background: var(--card-bg); border: 2px solid var(--border); border-radius: 10px; padding: 12px 16px; min-width: 160px; max-width: 220px; text-align: center; box-shadow: var(--shadow); }
+        .node.grandparent { border-color: var(--accent); background: #FFF8E1; }
+        .node.spouse { border-color: #E91E63; background: #FCE4EC; }
+        .node.sibling { border-color: var(--secondary); }
+        .node.nephew { border-color: #9C27B0; background: #F3E5F5; }
+        .node.child { border-color: var(--success); background: #E8F5E9; border-width: 2px; }
+        .node-name { font-weight: 600; font-size: 13px; color: var(--text); }
+        .node-detail { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+        .connector { width: 2px; height: 20px; background: var(--border); margin: 0 auto; }
 
-        /* Info rows */
-        .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); }
-        .info-row:last-child { border-bottom: none; }
-        .info-label { font-weight: 500; color: var(--text-muted); }
-        .info-value { color: var(--text); text-align: right; }
+        /* Info */
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+        .info-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+        .info-card h3 { font-size: 14px; color: var(--primary); margin-bottom: 12px; }
+        .row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; border-bottom: 1px solid var(--border); }
+        .row:last-child { border-bottom: none; }
+        .row .label { color: var(--text-muted); }
+        .row .value { color: var(--text); text-align: right; font-weight: 500; }
 
-        /* Loading */
-        .loading { text-align: center; padding: 60px; color: var(--text-muted); }
-        .spinner { border: 4px solid var(--border); border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Company card */
+        .company { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+        .company-name { font-weight: 600; font-size: 15px; color: var(--primary); margin-bottom: 8px; }
+        .badge { padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
+        .badge-ativa { background: #C8E6C9; color: var(--success); }
+        .badge-baixada { background: #FFCDD2; color: var(--danger); }
 
-        /* Mobile */
+        /* Responsive */
         @media (max-width: 768px) {
             .menu-toggle { display: block; }
-            .sidebar { transform: translateX(-100%); }
+            .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
             .sidebar.open { transform: translateX(0); }
-            .main { margin-left: 0; padding: 70px 16px 16px; }
-            .stats { flex-direction: column; }
-            .tree-children { flex-direction: column; align-items: center; }
+            .main { margin-left: 0; padding: 60px 12px 12px; }
+            .stats { grid-template-columns: repeat(2, 1fr); }
+            .info-grid { grid-template-columns: 1fr; }
         }
+
+        .loading { text-align: center; padding: 60px; color: var(--text-muted); }
+        .spinner { border: 4px solid var(--border); border-top: 4px solid var(--primary); border-radius: 50%; width: 36px; height: 36px; animation: spin 1s linear infinite; margin: 0 auto 12px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
     <header class="header">
-        <h1>🌳 RGVL - Dados Pessoais</h1>
+        <h1>🌳 RGVL</h1>
         <button class="menu-toggle" onclick="toggleMenu()">☰</button>
     </header>
-
     <nav class="sidebar" id="sidebar">
         <a class="nav-item active" data-section="overview">📊 Visão Geral</a>
-        <a class="nav-item" data-section="family-tree">🌳 Árvore Familiar</a>
+        <a class="nav-item" data-section="family">👨‍👩‍👧 Família</a>
         <a class="nav-item" data-section="person">👤 Dados Pessoais</a>
-        <a class="nav-item" data-section="family">🌳 Árvore Genealógica</a>
         <a class="nav-item" data-section="companies">🏢 Empresas</a>
         <a class="nav-item" data-section="properties">🏠 Imóveis</a>
         <a class="nav-item" data-section="documents">📄 Documentos</a>
@@ -115,338 +110,282 @@
         <a class="nav-item" data-section="contacts">📞 Contatos</a>
         <a class="nav-item" data-section="notes">📝 Notas</a>
     </nav>
-
-    <main class="main">
-        <div id="app">
-            <div class="loading"><div class="spinner"></div>Carregando dados...</div>
-        </div>
-    </main>
-
+    <main class="main"><div id="app"><div class="loading"><div class="spinner"></div>Carregando...</div></div></main>
     <script>
-    // API - tries port 5004 first, then 5003
     const PORTS = [5004, 5003];
-    let API_BASE = null;
-
     async function findAPI() {
-        const origin = window.location.origin;
-        for (const port of PORTS) {
-            try {
-                const testUrl = `${origin.replace(/:(\d+)/, ':' + port)}/api/health`;
-                const resp = await fetch(testUrl, { signal: AbortSignal.timeout(3000) });
-                if (resp.ok) {
-                    API_BASE = `${origin.replace(/:(\d+)/, ':' + port)}/api`;
-                    return API_BASE;
-                }
-            } catch(e) { continue; }
+        const o = window.location.origin;
+        for (const p of PORTS) {
+            try { const r = await fetch(`${o.replace(/:\d+/, ':'+p)}/api/health`, {signal:AbortSignal.timeout(3000)}); if (r.ok) return `${o.replace(/:\d+/, ':'+p)}/api`; } catch(e) {}
         }
-        return `${window.location.origin.replace(/:(\d+)/, ':5004')}/api`;
+        return `${o.replace(/:\d+/, ':5004')}/api`;
     }
-
-    // Helpers
-    function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
-    function fmt(v) { return v || '-'; }
+    function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
     function fmtDate(d) { if (!d) return '-'; try { return new Date(d).toLocaleDateString('pt-BR'); } catch(e) { return d; } }
-    function fmtMoney(v) { if (!v) return '-'; return new Intl.NumberFormat('pt-BR', {style:'currency',currency:'BRL'}).format(v); }
+    function fmtMoney(v) { if (!v) return '-'; return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v); }
     function fmtPhone(p) { if (!p) return '-'; if (Array.isArray(p)) return p.join(', '); return p; }
-
-    // Menu
     function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
-    // Navigation
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', function() {
+    document.querySelectorAll('.nav-item').forEach(el => {
+        el.addEventListener('click', function() {
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             this.classList.add('active');
-            document.getElementById(this.dataset.section).scrollIntoView({ behavior: 'smooth' });
+            document.getElementById(this.dataset.section).scrollIntoView({behavior:'smooth'});
             if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
         });
     });
 
-    // Load data
-    async function loadData() {
+    async function load() {
         try {
             const api = await findAPI();
-            const [person, spouse, siblings, nephews, companies, properties, contacts, documents, legal, notes] = await Promise.all([
-                fetch(api + '/person').then(r => r.json()).catch(() => null),
-                fetch(api + '/spouse').then(r => r.json()).catch(() => null),
-                fetch(api + '/siblings').then(r => r.json()).catch(() => []),
-                fetch(api + '/nephews').then(r => r.json()).catch(() => []),
-                fetch(api + '/companies').then(r => r.json()).catch(() => []),
-                fetch(api + '/properties').then(r => r.json()).catch(() => []),
-                fetch(api + '/contacts').then(r => r.json()).catch(() => []),
-                fetch(api + '/documents').then(r => r.json()).catch(() => []),
-                fetch(api + '/legal/processes').then(r => r.json()).catch(() => []),
-                fetch(api + '/notes').then(r => r.json()).catch(() => [])
+            const [person, spouse, siblings, nephews, companies, properties, contacts, documents, legal, notes, children] = await Promise.all([
+                fetch(api+'/person').then(r=>r.json()).catch(()=>null),
+                fetch(api+'/spouse').then(r=>r.json()).catch(()=>null),
+                fetch(api+'/siblings').then(r=>r.json()).catch(()=>[]),
+                fetch(api+'/nephews').then(r=>r.json()).catch(()=>[]),
+                fetch(api+'/companies').then(r=>r.json()).catch(()=>[]),
+                fetch(api+'/properties').then(r=>r.json()).catch(()=>[]),
+                fetch(api+'/contacts').then(r=>r.json()).catch(()=>[]),
+                fetch(api+'/documents').then(r=>r.json()).catch(()=>[]),
+                fetch(api+'/legal/processes').then(r=>r.json()).catch(()=>[]),
+                fetch(api+'/notes').then(r=>r.json()).catch(()=>[]),
+                fetch(api+'/children').then(r=>r.json()).catch(()=>[])
             ]);
-            render({ person, spouse, siblings: siblings||[], nephews: nephews||[], companies: companies||[], properties: properties||[], contacts: contacts||[], documents: documents||[], legal_processes: legal||[], notes: notes||[] });
+            render({person,spouse,siblings:siblings||[],nephews:nephews||[],companies:companies||[],properties:properties||[],contacts:contacts||[],documents:documents||[],legal_processes:legal||[],notes:notes||[],children:children||[]});
         } catch(e) {
-            document.getElementById('app').innerHTML = '<div class="section"><h2>⚠️ Erro ao carregar dados</h2><p>' + esc(e.message) + '</p></div>';
+            document.getElementById('app').innerHTML = '<div class="section"><h2>⚠️ Erro</h2><p>'+esc(e.message)+'</p></div>';
         }
     }
 
-    function render(DATA) {
-        const p = DATA.person || {};
-        const html = `
-            <!-- Overview -->
-            <section class="section" id="overview">
-                <h2>📊 Visão Geral</h2>
-                <div class="stats">
-                    <div class="stat"><div class="stat-value">1</div><div class="stat-label">Pessoa</div></div>
-                    <div class="stat"><div class="stat-value">${DATA.siblings.length}</div><div class="stat-label">Irmãos</div></div>
-                    <div class="stat"><div class="stat-value">${DATA.nephews.length}</div><div class="stat-label">Sobrinhos</div></div>
-                    <div class="stat"><div class="stat-value">${DATA.companies.length}</div><div class="stat-label">Empresas</div></div>
-                    <div class="stat"><div class="stat-value">${DATA.properties.length}</div><div class="stat-label">Imóveis</div></div>
-                    <div class="stat"><div class="stat-value">${DATA.legal_processes.length}</div><div class="stat-label">Processos</div></div>
-                    <div class="stat"><div class="stat-value">${DATA.documents.length}</div><div class="stat-label">Documentos</div></div>
-                    <div class="stat"><div class="stat-value">${DATA.contacts.length}</div><div class="stat-label">Contatos</div></div>
-                </div>
-            </section>
+    function render(D) {
+        const p = D.person || {};
+        document.getElementById('app').innerHTML = `
+        <!-- Overview -->
+        <div class="section" id="overview">
+            <div class="section-title">📊 Visão Geral</div>
+            <div class="stats">
+                <div class="stat"><div class="stat-value">${D.siblings.length}</div><div class="stat-label">Tios</div></div>
+                <div class="stat"><div class="stat-value">${D.children.length}</div><div class="stat-label">Filhos</div></div>
+                <div class="stat"><div class="stat-value">${D.nephews.length}</div><div class="stat-label">Primos</div></div>
+                <div class="stat"><div class="stat-value">${D.companies.length}</div><div class="stat-label">Empresas</div></div>
+                <div class="stat"><div class="stat-value">${D.properties.length}</div><div class="stat-label">Imóveis</div></div>
+                <div class="stat"><div class="stat-value">${D.legal_processes.length}</div><div class="stat-label">Processos</div></div>
+                <div class="stat"><div class="stat-value">${D.documents.length}</div><div class="stat-label">Docs</div></div>
+                <div class="stat"><div class="stat-value">${D.contacts.length}</div><div class="stat-label">Contatos</div></div>
+            </div>
+        </div>
 
-            <!-- Family Tree -->
-            <section class="section" id="family-tree">
-                <h2>🌳 Árvore Genealógica</h2>
-                <div class="tree">
-                    <!-- Grandparents -->
-                    <div class="tree-node">
-                        <div class="tree-label">Geração 1 - Avós</div>
-                        <div class="tree-person grandparent">
-                            <div class="tree-name">Edmundo de Vasconcellos Lanna (1922-1992)</div>
-                            <div class="tree-detail">+ Nice Gorgulho de Vasconcellos Lanna (1926-2019)</div>
+        <!-- Family Tree -->
+        <div class="section" id="family">
+            <div class="section-title">🌳 Árvore Genealógica</div>
+            <div class="tree">
+                <div class="gen">
+                    <div class="gen-label">Geração 4 — Bisavós</div>
+                    <div class="gen-row">
+                        <div class="node grandparent">
+                            <div class="node-name">Edmundo Mariano da Costa Lanna</div>
+                            <div class="node-detail">1878-1968 · Dentista</div>
+                            <div class="node-detail">+ Maria da Glória de Vasconcellos</div>
                         </div>
                     </div>
-                    <div class="tree-connector"></div>
-
-                    <!-- Parents & Siblings -->
-                    <div class="tree-children">
-                        ${DATA.siblings.map(s => `
-                            <div class="tree-person sibling">
-                                <div class="tree-label">Irmão(a)</div>
-                                <div class="tree-name">${esc(s.name)}</div>
-                                ${s.facebook ? `<div class="tree-detail">📘 ${esc(s.facebook)}</div>` : ''}
-                                ${s.instagram ? `<div class="tree-detail">📸 ${esc(s.instagram)}</div>` : ''}
+                </div>
+                <div class="connector"></div>
+                <div class="gen">
+                    <div class="gen-label">Geração 3 — Avós</div>
+                    <div class="gen-row">
+                        <div class="node grandparent">
+                            <div class="node-name">Edmundo de Vasconcellos Lanna</div>
+                            <div class="node-detail">1922-1992 · Dentista</div>
+                            <div class="node-detail">+ Nice Gorgulho (1926-2019)</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:6px;font-size:11px;color:var(--text-muted)">Irmãs: Thereza (1923-2006) · Maria Auxiliadora (1925-2018)</div>
+                </div>
+                <div class="connector"></div>
+                <div class="gen">
+                    <div class="gen-label">Geração 2 — Pais + Tios</div>
+                    <div class="gen-row">
+                        ${D.siblings.map(s => `
+                            <div class="node sibling">
+                                <div class="node-name">${esc(s.name)}</div>
+                                <div class="node-detail">${esc(s.notes || '').substring(0,60)}...</div>
                             </div>
                         `).join('')}
-
-                        <!-- Main Person -->
-                        <div class="tree-person main">
-                            <div class="tree-label">⚡ VOCÊ</div>
-                            <div class="tree-name">${esc(p.full_name)}</div>
-                            <div class="tree-detail">${esc(p.profession)} · ${esc(p.city)}/${esc(p.state)}</div>
+                        <div class="node" style="border-color:var(--accent);background:#FFF8E1">
+                            <div class="node-name">👨 ${esc(p.full_name)}</div>
+                            <div class="node-detail">${esc(p.profession).substring(0,40)}</div>
+                            <div class="node-detail">${esc(p.city)}/${esc(p.state)} · ${esc(p.email)}</div>
                         </div>
                     </div>
-                    <div class="tree-connector"></div>
-
-                    <!-- Spouse -->
-                    ${DATA.spouse ? `
-                    <div class="tree-node">
-                        <div class="tree-label">Cônjuge</div>
-                        <div class="tree-person spouse">
-                            <div class="tree-name">${esc(DATA.spouse.name)}</div>
-                            <div class="tree-detail">${esc(DATA.spouse.profession)}</div>
+                    ${D.spouse ? `
+                    <div style="margin-top:8px">
+                        <div class="gen-label">Cônjuge</div>
+                        <div class="gen-row">
+                            <div class="node spouse">
+                                <div class="node-name">👩 ${esc(D.spouse.name)}</div>
+                                <div class="node-detail">${esc(D.spouse.profession)}</div>
+                            </div>
                         </div>
                     </div>
-                    <div class="tree-connector"></div>
                     ` : ''}
-
-                    <!-- Nephews -->
-                    <div class="tree-node">
-                        <div class="tree-label">Geração 3 - Filhos/Sobrinhos (${DATA.nephews.length})</div>
-                        <div class="tree-children">
-                            ${DATA.nephews.map(n => `
-                                <div class="tree-person nephew">
-                                    <div class="tree-name">${esc(n.name)}</div>
-                                    <div class="tree-detail">${esc(n.profession || n.school || '-')}</div>
-                                </div>
-                            `).join('')}
-                        </div>
+                </div>
+                <div class="connector"></div>
+                <div class="gen">
+                    <div class="gen-label">Geração 1 — Você (${D.children.length})</div>
+                    <div class="gen-row">
+                        ${D.children.map(c => `
+                            <div class="node child">
+                                <div class="node-name">⚡ ${esc(c.name)}</div>
+                                <div class="node-detail">${esc(c.profession || '-')}</div>
+                            </div>
+                        `).join('') || '<div class="node"><div class="node-name">-</div></div>'}
                     </div>
                 </div>
-            </section>
-
-            <!-- Person Details -->
-            <section class="section" id="person">
-                <h2>👤 Dados Pessoais - ${esc(p.full_name)}</h2>
-                <div class="grid">
-                    <div class="card">
-                        <div class="info-row"><span class="info-label">Nome</span><span class="info-value">${esc(p.full_name)}</span></div>
-                        <div class="info-row"><span class="info-label">Apelido</span><span class="info-value">${esc(p.nickname)}</span></div>
-                        <div class="info-row"><span class="info-label">CPF</span><span class="info-value">${esc(p.cpf)}</span></div>
-                        <div class="info-row"><span class="info-label">RG</span><span class="info-value">${esc(p.rg)} ${esc(p.rg_uf)}</span></div>
-                        <div class="info-row"><span class="info-label">CREA</span><span class="info-value">${esc(p.crea)}</span></div>
-                    </div>
-                    <div class="card">
-                        <div class="info-row"><span class="info-label">Nascimento</span><span class="info-value">${fmtDate(p.birth_date)}</span></div>
-                        <div class="info-row"><span class="info-label">Nacionalidade</span><span class="info-value">${esc(p.nationality)}</span></div>
-                        <div class="info-row"><span class="info-label">Profissão</span><span class="info-value">${esc(p.profession)}</span></div>
-                        <div class="info-row"><span class="info-label">Estado Civil</span><span class="info-value">${esc(p.civil_state)}</span></div>
-                        <div class="info-row"><span class="info-label">Email</span><span class="info-value">${esc(p.email)}</span></div>
-                    </div>
-                    <div class="card">
-                        <div class="info-row"><span class="info-label">Telefone(s)</span><span class="info-value">${esc(fmtPhone(p.phones))}</span></div>
-                        <div class="info-row"><span class="info-label">Endereço</span><span class="info-value">${esc(p.address)}</span></div>
-                        <div class="info-row"><span class="info-label">CEP</span><span class="info-value">${esc(p.cep)}</span></div>
-                        <div class="info-row"><span class="info-label">Cidade</span><span class="info-value">${esc(p.city)}/${esc(p.state)}</span></div>
+                <div class="connector"></div>
+                <div class="gen">
+                    <div class="gen-label">Primos (Filhos dos Tios) — ${D.nephews.length}</div>
+                    <div class="gen-row">
+                        ${D.nephews.map(n => `
+                            <div class="node nephew">
+                                <div class="node-name">${esc(n.name)}</div>
+                                <div class="node-detail">${esc(n.profession || n.school || '-')}</div>
+                            </div>
+                        `).join('')}
                     </div>
                 </div>
-            </section>
+            </div>
+        </div>
 
-            <!-- Family -->
-            <section class="section" id="family">
-                <h2>👨‍👩‍👧 Árvore Genealógica (4 Gerações)</h2>
-                
-                <!-- Bisavós -->
-                <div class="card" style="margin-bottom:16px">
-                    <h3 style="margin:0 0 12px 0;color:var(--primary)">👴 Bisavós (Geração 4)</h3>
-                    <div class="info-row"><span class="info-label">Edmundo Mariano da Costa Lanna</span><span class="info-value">1878-1968</span></div>
-                    <div class="info-row"><span class="info-label">Maria da Glória de Vasconcellos</span><span class="info-value">-</span></div>
-                    <div style="margin-top:8px;padding-top:8px;border-top:1px solid #eee;font-size:12px;color:#888">Irmãs do avô: Thereza (1923-2006), Maria Auxiliadora (1925-2018)</div>
+        <!-- Person -->
+        <div class="section" id="person">
+            <div class="section-title">👤 Dados Pessoais</div>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>Identificação</h3>
+                    <div class="row"><span class="label">Nome</span><span class="value">${esc(p.full_name)}</span></div>
+                    <div class="row"><span class="label">Apelido</span><span class="value">${esc(p.nickname)}</span></div>
+                    <div class="row"><span class="label">CPF</span><span class="value">${esc(p.cpf)}</span></div>
+                    <div class="row"><span class="label">RG</span><span class="value">${esc(p.rg)} ${esc(p.rg_uf)}</span></div>
+                    <div class="row"><span class="label">CREA</span><span class="value">${esc(p.crea)}</span></div>
                 </div>
-                
-                <!-- Avós -->
-                <div class="card" style="margin-bottom:16px">
-                    <h3 style="margin:0 0 12px 0;color:var(--primary)">👴 Avós (Geração 3)</h3>
-                    <div class="info-row"><span class="info-label">Edmundo de Vasconcellos Lanna</span><span class="info-value">1922-1992 · Dentista</span></div>
-                    <div class="info-row"><span class="info-label">Nice Gorgulho de Vasconcellos Lanna</span><span class="info-value">1926-2019</span></div>
+                <div class="info-card">
+                    <h3>Pessoal</h3>
+                    <div class="row"><span class="label">Nascimento</span><span class="value">${fmtDate(p.birth_date)}</span></div>
+                    <div class="row"><span class="label">Nacionalidade</span><span class="value">${esc(p.nationality)}</span></div>
+                    <div class="row"><span class="label">Profissão</span><span class="value">${esc(p.profession)}</span></div>
+                    <div class="row"><span class="label">Estado Civil</span><span class="value">${esc(p.civil_state)}</span></div>
+                    <div class="row"><span class="label">Casamento</span><span class="value">${fmtDate(p.marriage_date)}</span></div>
                 </div>
-                
-                <!-- Pais -->
-                <div class="card" style="margin-bottom:16px">
-                    <h3 style="margin:0 0 12px 0;color:var(--primary)">👨 Pais (Geração 2)</h3>
-                    <div class="info-row"><span class="info-label">Rodrigo Gorgulho de Vasconcellos Lanna</span><span class="info-value">Eng. Civil · CREA-MG 24.920/D</span></div>
-                    <div class="info-row"><span class="info-label">Rosália Fagundes Ladeira</span><span class="info-value">Arquiteta · MG-313.077</span></div>
+                <div class="info-card">
+                    <h3>Contato</h3>
+                    <div class="row"><span class="label">Email</span><span class="value">${esc(p.email)}</span></div>
+                    <div class="row"><span class="label">Telefone</span><span class="value">${esc(fmtPhone(p.phones))}</span></div>
+                    <div class="row"><span class="label">Endereço</span><span class="value">${esc(p.address)}</span></div>
+                    <div class="row"><span class="label">CEP</span><span class="value">${esc(p.cep)}</span></div>
+                    <div class="row"><span class="label">Cidade</span><span class="value">${esc(p.city)}/${esc(p.state)}</span></div>
                 </div>
-                
-                <!-- Você -->
-                <div class="card" style="margin-bottom:16px">
-                    <h3 style="margin:0 0 12px 0;color:var(--primary)">🧑 Você (Geração 1)</h3>
-                    <div class="info-row"><span class="info-label">Rodrigo Melo Lanna</span><span class="info-value">VP J.P. Morgan · São Paulo</span></div>
-                </div>
-                
-                <!-- Tios -->
-                <div class="card">
-                    <h3 style="margin:0 0 12px 0;color:var(--primary)">👨‍👧 Tios (Irmãos do Pai) (${DATA.siblings.length})</h3>
-                    ${DATA.siblings.map(s => `
-                        <div class="info-row">
-                            <span class="info-label">${esc(s.name)}</span>
-                            <span class="info-value">${esc(s.notes || '-')}</span>
-                        </div>
-                    `).join('')}
-                </div>
-                
-                <!-- Primos -->
-                <div class="card" style="margin-top:16px">
-                    <h3 style="margin:0 0 12px 0;color:var(--primary)">👥 Primos (Filhos dos Tios) (${DATA.nephews.length})</h3>
-                    ${DATA.nephews.map(n => `
-                        <div class="info-row">
-                            <span class="info-label">${esc(n.name)}</span>
-                            <span class="info-value">${esc(n.profession || n.school || '-')}</span>
-                        </div>
-                    `).join('')}
-                </div>
-            </section>
+            </div>
+        </div>
 
-            <!-- Companies -->
-            <section class="section" id="companies">
-                <h2>🏢 Empresas (${DATA.companies.length})</h2>
-                <div class="grid">
-                    ${DATA.companies.map(c => `
-                        <div class="card">
-                            <div class="info-row"><span class="info-label">Nome Fantasia</span><span class="info-value">${esc(c.trade_name)}</span></div>
-                            <div class="info-row"><span class="info-label">Razão Social</span><span class="info-value">${esc(c.legal_name)}</span></div>
-                            <div class="info-row"><span class="info-label">CNPJ</span><span class="info-value">${esc(c.cnpj)}</span></div>
-                            <div class="info-row"><span class="info-label">Status</span><span class="info-value"><span class="badge ${c.status === 'ativa' ? 'badge-ativa' : 'badge-inativa'}">${esc(c.status)}</span></span></div>
-                            <div class="info-row"><span class="info-label">Capital</span><span class="info-value">${fmtMoney(c.capital)}</span></div>
-                            <div class="info-row"><span class="info-label">Atividade</span><span class="info-value">${esc(c.activity)}</span></div>
-                            <div class="info-row"><span class="info-label">Endereço</span><span class="info-value">${esc(c.address)}</span></div>
-                            ${c.phone ? `<div class="info-row"><span class="info-label">Telefone</span><span class="info-value">${esc(c.phone)}</span></div>` : ''}
-                            ${c.email ? `<div class="info-row"><span class="info-label">Email</span><span class="info-value">${esc(c.email)}</span></div>` : ''}
-                        </div>
-                    `).join('')}
-                </div>
-            </section>
-
-            <!-- Properties -->
-            <section class="section" id="properties">
-                <h2>🏠 Imóveis (${DATA.properties.length})</h2>
-                <div class="grid">
-                    ${DATA.properties.map(pr => `
-                        <div class="card">
-                            <div class="info-row"><span class="info-label">Tipo</span><span class="info-value">${esc(pr.property_type)}</span></div>
-                            <div class="info-row"><span class="info-label">Endereço</span><span class="info-value">${esc(pr.address)}</span></div>
-                            <div class="info-row"><span class="info-label">Bairro</span><span class="info-value">${esc(pr.neighborhood)}</span></div>
-                            <div class="info-row"><span class="info-label">Cidade</span><span class="info-value">${esc(pr.city)}/${esc(pr.state)}</span></div>
-                            <div class="info-row"><span class="info-label">Área Total</span><span class="info-value">${pr.area_total ? pr.area_total + ' m²' : '-'}</span></div>
-                            <div class="info-row"><span class="info-label">Quartos</span><span class="info-value">${pr.bedrooms || '-'}</span></div>
-                            <div class="info-row"><span class="info-label">Vagas</span><span class="info-value">${pr.parking_spaces || '-'}</span></div>
-                            <div class="info-row"><span class="info-label">Matrícula</span><span class="info-value">${esc(pr.registration)}</span></div>
-                            <div class="info-row"><span class="info-label">Cartório</span><span class="info-value">${esc(pr.cartorio)}</span></div>
-                            <div class="info-row"><span class="info-label">Valor Atual</span><span class="info-value">${fmtMoney(pr.current_value)}</span></div>
-                        </div>
-                    `).join('')}
-                </div>
-            </section>
-
-            <!-- Documents -->
-            <section class="section" id="documents">
-                <h2>📄 Documentos (${DATA.documents.length})</h2>
-                <div class="grid">
-                    ${DATA.documents.map(d => `
-                        <div class="card">
-                            <div class="info-row"><span class="info-label">Tipo</span><span class="info-value">${esc(d.doc_type)}</span></div>
-                            <div class="info-row"><span class="info-label">Título</span><span class="info-value">${esc(d.title)}</span></div>
-                            <div class="info-row"><span class="info-label">Data</span><span class="info-value">${fmtDate(d.issue_date)}</span></div>
-                            ${d.description ? `<div class="info-row"><span class="info-label">Descrição</span><span class="info-value">${esc(d.description)}</span></div>` : ''}
-                        </div>
-                    `).join('')}
-                </div>
-            </section>
-
-            <!-- Legal -->
-            <section class="section" id="legal">
-                <h2>⚖️ Processos (${DATA.legal_processes.length})</h2>
-                ${DATA.legal_processes.map(p => `
-                    <div class="card">
-                        <div class="info-row"><span class="info-label">Número</span><span class="info-value">${esc(p.process_number)}</span></div>
-                        <div class="info-row"><span class="info-label">Tribunal</span><span class="info-value">${esc(p.court)}</span></div>
-                        <div class="info-row"><span class="info-label">Assunto</span><span class="info-value">${esc(p.subject)}</span></div>
-                        <div class="info-row"><span class="info-label">Status</span><span class="info-value">${esc(p.status)}</span></div>
-                        ${p.value ? `<div class="info-row"><span class="info-label">Valor</span><span class="info-value">${fmtMoney(p.value)}</span></div>` : ''}
+        <!-- Companies -->
+        <div class="section" id="companies">
+            <div class="section-title">🏢 Empresas (${D.companies.length})</div>
+            <div class="info-grid">
+                ${D.companies.map(c => `
+                    <div class="company">
+                        <div class="company-name">${esc(c.trade_name || c.legal_name)}</div>
+                        <div class="row"><span class="label">CNPJ</span><span class="value">${esc(c.cnpj)}</span></div>
+                        <div class="row"><span class="label">Razão Social</span><span class="value">${esc(c.legal_name)}</span></div>
+                        <div class="row"><span class="label">Status</span><span class="value"><span class="badge ${c.status==='ativa'?'badge-ativa':'badge-baixada'}">${esc(c.status)}</span></span></div>
+                        ${c.capital?`<div class="row"><span class="label">Capital</span><span class="value">${fmtMoney(c.capital)}</span></div>`:''}
+                        ${c.activity?`<div class="row"><span class="label">Atividade</span><span class="value">${esc(c.activity)}</span></div>`:''}
+                        ${c.address?`<div class="row"><span class="label">Local</span><span class="value">${esc(c.address)}</span></div>`:''}
                     </div>
                 `).join('')}
-            </section>
+            </div>
+        </div>
 
-            <!-- Contacts -->
-            <section class="section" id="contacts">
-                <h2>📞 Contatos (${DATA.contacts.length})</h2>
-                <div class="grid">
-                    ${DATA.contacts.map(c => `
-                        <div class="card">
-                            <div class="info-row"><span class="info-label">Nome</span><span class="info-value">${esc(c.name)}</span></div>
-                            <div class="info-row"><span class="info-label">Função</span><span class="info-value">${esc(c.role)}</span></div>
-                            ${c.phone ? `<div class="info-row"><span class="info-label">Telefone</span><span class="info-value">${esc(c.phone)}</span></div>` : ''}
-                            ${c.email ? `<div class="info-row"><span class="info-label">Email</span><span class="info-value">${esc(c.email)}</span></div>` : ''}
-                        </div>
-                    `).join('')}
-                </div>
-            </section>
-
-            <!-- Notes -->
-            <section class="section" id="notes">
-                <h2>📝 Notas (${DATA.notes.length})</h2>
-                ${DATA.notes.map(n => `
-                    <div class="card">
-                        <div class="info-row"><span class="info-label">Categoria</span><span class="info-value">${esc(n.category)}</span></div>
-                        <div class="info-row"><span class="info-label">Fonte</span><span class="info-value">${esc(n.source)}</span></div>
-                        ${n.title ? `<div class="info-row"><span class="info-label">Título</span><span class="info-value">${esc(n.title)}</span></div>` : ''}
-                        ${n.content ? `<div style="margin-top:8px;font-size:13px;color:var(--text-muted)">${esc(n.content).substring(0, 200)}...</div>` : ''}
+        <!-- Properties -->
+        <div class="section" id="properties">
+            <div class="section-title">🏠 Imóveis (${D.properties.length})</div>
+            <div class="info-grid">
+                ${D.properties.map(pr => `
+                    <div class="info-card">
+                        <h3>${esc(pr.property_type)} — ${esc(pr.city)}/${esc(pr.state)}</h3>
+                        <div class="row"><span class="label">Endereço</span><span class="value">${esc(pr.address)}</span></div>
+                        <div class="row"><span class="label">Bairro</span><span class="value">${esc(pr.neighborhood)}</span></div>
+                        ${pr.area_total?`<div class="row"><span class="label">Área</span><span class="value">${pr.area_total} m²</span></div>`:''}
+                        ${pr.bedrooms?`<div class="row"><span class="label">Quartos</span><span class="value">${pr.bedrooms}</span></div>`:''}
+                        <div class="row"><span class="label">Matrícula</span><span class="value">${esc(pr.registration)}</span></div>
+                        <div class="row"><span class="label">Cartório</span><span class="value">${esc(pr.cartorio)}</span></div>
+                        <div class="row"><span class="label">Valor</span><span class="value">${fmtMoney(pr.current_value)}</span></div>
                     </div>
                 `).join('')}
-            </section>
+            </div>
+        </div>
+
+        <!-- Documents -->
+        <div class="section" id="documents">
+            <div class="section-title">📄 Documentos (${D.documents.length})</div>
+            <div class="info-grid">
+                ${D.documents.map(d => `
+                    <div class="info-card">
+                        <h3>${esc(d.title || d.doc_type)}</h3>
+                        <div class="row"><span class="label">Tipo</span><span class="value">${esc(d.doc_type)}</span></div>
+                        <div class="row"><span class="label">Data</span><span class="value">${fmtDate(d.issue_date)}</span></div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+
+        <!-- Legal -->
+        <div class="section" id="legal">
+            <div class="section-title">⚖️ Processos (${D.legal_processes.length})</div>
+            <div class="info-grid">
+                ${D.legal_processes.map(pr => `
+                    <div class="info-card">
+                        <h3>${esc(pr.process_number)}</h3>
+                        <div class="row"><span class="label">Tribunal</span><span class="value">${esc(pr.court)}</span></div>
+                        <div class="row"><span class="label">Assunto</span><span class="value">${esc(pr.subject)}</span></div>
+                        <div class="row"><span class="label">Status</span><span class="value">${esc(pr.status)}</span></div>
+                        ${pr.value?`<div class="row"><span class="label">Valor</span><span class="value">${fmtMoney(pr.value)}</span></div>`:''}
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+
+        <!-- Contacts -->
+        <div class="section" id="contacts">
+            <div class="section-title">📞 Contatos (${D.contacts.length})</div>
+            <div class="info-grid">
+                ${D.contacts.map(c => `
+                    <div class="info-card">
+                        <h3>${esc(c.name)}</h3>
+                        <div class="row"><span class="label">Função</span><span class="value">${esc(c.role)}</span></div>
+                        ${c.phone?`<div class="row"><span class="label">Telefone</span><span class="value">${esc(c.phone)}</span></div>`:''}
+                        ${c.email?`<div class="row"><span class="label">Email</span><span class="value">${esc(c.email)}</span></div>`:''}
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="section" id="notes">
+            <div class="section-title">📝 Notas (${D.notes.length})</div>
+            <div class="info-grid">
+                ${D.notes.map(n => `
+                    <div class="info-card">
+                        <h3>${esc(n.title || n.category || 'Nota')}</h3>
+                        <div class="row"><span class="label">Fonte</span><span class="value">${esc(n.source)}</span></div>
+                        <div class="row"><span class="label">Categoria</span><span class="value">${esc(n.category)}</span></div>
+                        ${n.content?`<p style="font-size:12px;color:var(--text-muted);margin-top:8px">${esc(n.content).substring(0,150)}...</p>`:''}
+                    </div>
+                `).join('')}
+            </div>
+        </div>
         `;
-        document.getElementById('app').innerHTML = html;
     }
-
-    loadData();
+    load();
     </script>
 </body>
 </html>
