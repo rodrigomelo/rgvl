@@ -22,224 +22,90 @@
             --shadow: 0 2px 8px rgba(0,0,0,0.08);
             --shadow-hover: 0 4px 12px rgba(0,0,0,0.12);
         }
-        
         * { box-sizing: border-box; }
-        
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-            margin: 0; 
-            padding: 0; 
-            background: var(--bg); 
-            color: var(--text);
-        }
-        
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background: var(--bg); color: var(--text); }
+
         /* Header */
-        .header {
-            background: var(--primary);
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            box-shadow: var(--shadow);
-        }
-        
+        .header { background: var(--primary); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; left: 0; right: 0; z-index: 100; box-shadow: var(--shadow); }
         .header h1 { margin: 0; font-size: 20px; }
-        
-        .menu-toggle {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            display: none;
-        }
-        
+        .menu-toggle { background: none; border: none; color: white; font-size: 24px; cursor: pointer; display: none; }
+
         /* Sidebar */
-        .sidebar {
-            width: 220px;
-            background: var(--primary);
-            color: white;
-            position: fixed;
-            top: 56px;
-            left: 0;
-            bottom: 0;
-            padding: 20px 0;
-            overflow-y: auto;
-            transition: transform 0.3s;
-            z-index: 99;
-        }
-        
-        .nav-item {
-            display: block;
-            padding: 12px 20px;
-            color: rgba(255,255,255,0.8);
-            text-decoration: none;
-            transition: background 0.2s;
-            border-left: 3px solid transparent;
-            cursor: pointer;
-        }
-        
-        .nav-item:hover, .nav-item.active {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            border-left-color: var(--accent);
-        }
-        
-        /* Main Content */
-        .main {
-            margin-left: 220px;
-            padding: 70px 24px 24px;
-            max-width: 1200px;
-        }
-        
+        .sidebar { width: 220px; background: var(--primary); color: white; position: fixed; top: 56px; left: 0; bottom: 0; padding: 20px 0; overflow-y: auto; transition: transform 0.3s; z-index: 99; }
+        .nav-item { display: block; padding: 12px 20px; color: rgba(255,255,255,0.8); text-decoration: none; transition: background 0.2s; border-left: 3px solid transparent; cursor: pointer; }
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); color: white; border-left-color: var(--accent); }
+
+        /* Main */
+        .main { margin-left: 220px; padding: 70px 24px 24px; max-width: 1200px; }
+
         /* Stats */
         .stats { display: flex; gap: 16px; flex-wrap: wrap; margin: 20px 0; }
-        .stat { 
-            background: var(--card-bg); 
-            padding: 20px 24px; 
-            border-radius: 12px; 
-            box-shadow: var(--shadow); 
-            border: 1px solid var(--border);
-            transition: transform 0.2s, box-shadow 0.2s;
-            flex: 1;
-            min-width: 140px;
-        }
-        .stat:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
-        }
+        .stat { background: var(--card-bg); padding: 20px 24px; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); transition: transform 0.2s, box-shadow 0.2s; flex: 1; min-width: 140px; text-align: center; }
+        .stat:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
         .stat-value { font-size: 28px; font-weight: bold; color: var(--primary); }
         .stat-label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
-        
+
         /* Sections */
-        .section { 
-            background: var(--card-bg); 
-            padding: 24px; 
-            border-radius: 12px; 
-            margin: 20px 0; 
-            box-shadow: var(--shadow); 
-            border: 1px solid var(--border);
-        }
+        .section { background: var(--card-bg); padding: 24px; border-radius: 12px; margin: 20px 0; box-shadow: var(--shadow); border: 1px solid var(--border); }
         .section h2 { margin-top: 0; color: var(--primary); font-size: 18px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 16px; }
-        
+
         /* Cards */
-        .card { 
-            border: 1px solid var(--border); 
-            padding: 16px; 
-            margin: 12px 0; 
-            border-radius: 8px; 
-            background: var(--bg);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
-        }
+        .card { border: 1px solid var(--border); padding: 16px; margin: 12px 0; border-radius: 8px; background: var(--bg); transition: transform 0.2s, box-shadow 0.2s; }
+        .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-        
+
         /* Badges */
-        .badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+        .badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; display: inline-block; }
         .badge-ativa { background: #C8E6C9; color: var(--success); }
         .badge-inativa { background: #FFCDD2; color: var(--danger); }
-        .badge-cpf { background: #E3F2FD; color: #1565C0; }
-        .badge-rg { background: #FFF3E0; color: #EF6C00; }
-        .badge-crea { background: #E8F5E9; color: #2E7D32; }
-        .badge-birth_certificate { background: #F3E5F5; color: #7B1FA2; }
-        
-        /* Timeline */
-        .timeline { border-left: 3px solid var(--border); padding-left: 20px; margin: 20px 0; }
-        .timeline-item { position: relative; margin-bottom: 20px; }
-        .timeline-item::before {
-            content: ''; position: absolute; left: -26px; top: 4px;
-            width: 10px; height: 10px; border-radius: 50%; background: var(--secondary);
-        }
-        
+
+        /* Tree */
+        .tree { padding: 20px; }
+        .tree-node { display: flex; flex-direction: column; align-items: center; position: relative; }
+        .tree-person { background: var(--card-bg); border: 2px solid var(--primary); border-radius: 12px; padding: 16px 24px; text-align: center; min-width: 200px; box-shadow: var(--shadow); margin: 8px; cursor: pointer; transition: all 0.2s; }
+        .tree-person:hover { border-color: var(--accent); box-shadow: var(--shadow-hover); }
+        .tree-person.grandparent { border-color: var(--accent); background: #FFF8E1; }
+        .tree-person.spouse { border-color: #E91E63; background: #FCE4EC; }
+        .tree-person.sibling { border-color: var(--secondary); }
+        .tree-person.nephew { border-color: #9C27B0; background: #F3E5F5; }
+        .tree-person.main { border-color: var(--success); background: #E8F5E9; border-width: 3px; }
+        .tree-children { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 8px; }
+        .tree-connector { width: 2px; height: 30px; background: var(--border); margin: 0 auto; }
+        .tree-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+        .tree-name { font-weight: 600; font-size: 14px; color: var(--text); }
+        .tree-detail { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+        /* Info rows */
+        .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { font-weight: 500; color: var(--text-muted); }
+        .info-value { color: var(--text); text-align: right; }
+
         /* Loading */
         .loading { text-align: center; padding: 60px; color: var(--text-muted); }
-        .spinner {
-            border: 4px solid var(--border);
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            width: 40px; height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
+        .spinner { border: 4px solid var(--border); border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        /* Wealth Summary */
-        .wealth-summary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            color: white;
-            padding: 24px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            text-align: center;
-        }
-        .wealth-summary h2 {
-            color: white;
-            border-bottom: none;
-            margin-bottom: 16px;
-            font-size: 16px;
-            opacity: 0.9;
-        }
-        .wealth-total {
-            font-size: 36px;
-            font-weight: bold;
-            margin-bottom: 16px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        .wealth-breakdown {
-            display: flex;
-            justify-content: center;
-            gap: 32px;
-            flex-wrap: wrap;
-        }
-        .wealth-item {
-            text-align: center;
-        }
-        .wealth-label {
-            display: block;
-            font-size: 12px;
-            opacity: 0.8;
-            margin-bottom: 4px;
-        }
-        .wealth-value {
-            font-size: 18px;
-            font-weight: 600;
-        }
-        .wealth-note {
-            font-size: 11px;
-            opacity: 0.7;
-            margin-top: 16px;
-            font-style: italic;
-        }
-        
+
         /* Mobile */
         @media (max-width: 768px) {
             .menu-toggle { display: block; }
             .sidebar { transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
             .main { margin-left: 0; padding: 70px 16px 16px; }
-            .header { padding: 12px 16px; }
+            .stats { flex-direction: column; }
+            .tree-children { flex-direction: column; align-items: center; }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
     <header class="header">
-        <h1>RGVL - Dados Pessoais</h1>
+        <h1>🌳 RGVL - Dados Pessoais</h1>
         <button class="menu-toggle" onclick="toggleMenu()">☰</button>
     </header>
-    
-    <!-- Sidebar -->
+
     <nav class="sidebar" id="sidebar">
         <a class="nav-item active" data-section="overview">📊 Visão Geral</a>
+        <a class="nav-item" data-section="family-tree">🌳 Árvore Familiar</a>
         <a class="nav-item" data-section="person">👤 Dados Pessoais</a>
         <a class="nav-item" data-section="family">👨‍👩‍👧 Família</a>
         <a class="nav-item" data-section="companies">🏢 Empresas</a>
@@ -247,9 +113,9 @@
         <a class="nav-item" data-section="documents">📄 Documentos</a>
         <a class="nav-item" data-section="legal">⚖️ Processos</a>
         <a class="nav-item" data-section="contacts">📞 Contatos</a>
+        <a class="nav-item" data-section="notes">📝 Notas</a>
     </nav>
-    
-    <!-- Main Content -->
+
     <main class="main">
         <div id="app">
             <div class="loading"><div class="spinner"></div>Carregando dados...</div>
@@ -260,7 +126,7 @@
     // API - tries port 5004 first, then 5003
     const PORTS = [5004, 5003];
     let API_BASE = null;
-    
+
     async function findAPI() {
         const origin = window.location.origin;
         for (const port of PORTS) {
@@ -273,114 +139,34 @@
                 }
             } catch(e) { continue; }
         }
-        // Fallback
         return `${window.location.origin.replace(/:(\d+)/, ':5004')}/api`;
     }
-    
+
     // Helpers
+    function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
     function fmt(v) { return v || '-'; }
-    
-    function esc(s) {
-        if (!s) return '';
-        return String(s)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    }
-    
-    function fmtCPF(cpf) {
-        if (!cpf || cpf.length !== 11) return cpf || '-';
-        return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-    }
-    
-    function fmtCNPJ(cnpj) {
-        if (!cnpj || cnpj.length !== 14) return cnpj || '-';
-        return cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
-    }
-    
-    function fmtDate(dateStr) {
-        if (!dateStr) return '-';
-        try {
-            const d = new Date(dateStr);
-            if (isNaN(d.getTime())) return dateStr;
-            return d.toLocaleDateString('pt-BR');
-        } catch(e) { return dateStr; }
-    }
-    
-    function fmtMoney(val) {
-        if (!val) return '-';
-        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
-    }
-    
-    // Wealth calculations (based on MARKET VALUE research)
-    // Rua Gonçalves Dias (373m²): R$ 17.000-21.000/m² = R$ 6.3-7.8M (using 7.05M avg)
-    // Rua Oliveira (245m²): R$ 9.500-12.500/m² = R$ 2.3-3.1M (using 2.7M avg)
-    
-    function getPropertyMarketValue(prop) {
-        const addr = (prop.address || '').toLowerCase();
-        const city = (prop.city || '').toLowerCase();
-        const neighborhood = (prop.neighborhood || '').toLowerCase();
-        const building = (prop.building_name || '').toLowerCase();
-        
-        // Check neighborhood first (use includes for UTF-8 safety)
-        if (neighborhood.includes('funcion') || addr.includes('goncalves') || building.includes('quintas')) return 7050000;
-        if (neighborhood.includes('cruzeiro') || addr.includes('oliveira') || building.includes('bacha')) return 2700000;
-        
-        return 2700000; // Default
-    }
-    
-    function calculatePropertyMarketValue(properties) {
-        if (!properties || properties.length === 0) return 0;
-        let total = 0;
-        properties.forEach(p => {
-            total += getPropertyMarketValue(p);
-        });
-        return total;
-    }
-    
-    function calculateCompanyWealth(companies) {
-        if (!companies || companies.length === 0) return 0;
-        let total = 0;
-        companies.forEach(c => {
-            if (c.capital) {
-                total += c.capital;
-            }
-        });
-        return total;
-    }
-    
-    // Total = Market value of properties + Company capital
-    function calculateMarketWealth(DATA) {
-        const propertyMarket = calculatePropertyMarketValue(DATA.properties);
-        const companyWealth = calculateCompanyWealth(DATA.companies);
-        return fmtMoney(propertyMarket + companyWealth);
-    }
-    
-    // Menu toggle
-    function toggleMenu() {
-        document.getElementById('sidebar').classList.toggle('open');
-    }
-    
+    function fmtDate(d) { if (!d) return '-'; try { return new Date(d).toLocaleDateString('pt-BR'); } catch(e) { return d; } }
+    function fmtMoney(v) { if (!v) return '-'; return new Intl.NumberFormat('pt-BR', {style:'currency',currency:'BRL'}).format(v); }
+    function fmtPhone(p) { if (!p) return '-'; if (Array.isArray(p)) return p.join(', '); return p; }
+
+    // Menu
+    function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
+
     // Navigation
     document.querySelectorAll('.nav-item').forEach(item => {
         item.addEventListener('click', function() {
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             this.classList.add('active');
-            const section = this.dataset.section;
-            document.getElementById(section).scrollIntoView({ behavior: 'smooth' });
-            if (window.innerWidth <= 768) {
-                document.getElementById('sidebar').classList.remove('open');
-            }
+            document.getElementById(this.dataset.section).scrollIntoView({ behavior: 'smooth' });
+            if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
         });
     });
-    
+
     // Load data
     async function loadData() {
         try {
             const api = await findAPI();
-            const [person, spouse, siblings, nephews, companies, properties, contacts, documents, legal] = await Promise.all([
+            const [person, spouse, siblings, nephews, companies, properties, contacts, documents, legal, notes] = await Promise.all([
                 fetch(api + '/person').then(r => r.json()).catch(() => null),
                 fetch(api + '/spouse').then(r => r.json()).catch(() => null),
                 fetch(api + '/siblings').then(r => r.json()).catch(() => []),
@@ -389,10 +175,10 @@
                 fetch(api + '/properties').then(r => r.json()).catch(() => []),
                 fetch(api + '/contacts').then(r => r.json()).catch(() => []),
                 fetch(api + '/documents').then(r => r.json()).catch(() => []),
-                fetch(api + '/legal/processes').then(r => r.json()).catch(() => [])
+                fetch(api + '/legal/processes').then(r => r.json()).catch(() => []),
+                fetch(api + '/notes').then(r => r.json()).catch(() => [])
             ]);
-
-            render({ person, spouse, siblings: siblings||[], nephews: nephews||[], companies: companies||[], properties: properties||[], contacts: contacts||[], documents: documents||[], legal_processes: legal||[] });
+            render({ person, spouse, siblings: siblings||[], nephews: nephews||[], companies: companies||[], properties: properties||[], contacts: contacts||[], documents: documents||[], legal_processes: legal||[], notes: notes||[] });
         } catch(e) {
             document.getElementById('app').innerHTML = '<div class="section"><h2>⚠️ Erro ao carregar dados</h2><p>' + esc(e.message) + '</p></div>';
         }
@@ -403,73 +189,129 @@
         const html = `
             <!-- Overview -->
             <section class="section" id="overview">
-                <!-- Wealth Summary -->
-                <div class="wealth-summary">
-                    <h2>💰 Patrimonio Total (Valor de Mercado)</h2>
-                    <div class="wealth-total">${calculateMarketWealth(DATA)}</div>
-                    <div class="wealth-breakdown">
-                        <div class="wealth-item">
-                            <span class="wealth-label">Imoveis</span>
-                            <span class="wealth-value">${fmtMoney(calculatePropertyMarketValue(DATA.properties))}</span>
-                        </div>
-                        <div class="wealth-item">
-                            <span class="wealth-label">Empresas</span>
-                            <span class="wealth-value">${fmtMoney(calculateCompanyWealth(DATA.companies))}</span>
-                        </div>
-                    </div>
-                </div>
-                
+                <h2>📊 Visão Geral</h2>
                 <div class="stats">
+                    <div class="stat"><div class="stat-value">1</div><div class="stat-label">Pessoa</div></div>
+                    <div class="stat"><div class="stat-value">${DATA.siblings.length}</div><div class="stat-label">Irmãos</div></div>
+                    <div class="stat"><div class="stat-value">${DATA.nephews.length}</div><div class="stat-label">Sobrinhos</div></div>
                     <div class="stat"><div class="stat-value">${DATA.companies.length}</div><div class="stat-label">Empresas</div></div>
-                    <div class="stat"><div class="stat-value">${DATA.properties.length}</div><div class="stat-label">Imoveis</div></div>
+                    <div class="stat"><div class="stat-value">${DATA.properties.length}</div><div class="stat-label">Imóveis</div></div>
                     <div class="stat"><div class="stat-value">${DATA.legal_processes.length}</div><div class="stat-label">Processos</div></div>
                     <div class="stat"><div class="stat-value">${DATA.documents.length}</div><div class="stat-label">Documentos</div></div>
+                    <div class="stat"><div class="stat-value">${DATA.contacts.length}</div><div class="stat-label">Contatos</div></div>
                 </div>
             </section>
 
-            <!-- Person -->
+            <!-- Family Tree -->
+            <section class="section" id="family-tree">
+                <h2>🌳 Árvore Genealógica</h2>
+                <div class="tree">
+                    <!-- Grandparents -->
+                    <div class="tree-node">
+                        <div class="tree-label">Geração 1 - Avós</div>
+                        <div class="tree-person grandparent">
+                            <div class="tree-name">Edmundo de Vasconcellos Lanna (1922-1992)</div>
+                            <div class="tree-detail">+ Nice Gorgulho de Vasconcellos Lanna (1926-2019)</div>
+                        </div>
+                    </div>
+                    <div class="tree-connector"></div>
+
+                    <!-- Parents & Siblings -->
+                    <div class="tree-children">
+                        ${DATA.siblings.map(s => `
+                            <div class="tree-person sibling">
+                                <div class="tree-label">Irmão(a)</div>
+                                <div class="tree-name">${esc(s.name)}</div>
+                                ${s.facebook ? `<div class="tree-detail">📘 ${esc(s.facebook)}</div>` : ''}
+                                ${s.instagram ? `<div class="tree-detail">📸 ${esc(s.instagram)}</div>` : ''}
+                            </div>
+                        `).join('')}
+
+                        <!-- Main Person -->
+                        <div class="tree-person main">
+                            <div class="tree-label">⚡ VOCÊ</div>
+                            <div class="tree-name">${esc(p.full_name)}</div>
+                            <div class="tree-detail">${esc(p.profession)} · ${esc(p.city)}/${esc(p.state)}</div>
+                        </div>
+                    </div>
+                    <div class="tree-connector"></div>
+
+                    <!-- Spouse -->
+                    ${DATA.spouse ? `
+                    <div class="tree-node">
+                        <div class="tree-label">Cônjuge</div>
+                        <div class="tree-person spouse">
+                            <div class="tree-name">${esc(DATA.spouse.name)}</div>
+                            <div class="tree-detail">${esc(DATA.spouse.profession)}</div>
+                        </div>
+                    </div>
+                    <div class="tree-connector"></div>
+                    ` : ''}
+
+                    <!-- Nephews -->
+                    <div class="tree-node">
+                        <div class="tree-label">Geração 3 - Filhos/Sobrinhos (${DATA.nephews.length})</div>
+                        <div class="tree-children">
+                            ${DATA.nephews.map(n => `
+                                <div class="tree-person nephew">
+                                    <div class="tree-name">${esc(n.name)}</div>
+                                    <div class="tree-detail">${esc(n.profession || n.school || '-')}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Person Details -->
             <section class="section" id="person">
-                <h2>👤 Dados Pessoais</h2>
+                <h2>👤 Dados Pessoais - ${esc(p.full_name)}</h2>
                 <div class="grid">
-                    <div class="card"><strong>Nome</strong><br>${esc(p.full_name)}</div>
-                    <div class="card"><strong>CPF</strong><br>${esc(fmtCPF(p.cpf))}</div>
-                    <div class="card"><strong>RG</strong><br>${esc(p.rg)}</div>
-                    <div class="card"><strong>Nascimento</strong><br>${fmtDate(p.birth_date)}</div>
-                    <div class="card"><strong>Profissão</strong><br>${esc(p.profession)}</div>
-                    <div class="card"><strong>Cidade/UF</strong><br>${esc(p.city)}/${esc(p.state)}</div>
+                    <div class="card">
+                        <div class="info-row"><span class="info-label">Nome</span><span class="info-value">${esc(p.full_name)}</span></div>
+                        <div class="info-row"><span class="info-label">Apelido</span><span class="info-value">${esc(p.nickname)}</span></div>
+                        <div class="info-row"><span class="info-label">CPF</span><span class="info-value">${esc(p.cpf)}</span></div>
+                        <div class="info-row"><span class="info-label">RG</span><span class="info-value">${esc(p.rg)} ${esc(p.rg_uf)}</span></div>
+                        <div class="info-row"><span class="info-label">CREA</span><span class="info-value">${esc(p.crea)}</span></div>
+                    </div>
+                    <div class="card">
+                        <div class="info-row"><span class="info-label">Nascimento</span><span class="info-value">${fmtDate(p.birth_date)}</span></div>
+                        <div class="info-row"><span class="info-label">Nacionalidade</span><span class="info-value">${esc(p.nationality)}</span></div>
+                        <div class="info-row"><span class="info-label">Profissão</span><span class="info-value">${esc(p.profession)}</span></div>
+                        <div class="info-row"><span class="info-label">Estado Civil</span><span class="info-value">${esc(p.civil_state)}</span></div>
+                        <div class="info-row"><span class="info-label">Email</span><span class="info-value">${esc(p.email)}</span></div>
+                    </div>
+                    <div class="card">
+                        <div class="info-row"><span class="info-label">Telefone(s)</span><span class="info-value">${esc(fmtPhone(p.phones))}</span></div>
+                        <div class="info-row"><span class="info-label">Endereço</span><span class="info-value">${esc(p.address)}</span></div>
+                        <div class="info-row"><span class="info-label">CEP</span><span class="info-value">${esc(p.cep)}</span></div>
+                        <div class="info-row"><span class="info-label">Cidade</span><span class="info-value">${esc(p.city)}/${esc(p.state)}</span></div>
+                    </div>
                 </div>
             </section>
 
             <!-- Family -->
             <section class="section" id="family">
                 <h2>👨‍👩‍👧 Família</h2>
-                
-                <!-- Avós -->
-                <h3 style="color:#666;font-size:14px;margin-top:16px;">Avós (Pais do Pai)</h3>
                 <div class="grid">
-                    <div class="card"><strong>👴 Edmundo de Vasconcellos Lanna</strong><br><small>1922-1992</small><br><small>Dentista</small></div>
-                    <div class="card"><strong>👵 Nice Gorgulho de Vasconcellos Lanna</strong><br><small>1926-2019</small></div>
-                </div>
-                
-                <!-- Pais -->
-                <h3 style="color:#666;font-size:14px;margin-top:16px;">Pais</h3>
-                <div class="grid">
-                    <div class="card"><strong>👤 ${esc(p.full_name)}</strong><br><small>Engenheiro Civil</small></div>
-                    <div class="card"><strong>💑 ${DATA.spouse ? esc(DATA.spouse.name) : '-'}</strong><br><small>${DATA.spouse ? esc(DATA.spouse.profession) : ''}</small></div>
-                </div>
-                
-                <!-- Você (Filhos) -->
-                <h3 style="color:#666;font-size:14px;margin-top:16px;">Você</h3>
-                <div class="grid">
-                    <div class="card"><strong>🧑 Rodrigo Melo Lanna</strong><br><small>Vice President - J.P. Morgan</small></div>
-                </div>
-                
-                <!-- Tios (Irmãos do Pai) -->
-                <h3 style="color:#666;font-size:14px;margin-top:16px;">Tios (Irmãos do Pai)</h3>
-                <div class="grid">
-                    ${DATA.siblings.length > 0 ? DATA.siblings.map(s => `
-                        <div class="card"><strong>👨 ${esc(s.name)}</strong><br><small>${esc(s.notes || 'Tio/Tia')}</small></div>
-                    `).join('') : '<div class="card">-</div>'}
+                    <div class="card">
+                        <h3 style="margin:0 0 12px 0;color:var(--primary)">Irmãos (${DATA.siblings.length})</h3>
+                        ${DATA.siblings.map(s => `
+                            <div class="info-row">
+                                <span class="info-label">${esc(s.name)}</span>
+                                <span class="info-value">${s.facebook ? '📘 '+esc(s.facebook) : ''} ${s.instagram ? '📸 '+esc(s.instagram) : ''}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="card">
+                        <h3 style="margin:0 0 12px 0;color:var(--primary)">Sobrinhos (${DATA.nephews.length})</h3>
+                        ${DATA.nephews.map(n => `
+                            <div class="info-row">
+                                <span class="info-label">${esc(n.name)}</span>
+                                <span class="info-value">${esc(n.profession || n.school || '-')}</span>
+                            </div>
+                        `).join('')}
+                    </div>
                 </div>
             </section>
 
@@ -479,10 +321,15 @@
                 <div class="grid">
                     ${DATA.companies.map(c => `
                         <div class="card">
-                            <strong>${esc(c.trade_name || c.legal_name)}</strong><br>
-                            <small>${fmtCNPJ(c.cnpj)}</small><br>
-                            <span class="badge ${c.status === 'ativa' ? 'badge-ativa' : 'badge-inativa'}">${esc(c.status)}</span>
-                            ${c.capital ? `<br><small>Capital: ${fmtMoney(c.capital)}</small>` : ''}
+                            <div class="info-row"><span class="info-label">Nome Fantasia</span><span class="info-value">${esc(c.trade_name)}</span></div>
+                            <div class="info-row"><span class="info-label">Razão Social</span><span class="info-value">${esc(c.legal_name)}</span></div>
+                            <div class="info-row"><span class="info-label">CNPJ</span><span class="info-value">${esc(c.cnpj)}</span></div>
+                            <div class="info-row"><span class="info-label">Status</span><span class="info-value"><span class="badge ${c.status === 'ativa' ? 'badge-ativa' : 'badge-inativa'}">${esc(c.status)}</span></span></div>
+                            <div class="info-row"><span class="info-label">Capital</span><span class="info-value">${fmtMoney(c.capital)}</span></div>
+                            <div class="info-row"><span class="info-label">Atividade</span><span class="info-value">${esc(c.activity)}</span></div>
+                            <div class="info-row"><span class="info-label">Endereço</span><span class="info-value">${esc(c.address)}</span></div>
+                            ${c.phone ? `<div class="info-row"><span class="info-label">Telefone</span><span class="info-value">${esc(c.phone)}</span></div>` : ''}
+                            ${c.email ? `<div class="info-row"><span class="info-label">Email</span><span class="info-value">${esc(c.email)}</span></div>` : ''}
                         </div>
                     `).join('')}
                 </div>
@@ -490,22 +337,22 @@
 
             <!-- Properties -->
             <section class="section" id="properties">
-                <h2>🏠 Imoveis (${DATA.properties.length})</h2>
+                <h2>🏠 Imóveis (${DATA.properties.length})</h2>
                 <div class="grid">
-                    ${DATA.properties.map(prop => {
-                        const addr = (prop.address || '').toLowerCase();
-                        const dbValue = prop.current_value || prop.purchase_value || 0;
-                        const marketValue = getPropertyMarketValue(prop);
-                        const showMarket = marketValue > 0 && marketValue !== dbValue;
-                        return `
+                    ${DATA.properties.map(pr => `
                         <div class="card">
-                            <strong>${esc(prop.address)}</strong><br>
-                            <small>${esc(prop.city)}/${esc(prop.state)}</small>
-                            ${dbValue ? `<div class="money" style="margin-top:8px;font-size:16px">${fmtMoney(dbValue)}</div>` : ''}
-                            ${showMarket ? `<div style="color:#666;font-size:13px;margin-top:4px">Mercado: ${fmtMoney(marketValue)}</div>` : ''}
-                            ${prop.area_sqm ? `<small style="color:#666">Area: ${prop.area_sqm}m²</small>` : ''}
+                            <div class="info-row"><span class="info-label">Tipo</span><span class="info-value">${esc(pr.property_type)}</span></div>
+                            <div class="info-row"><span class="info-label">Endereço</span><span class="info-value">${esc(pr.address)}</span></div>
+                            <div class="info-row"><span class="info-label">Bairro</span><span class="info-value">${esc(pr.neighborhood)}</span></div>
+                            <div class="info-row"><span class="info-label">Cidade</span><span class="info-value">${esc(pr.city)}/${esc(pr.state)}</span></div>
+                            <div class="info-row"><span class="info-label">Área Total</span><span class="info-value">${pr.area_total ? pr.area_total + ' m²' : '-'}</span></div>
+                            <div class="info-row"><span class="info-label">Quartos</span><span class="info-value">${pr.bedrooms || '-'}</span></div>
+                            <div class="info-row"><span class="info-label">Vagas</span><span class="info-value">${pr.parking_spaces || '-'}</span></div>
+                            <div class="info-row"><span class="info-label">Matrícula</span><span class="info-value">${esc(pr.registration)}</span></div>
+                            <div class="info-row"><span class="info-label">Cartório</span><span class="info-value">${esc(pr.cartorio)}</span></div>
+                            <div class="info-row"><span class="info-label">Valor Atual</span><span class="info-value">${fmtMoney(pr.current_value)}</span></div>
                         </div>
-                    `}).join('')}
+                    `).join('')}
                 </div>
             </section>
 
@@ -513,31 +360,29 @@
             <section class="section" id="documents">
                 <h2>📄 Documentos (${DATA.documents.length})</h2>
                 <div class="grid">
-                    ${DATA.documents.map(d => {
-                        const label = d.title || d.doc_type.replace('_', ' ');
-                        return `
+                    ${DATA.documents.map(d => `
                         <div class="card">
-                            <span class="badge ${d.doc_type === 'cpf' ? 'badge-cpf' : d.doc_type === 'rg' ? 'badge-rg' : d.doc_type === 'crea' ? 'badge-crea' : ''}">${esc(d.doc_type.replace('_', ' ').toUpperCase())}</span>
-                            <strong>${esc(label)}</strong><br>
-                            <small>${esc(d.description) || '-'}</small>
-                            ${d.source ? `<br><small style="color:#999">Fonte: ${esc(d.source)}</small>` : ''}
+                            <div class="info-row"><span class="info-label">Tipo</span><span class="info-value">${esc(d.doc_type)}</span></div>
+                            <div class="info-row"><span class="info-label">Título</span><span class="info-value">${esc(d.title)}</span></div>
+                            <div class="info-row"><span class="info-label">Data</span><span class="info-value">${fmtDate(d.issue_date)}</span></div>
+                            ${d.description ? `<div class="info-row"><span class="info-label">Descrição</span><span class="info-value">${esc(d.description)}</span></div>` : ''}
                         </div>
-                    `}).join('')}
+                    `).join('')}
                 </div>
             </section>
 
             <!-- Legal -->
             <section class="section" id="legal">
                 <h2>⚖️ Processos (${DATA.legal_processes.length})</h2>
-                <div class="timeline">
-                    ${DATA.legal_processes.map(p => `
-                        <div class="timeline-item">
-                            <strong>${esc(p.process_number)}</strong><br>
-                            ${esc(p.subject)}<br>
-                            <span class="badge ${p.status === 'ativo' ? 'badge-ativa' : ''}">${esc(p.status)}</span>
-                        </div>
-                    `).join('')}
-                </div>
+                ${DATA.legal_processes.map(p => `
+                    <div class="card">
+                        <div class="info-row"><span class="info-label">Número</span><span class="info-value">${esc(p.process_number)}</span></div>
+                        <div class="info-row"><span class="info-label">Tribunal</span><span class="info-value">${esc(p.court)}</span></div>
+                        <div class="info-row"><span class="info-label">Assunto</span><span class="info-value">${esc(p.subject)}</span></div>
+                        <div class="info-row"><span class="info-label">Status</span><span class="info-value">${esc(p.status)}</span></div>
+                        ${p.value ? `<div class="info-row"><span class="info-label">Valor</span><span class="info-value">${fmtMoney(p.value)}</span></div>` : ''}
+                    </div>
+                `).join('')}
             </section>
 
             <!-- Contacts -->
@@ -546,11 +391,26 @@
                 <div class="grid">
                     ${DATA.contacts.map(c => `
                         <div class="card">
-                            <strong>${esc(c.name)}</strong> - ${esc(c.role)}<br>
-                            <small>${esc(c.phone)}</small>
+                            <div class="info-row"><span class="info-label">Nome</span><span class="info-value">${esc(c.name)}</span></div>
+                            <div class="info-row"><span class="info-label">Função</span><span class="info-value">${esc(c.role)}</span></div>
+                            ${c.phone ? `<div class="info-row"><span class="info-label">Telefone</span><span class="info-value">${esc(c.phone)}</span></div>` : ''}
+                            ${c.email ? `<div class="info-row"><span class="info-label">Email</span><span class="info-value">${esc(c.email)}</span></div>` : ''}
                         </div>
                     `).join('')}
                 </div>
+            </section>
+
+            <!-- Notes -->
+            <section class="section" id="notes">
+                <h2>📝 Notas (${DATA.notes.length})</h2>
+                ${DATA.notes.map(n => `
+                    <div class="card">
+                        <div class="info-row"><span class="info-label">Categoria</span><span class="info-value">${esc(n.category)}</span></div>
+                        <div class="info-row"><span class="info-label">Fonte</span><span class="info-value">${esc(n.source)}</span></div>
+                        ${n.title ? `<div class="info-row"><span class="info-label">Título</span><span class="info-value">${esc(n.title)}</span></div>` : ''}
+                        ${n.content ? `<div style="margin-top:8px;font-size:13px;color:var(--text-muted)">${esc(n.content).substring(0, 200)}...</div>` : ''}
+                    </div>
+                `).join('')}
             </section>
         `;
         document.getElementById('app').innerHTML = html;
