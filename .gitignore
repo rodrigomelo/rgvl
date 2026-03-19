@@ -34,3 +34,8 @@ Thumbs.db
 .dist/
 .build/
 .trash/
+data/
+*.db
+.venv/
+__pycache__/
+*.pyc
