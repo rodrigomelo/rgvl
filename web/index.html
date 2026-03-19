@@ -443,10 +443,33 @@
             <!-- Family -->
             <section class="section" id="family">
                 <h2>👨‍👩‍👧 Família</h2>
+                
+                <!-- Avós -->
+                <h3 style="color:#666;font-size:14px;margin-top:16px;">Avós (Pais do Pai)</h3>
                 <div class="grid">
-                    <div class="card"><strong>Cônjuge</strong><br>${DATA.spouse ? esc(DATA.spouse.name) : '-'}</div>
-                    <div class="card"><strong>Irmãos</strong><br>${DATA.siblings.length > 0 ? DATA.siblings.map(s => esc(s.name)).join(', ') : '-'}</div>
-                    <div class="card"><strong>Sobrinhos</strong><br>${DATA.nephews.length > 0 ? DATA.nephews.map(n => esc(n.name)).join(', ') : '-'}</div>
+                    <div class="card"><strong>👴 Edmundo de Vasconcellos Lanna</strong><br><small>1922-1992</small><br><small>Dentista</small></div>
+                    <div class="card"><strong>👵 Nice Gorgulho de Vasconcellos Lanna</strong><br><small>1926-2019</small></div>
+                </div>
+                
+                <!-- Pais -->
+                <h3 style="color:#666;font-size:14px;margin-top:16px;">Pais</h3>
+                <div class="grid">
+                    <div class="card"><strong>👤 ${esc(p.full_name)}</strong><br><small>Engenheiro Civil</small></div>
+                    <div class="card"><strong>💑 ${DATA.spouse ? esc(DATA.spouse.name) : '-'}</strong><br><small>${DATA.spouse ? esc(DATA.spouse.profession) : ''}</small></div>
+                </div>
+                
+                <!-- Você (Filhos) -->
+                <h3 style="color:#666;font-size:14px;margin-top:16px;">Você</h3>
+                <div class="grid">
+                    <div class="card"><strong>🧑 Rodrigo Melo Lanna</strong><br><small>Vice President - J.P. Morgan</small></div>
+                </div>
+                
+                <!-- Tios (Irmãos do Pai) -->
+                <h3 style="color:#666;font-size:14px;margin-top:16px;">Tios (Irmãos do Pai)</h3>
+                <div class="grid">
+                    ${DATA.siblings.length > 0 ? DATA.siblings.map(s => `
+                        <div class="card"><strong>👨 ${esc(s.name)}</strong><br><small>${esc(s.notes || 'Tio/Tia')}</small></div>
+                    `).join('') : '<div class="card">-</div>'}
                 </div>
             </section>
 
