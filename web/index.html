@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RGVL - Dados Pessoais</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #333; }
+        .stats { display: flex; gap: 15px; flex-wrap: wrap; margin: 20px 0; }
+        .stat { background: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .stat-value { font-size: 24px; font-weight: bold; color: #2196F3; }
+        .stat-label { font-size: 12px; color: #666; }
+        .section { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .section h2 { margin-top: 0; color: #333; }
+        .card { border: 1px solid #eee; padding: 15px; margin: 10px 0; border-radius: 6px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+        .loading { text-align: center; padding: 50px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>RGVL - Dados Pessoais</h1>
+        <div id="app">
+            <div class="loading">Carregando dados...</div>
+        </div>
+    </div>
+
+    <script>
+    const API = window.location.origin.replace(':5003', ':5004') + '/api';
+
+    async function loadData() {
+        try {
+            const [person, spouse, siblings, nephews, companies, properties, contacts, documents, legal] = await Promise.all([
+                fetch(API + '/person').then(r => r.json()).catch(() => null),
+                fetch(API + '/spouse').then(r => r.json()).catch(() => null),
+                fetch(API + '/siblings').then(r => r.json()).catch(() => []),
+                fetch(API + '/nephews').then(r => r.json()).catch(() => []),
+                fetch(API + '/companies').then(r => r.json()).catch(() => []),
+                fetch(API + '/properties').then(r => r.json()).catch(() => []),
+                fetch(API + '/contacts').then(r => r.json()).catch(() => []),
+                fetch(API + '/documents').then(r => r.json()).catch(() => []),
+                fetch(API + '/legal/processes').then(r => r.json()).catch(() => [])
+            ]);
+
+            render({ person, spouse, siblings: siblings||[], nephews: nephews||[], companies: companies||[], properties: properties||[], contacts: contacts||[], documents: documents||[], legal_processes: legal||[] });
+        } catch(e) {
+            document.getElementById('app').innerHTML = '<div class="section"><h2>Erro ao carregar dados</h2><p>' + e.message + '</p></div>';
+        }
+    }
+
+    function fmt(v) { return v || '-'; }
+
+    function render(DATA) {
+        const p = DATA.person || {};
+        const html = `
+            <div class="stats">
+                <div class="stat"><div class="stat-value">${DATA.companies.length}</div><div class="stat-label">Empresas</div></div>
+                <div class="stat"><div class="stat-value">${DATA.properties.length}</div><div class="stat-label">Imóveis</div></div>
+                <div class="stat"><div class="stat-value">${DATA.legal_processes.length}</div><div class="stat-label">Processos</div></div>
+            </div>
+
+            <div class="section">
+                <h2>👤 ${fmt(p.full_name)}</h2>
+                <p><strong>Profissão:</strong> ${fmt(p.profession)}</p>
+                <p><strong>CPF:</strong> ${fmt(p.cpf)}</p>
+                <p><strong>RG:</strong> ${fmt(p.rg)}</p>
+                <p><strong>Nascimento:</strong> ${fmt(p.birth_date)}</p>
+                <p><strong>Cidade:</strong> ${fmt(p.city)}/${fmt(p.state)}</p>
+            </div>
+
+            <div class="section">
+                <h2>👨‍👩‍👧 Família</h2>
+                <p><strong>Cônjuge:</strong> ${DATA.spouse ? DATA.spouse.name : '-'}</p>
+                <p><strong>Irmãos:</strong> ${DATA.siblings.length}</p>
+                <p><strong>Sobrinhos:</strong> ${DATA.nephews.length}</p>
+            </div>
+
+            <div class="section">
+                <h2>🏢 Empresas (${DATA.companies.length})</h2>
+                <div class="grid">
+                    ${DATA.companies.map(c => `
+                        <div class="card">
+                            <strong>${fmt(c.trade_name || c.legal_name)}</strong><br>
+                            <small>${fmt(c.cnpj)}</small><br>
+                            <span style="color:${c.status === 'ativa' ? 'green' : 'red'}">${fmt(c.status)}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🏠 Imóveis (${DATA.properties.length})</h2>
+                <div class="grid">
+                    ${DATA.properties.map(p => `
+                        <div class="card">
+                            <strong>${fmt(p.address)}</strong><br>
+                            <small>${fmt(p.city)}/${fmt(p.state)}</small>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📞 Contatos (${DATA.contacts.length})</h2>
+                ${DATA.contacts.map(c => `
+                    <div class="card">
+                        <strong>${fmt(c.name)}</strong> - ${fmt(c.role)}<br>
+                        <small>${fmt(c.phone)}</small>
+                    </div>
+                `).join('')}
+            </div>
+
+            <div class="section">
+                <h2>⚖️ Processos (${DATA.legal_processes.length})</h2>
+                ${DATA.legal_processes.map(p => `
+                    <div class="card">
+                        <strong>${fmt(p.process_number)}</strong><br>
+                        ${fmt(p.subject)}<br>
+                        <span>${fmt(p.status)}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        document.getElementById('app').innerHTML = html;
+    }
+
+    loadData();
+    </script>
+</body>
+</html>

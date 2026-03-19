@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RGVL - Dados Pessoais</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #0f0f0f; --bg-card: #1a1a1a; --text: #fff; --text-secondary: #a0a0a0; --text-muted: #666; --accent: #6366f1; --accent-green: #10b981; --accent-blue: #3b82f6; --accent-orange: #f59e0b; --accent-pink: #ec4899; --border: #2a2a2a; --shadow: 0 4px 20px rgba(0,0,0,0.3); --radius: 12px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 2rem; }
+        .header { background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 2rem 1.5rem; border-bottom: 1px solid var(--border); }
+        .header-content { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+        .logo { width: 48px; height: 48px; background: linear-gradient(135deg, var(--accent), var(--accent-blue)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; }
+        .header-text h1 { font-size: 1.5rem; font-weight: 700; }
+        .header-text .subtitle { color: var(--text-secondary); font-size: 0.85rem; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem 1rem; }
+        .section { margin-bottom: 2rem; }
+        .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
+        .stat-value { font-size: 2rem; font-weight: 700; color: var(--accent); }
+        .stat-label { color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.25rem; }
+        .profile-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; display: grid; grid-template-columns: auto 1fr; gap: 1.5rem; }
+        .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-pink)); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; }
+        .profile-info h2 { font-size: 1.25rem; margin-bottom: 0.25rem; }
+        .profile-info .role { color: var(--text-secondary); }
+        .profile-info .details { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.75rem; margin-top: 1rem; }
+        .profile-info .detail-item { font-size: 0.85rem; }
+        .profile-info .detail-label { color: var(--text-muted); display: block; }
+        .family-grid, .companies-grid, .properties-grid, .legal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+        .family-card, .company-card, .property-card, .legal-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
+        .family-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-pink), var(--accent-orange)); display: flex; align-items: center; justify-content: center; font-weight: 700; margin-bottom: 0.75rem; }
+        .family-name { font-weight: 600; margin-bottom: 0.25rem; }
+        .family-relationship { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 0.5rem; }
+        .family-details { font-size: 0.8rem; color: var(--text-muted); }
+        .family-details span { display: block; margin-top: 0.25rem; }
+        .company-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+        .company-name { font-weight: 600; }
+        .company-status { font-size: 0.75rem; padding: 0.25rem 0.5rem; border-radius: 12px; background: rgba(16,185,129,0.2); color: var(--accent-green); }
+        .company-status.inactive { background: rgba(239,68,68,0.2); color: #ef4444; }
+        .company-cnpj { font-size: 0.8rem; color: var(--text-muted); font-family: monospace; margin-bottom: 0.5rem; }
+        .company-info { font-size: 0.85rem; color: var(--text-secondary); }
+        .company-info span { display: block; margin-top: 0.25rem; }
+        .company-capital { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+        .company-capital strong { color: var(--accent-green); }
+        .property-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+        .property-type { font-size: 0.75rem; padding: 0.25rem 0.5rem; border-radius: 12px; background: rgba(99,102,241,0.2); color: var(--accent); }
+        .property-status { font-size: 0.75rem; padding: 0.25rem 0.5rem; border-radius: 12px; background: rgba(16,185,129,0.2); color: var(--accent-green); }
+        .property-address { font-weight: 600; margin-bottom: 0.25rem; }
+        .property-neighborhood { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem; }
+        .property-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+        .property-stat { text-align: center; }
+        .property-stat-value { font-weight: 700; color: var(--accent); }
+        .property-stat-label { font-size: 0.7rem; color: var(--text-muted); }
+        .property-value { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+        .property-value strong { color: var(--accent-green); }
+        .legal-card { border-left: 4px solid var(--accent-orange); }
+        .legal-number { font-family: monospace; font-weight: 600; font-size: 0.95rem; }
+        .legal-court { font-size: 0.75rem; color: var(--text-muted); margin: 0.25rem 0; }
+        .legal-subject { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
+        .legal-parties { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .legal-status { display: inline-block; padding: 0.25rem 0.5rem; border-radius: 4px; background: rgba(16,185,129,0.2); color: var(--accent-green); font-size: 0.75rem; }
+        .legal-filings { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+        .legal-filing { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+        .list-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+        .list-item { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
+        .list-item:last-child { border-bottom: none; }
+        .list-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--bg); display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0; }
+        .list-info { flex: 1; }
+        .list-name { font-weight: 500; }
+        .list-meta { font-size: 0.8rem; color: var(--text-muted); }
+        @media(max-width:640px) { .header-content { flex-direction: column; gap: 1rem; } .profile-card { grid-template-columns: 1fr; } .profile-avatar { margin: 0 auto; } }
+    </style>
+</head>
+<body>
+    <header class="header">
+                <div class="logo">R</div>
+                <div class="header-text"><h1>RGVL - Dados Pessoais</h1><div class="subtitle">Rodrigo Gorgulho de Vasconcellos Lanna</div></div>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card"><div class="stat-value" id="statCompanies">-</div><div class="stat-label">Empresas</div></div>
+            <div class="stat-card"><div class="stat-value" id="statProperties">-</div><div class="stat-label">Imóveis</div></div>
+            <div class="stat-card"><div class="stat-value" id="statNetWorth">-</div><div class="stat-label">Patrimônio</div></div>
+            <div class="stat-card"><div class="stat-value" id="statProcesses">-</div><div class="stat-label">Processos</div></div>
+        </div>
+        <section class="section"><h2 class="section-title">👤 Identificação</h2><div class="profile-card" id="profileCard"></div></section>
+        <section class="section">
+            <h2 class="section-title">👨‍👩‍👧 Família</h2>
+            <div class="stats-grid" style="margin-bottom:1rem"><div class="stat-card"><div class="stat-value" id="familySpouseCount">-</div><div class="stat-label">Cônjuge</div></div>
+            <div class="stats-grid" style="margin-bottom:1rem"><div class="stat-card"><div class="stat-value" id="familySiblingsCount">-</div><div class="stat-label">Irmãos</div></div>
+            <div class="stats-grid" style="margin-bottom:1rem"><div class="stat-card"><div class="stat-value" id="familyNephewsCount">-</div><div class="stat-label">Sobrinhos</div></div>
+            <div class="family-grid" id="familyGrid"></div>
+        </section>
+        <section class="section"><h2 class="section-title">🏢 Empresas</h2><div class="companies-grid" id="companiesGrid"></div></section>
+        <section class="section"><h2 class="section-title">🏠 Imóveis</h2><div class="properties-grid" id="propertiesGrid"></div></section>
+        <section class="section"><h2 class="section-title">📞 Contatos</h2><div class="list-card" id="contactsCard"></div></section>
+        <section class="section"><h2 class="section-title">📄 Documentos</h2><div class="list-card" id="documentsCard"></div></section>
+        <section class="section"><h2 class="section-title">⚖️ Processos Jurídicos</h2><div class="legal-grid" id="legalGrid"></div></section>
+    </div>
+    <script>
+        const DATA = {   \"person\": {     \"id\": 1,     \"full_name\": \"Rodrigo Gorgulho de Vasconcellos Lanna\",     \"nickname\": \"Rodrigo Lanna\",     \"cpf\": \"314.516.326-49\",     \"rg\": \"MG-594.589\",     \"rg_uf\": null,     \"crea\": \"24920/D\",     \"birth_date\": \"1955-12-17 00:00:00\",     \"nationality\": \"Brasileiro\",     \"profession\": \"Engenheiro Civil\",     \"civil_state\": \"Casado\",     \"marriage_date\": null,     \"email\": \"rlanna@cbmsa.com.br\",     \"phones\": [       \"+55(31)3417-6319\",       \"+55(31)3213-6476\"     ],     \"address\": \"R Cear\u00e1, 1305, Apto. 1202 - Bairro Funcion\u00e1rios\",     \"cep\": \"30150-311\",     \"city\": \"Belo Horizonte\",     \"state\": \"MG\",     \"notes\": null,     \"raw_data\": null,     \"collected_at\": \"2026-03-18 16:59:38.368289\",     \"updated_at\": \"2026-03-18 16:59:38.368290\"   },   \"spouse\": {     \"id\": 1,     \"name\": \"Ros\u00e1lia Fagundes Ladeira\",     \"profession\": \"Arquiteta\",     \"rg\": \"MG-313.077\",     \"cpf\": \"359.959.806-10\",     \"raw_data\": null,     \"collected_at\": \"2026-03-18 16:59:38.369191\"   },   \"siblings\": [     {       \"id\": 1,       \"name\": \"J\u00fania Gorgulho de Vasconcellos Lanna\",       \"facebook\": \"junia.lanna.5\",       \"instagram\": null,       \"notes\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.368994\"     },     {       \"id\": 2,       \"name\": \"Marcelo Gorgulho Vasconcellos Lanna\",       \"facebook\": null,       \"instagram\": null,       \"notes\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.368995\"     },     {       \"id\": 3,       \"name\": \"Henrique Gorgulho De Vasconcellos Lanna\",       \"facebook\": null,       \"instagram\": null,       \"notes\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.368995\"     }   ],   \"nephews\": [     {       \"id\": 1,       \"name\": \"Luiza Lanna\",       \"relationship\": \"nephew\",       \"facebook\": null,       \"instagram\": null,       \"school\": \"Col\u00e9gio Marista Dom Silv\u00e9rio\",       \"profession\": null,       \"notes\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.367869\"     },     {       \"id\": 2,       \"name\": \"Fernanda Lanna\",       \"relationship\": \"nephew\",       \"facebook\": \"fernanda.lanna.5\",       \"instagram\": null,       \"school\": null,       \"profession\": null,       \"notes\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.367869\"     },     {       \"id\": 3,       \"name\": \"Marcela Lanna\",       \"relationship\": \"nephew\",       \"facebook\": null,       \"instagram\": null,       \"school\": \"Escola Santo Tom\u00e1s de Aquino\",       \"profession\": null,       \"notes\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.367870\"     },     {       \"id\": 4,       \"name\": \"Andre Lanna\",       \"relationship\": \"nephew\",       \"facebook\": null,       \"instagram\": null,       \"school\": \"Escola Santo Tom\u00e1s de Aquino\",       \"profession\": null,       \"notes\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.367870\"     },     {       \"id\": 5,       \"name\": \"Andrea Lanna\",       \"relationship\": \"niece\",       \"facebook\": null,       \"instagram\": null,       \"school\": \"Liceu Albert Sabin\",       \"profession\": null,       \"notes\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.367871\"     },     {       \"id\": 6,       \"name\": \"Paula Lanna Silva\",       \"relationship\": \"niece\",       \"facebook\": null,       \"instagram\": null,       \"school\": \"Liceu Albert Sabin\",       \"profession\": null,       \"notes\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.367871\"     },     {       \"id\": 7,       \"name\": \"Alessandra Lanna\",       \"relationship\": \"nephew\",       \"facebook\": null,       \"instagram\": null,       \"school\": null,       \"profession\": null,       \"notes\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.367871\"     },     {       \"id\": 8,       \"name\": \"Bruno Lanna\",       \"relationship\": \"nephew\",       \"facebook\": null,       \"instagram\": null,       \"school\": null,       \"profession\": null,       \"notes\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.367872\"     },     {       \"id\": 9,       \"name\": \"Luisa Lanna\",       \"relationship\": \"nephew\",       \"facebook\": null,       \"instagram\": null,       \"school\": null,       \"profession\": null,       \"notes\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.367872\"     },     {       \"id\": 10,       \"name\": \"Ant\u00f4nio Bahury Lanna\",       \"relationship\": \"nephew\",       \"facebook\": null,       \"instagram\": null,       \"school\": \"Col\u00e9gio Santa Doroteia\",       \"profession\": null,       \"notes\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.367873\"     },     {       \"id\": 11,       \"name\": \"Jo\u00e3o V\u00edtor Lanna\",       \"relationship\": \"nephew\",       \"facebook\": null,       \"instagram\": null,       \"school\": \"Col\u00e9gio Santa Doroteia\",       \"profession\": null,       \"notes\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.367873\"     },     {       \"id\": 12,       \"name\": \"Paula Lanna\",       \"relationship\": \"niece\",       \"facebook\": null,       \"instagram\": null,       \"school\": null,       \"profession\": null,       \"notes\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.367873\"     },     {       \"id\": 13,       \"name\": \"Edmundo Lanna\",       \"relationship\": \"nephew\",       \"facebook\": null,       \"instagram\": null,       \"school\": null,       \"profession\": null,       \"notes\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.367874\"     },     {       \"id\": 14,       \"name\": \"Vivi Lanna\",       \"relationship\": \"nephew\",       \"facebook\": null,       \"instagram\": null,       \"school\": null,       \"profession\": null,       \"notes\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.367874\"     },     {       \"id\": 15,       \"name\": \"Pichita Lanna\",       \"relationship\": \"niece\",       \"facebook\": null,       \"instagram\": null,       \"school\": null,       \"profession\": null,       \"notes\": \"Dono de buffet\",       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.367875\"     },     {       \"id\": 16,       \"name\": \"Julia Lanna\",       \"relationship\": \"niece\",       \"facebook\": null,       \"instagram\": null,       \"school\": \"Colegio Marista\",       \"profession\": null,       \"notes\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.367875\"     }   ],   \"companies\": [     {       \"id\": 1,       \"cnpj\": \"17.185.786/0001-61\",       \"legal_name\": \"Construtora Barbosa Mello SA\",       \"trade_name\": \"Construtora Barbosa Mello S/A\",       \"opening_date\": null,       \"address\": \"Av Portugal, 4851, Itapoa, BH/MG\",       \"phone\": null,       \"email\": null,       \"capital\": null,       \"status\": \"ativa\",       \"activity\": \"Constru\u00e7\u00e3o de edif\u00edcios\",       \"partners\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.366300\"     },     {       \"id\": 2,       \"cnpj\": \"22.676.938/0001-69\",       \"legal_name\": \"Rodrigo Gorgulho de Vasconcellos Lanna - Epp\",       \"trade_name\": \"Rvl Engenharia\",       \"opening_date\": null,       \"address\": \"R Cear\u00e1, 1309, Apto. 1202, BH/MG\",       \"phone\": null,       \"email\": null,       \"capital\": null,       \"status\": \"ativa\",       \"activity\": \"Atividades de engenharia\",       \"partners\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.366304\"     },     {       \"id\": 3,       \"cnpj\": \"02.835.659/0001-93\",       \"legal_name\": \"Erh Lanna Engenharia Ltda - Epp\",       \"trade_name\": null,       \"opening_date\": \"1998-11-11 00:00:00\",       \"address\": null,       \"phone\": null,       \"email\": null,       \"capital\": 45000.0,       \"status\": \"inativa\",       \"activity\": \"Atividades de engenharia\",       \"partners\": [         {           \"name\": \"Henrique Gorgulho Vasconcellos Lanna\"         }       ],       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.366633\"     }   ],   \"properties\": [     {       \"id\": 1,       \"property_type\": \"Apartamento\",       \"address\": \"Rua Gon\u00e7alves Dias, 865, Apto. 1201\",       \"city\": \"Belo Horizonte\",       \"state\": \"MG\",       \"neighborhood\": \"Funcion\u00e1rios\",       \"registration\": \"121.974\",       \"cartorio\": \"3\u00b0 Of\u00edcio - Cart\u00f3rio Bol\u00edvar\",       \"cnm\": null,       \"building_name\": \"Quintas da Liberdade Fine Residence\",       \"floor\": \"12\u00b0 andar\",       \"area_sqm\": 373.28,       \"area_common\": 176.72,       \"area_total\": 550.0,       \"bedrooms\": 4,       \"parking_spaces\": 5,       \"parking_boxes\": null,       \"owners\": [         \"Rodrigo Gorgulho de Vasconcellos Lanna\",         \"Ros\u00e1lia Fagundes Ladeira\"       ],       \"purchase_date\": \"2017-12-21 00:00:00\",       \"purchase_value\": 3930700.9,       \"financing_value\": 1450000.0,       \"itbi\": 119999.96,       \"fiscal_value\": 3999998.73,       \"current_value\": 3999998.73,       \"status\": \"paid_off\",       \"description\": null,       \"annotations\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.368729\"     },     {       \"id\": 2,       \"property_type\": \"Apartamento\",       \"address\": \"Rua Oliveira, 259, Apto. 303\",       \"city\": \"Belo Horizonte\",       \"state\": \"MG\",       \"neighborhood\": \"Cruzeiro\",       \"registration\": \"15.902\",       \"cartorio\": \"2\u00b0 Of\u00edcio de Registro de Im\u00f3veis\",       \"cnm\": null,       \"building_name\": \"El Bacha IV\",       \"floor\": null,       \"area_sqm\": 245.5,       \"area_common\": 95.75,       \"area_total\": 341.25,       \"bedrooms\": 3,       \"parking_spaces\": 2,       \"parking_boxes\": null,       \"owners\": [         \"Rodrigo Gorgulho de Vasconcellos Lanna\"       ],       \"purchase_date\": \"1982-03-16 00:00:00\",       \"purchase_value\": null,       \"financing_value\": null,       \"itbi\": null,       \"fiscal_value\": null,       \"current_value\": null,       \"status\": \"paid_off\",       \"description\": null,       \"annotations\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.368730\"     }   ],   \"contacts\": [     {       \"id\": 1,       \"name\": \"Rodrigo da Cunha Pereira\",       \"role\": \"Advogado\",       \"company\": \"Rodrigo da Cunha Pereira e Associados\",       \"phone\": \"+55 31 3335-9450\",       \"email\": \"rcp@rodrigodacunha.adv.br\",       \"notes\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.366956\"     },     {       \"id\": 2,       \"name\": \"Caio Brasil\",       \"role\": \"Advogado\",       \"company\": \"Rodrigo da Cunha Pereira e Associados\",       \"phone\": \"+55 31 8745-8245\",       \"email\": \"caio@rodrigodacunha.adv.br\",       \"notes\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.366957\"     },     {       \"id\": 3,       \"name\": \"Sara\",       \"role\": \"Cart\u00f3rio\",       \"company\": \"Cart\u00f3rio 2\u00ba Of\u00edcio de Itaituba\",       \"phone\": \"+55 93 3518-7654\",       \"email\": \"cartorioitb@hotmail.com\",       \"notes\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.366957\"     }   ],   \"documents\": [     {       \"id\": 1,       \"doc_type\": \"rg\",       \"title\": \"RG\",       \"description\": \"RG MG-594.589\",       \"file_path\": null,       \"issue_date\": null,       \"expiry_date\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.367266\"     },     {       \"id\": 2,       \"doc_type\": \"cpf\",       \"title\": \"CPF\",       \"description\": \"314.516.326-49\",       \"file_path\": null,       \"issue_date\": null,       \"expiry_date\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.367267\"     },     {       \"id\": 3,       \"doc_type\": \"crea\",       \"title\": \"CREA/MG\",       \"description\": \"24920/D\",       \"file_path\": null,       \"issue_date\": null,       \"expiry_date\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.367267\"     },     {       \"id\": 4,       \"doc_type\": \"birth_certificate\",       \"title\": \"Certid\u00e3o de Nascimento\",       \"description\": null,       \"file_path\": null,       \"issue_date\": null,       \"expiry_date\": null,       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.367267\"     }   ],   \"legal_processes\": [     {       \"id\": 1,       \"process_number\": \"0012345-78.2025.8.13.0001\",       \"court\": \"TJMG\",       \"subject\": \"Reconhecimento de Paternidade\",       \"parties\": [         \"Rodrigo da Silva Melo (filho)\",         \"Rodrigo Gorgulho de Vasconcellos Lanna (pai)\"       ],       \"status\": \"Conclu\u00eddo\",       \"value\": 0.0,       \"filings\": [         {           \"date\": \"2024-11-24\",           \"description\": \"In\u00edcio do processo - Reconhecimento de paternidade\"         },         {           \"date\": \"2025-08-25\",           \"description\": \"Requerimento administrativo de altera\u00e7\u00e3o de sobrenome\"         }       ],       \"raw_data\": null,       \"collected_at\": \"2026-03-18 16:59:38.367534\",       \"updated_at\": \"2026-03-18 16:59:38.367535\"     }   ] } ;
+
+        function fmtDate(s){if(!s)return'-';return new Date(s).toLocaleDateString('pt-BR')}
+        function fmtCurr(v){if(!v)return'-';return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v)}
+
+        function renderStats(DATA){
+            const companies = DATA.companies || [];
+            const properties = DATA.properties || [];
+            const processes = DATA.legal_processes || [];
+            document.getElementById('statCompanies').textContent = companies.length;
+            document.getElementById('statProperties').textContent = properties.length;
+            document.getElementById('statProcesses').textContent = processes.length;
+            const totalValue = (properties.reduce((a,p)=>a+(p.current_value||p.purchase_value||0),0)) + (companies.reduce((a,c)=>a+(c.capital||0),0));
+            document.getElementById('statNetWorth').textContent = totalValue > 0 ? (totalValue/1e6).toFixed(1)+'M' : '-';
+        }
+
+        function renderPerson(DATA){
+            const p = DATA.person;
+            if(!p) return;
+            const i = (p.full_name||'R').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+            document.getElementById('profileCard').innerHTML = '<div class="profile-avatar">'+i+'</div><div class="profile-info"><h2>'+p.full_name+'</h2><div class="role">'+(p.profession||'Engenheiro Civil')+'</div><div class="details"><div class="detail-item"><span class="detail-label">CPF</span>'+(p.cpf||'-')+'</div><div class="detail-item"><span class="detail-label">RG</span>'+(p.rg?p.rg+(p.rg_uf?'-'+p.rg_uf:''):'-')+'</div><div class="detail-item"><span class="detail-label">CREA</span>'+(p.crea||'-')+'</div><div class="detail-item"><span class="detail-label">Nascimento</span>'+(p.birth_date?fmtDate(p.birth_date):'-')+'</div><div class="detail-item"><span class="detail-label">Cidade</span>'+(p.city||'Belo Horizonte')+'/'+(p.state||'MG')+'</div></div></div>';
+        }
+
+        function renderFamily(DATA){
+            const sp = DATA.spouse, sib = DATA.siblings||[], nep = DATA.nephews||[];
+            document.getElementById('familySpouseCount').textContent = sp ? 1 : 0;
+            document.getElementById('familySiblingsCount').textContent = sib.length;
+            document.getElementById('familyNephewsCount').textContent = nep.length;
+            let h = '';
+            if(sp) h += '<div class="family-card"><div class="family-avatar">'+sp.name.split(' ').map(n=>n[0]).join('').substring(0,2)+'</div><div class="family-name">'+sp.name+'</div><div class="family-relationship">Cônjuge</div><div class="family-details">'+(sp.profession?'<span>'+sp.profession+'</span>':'')+'</div></div>';
+            sib.forEach(s=>h+='<div class="family-card"><div class="family-avatar">'+s.name.split(' ').map(n=>n[0]).join('').substring(0,2)+'</div><div class="family-name">'+s.name+'</div><div class="family-relationship">Irmão(ã)</div></div>');
+            nep.forEach(n=>h+='<div class="family-card"><div class="family-avatar">'+n.name.split(' ').map(n=>n[0]).join('').substring(0,2)+'</div><div class="family-name">'+n.name+'</div><div class="family-relationship">'+(n.relationship==='niece'?'Sobrinha':'Sobrinho')+'</div><div class="family-details">'+(n.school?'<span>'+n.school+'</span>':'')+'</div></div>');
+            document.getElementById('familyGrid').innerHTML = h;
+        }
+
+        function renderCompanies(DATA){
+            const cs = DATA.companies||[];
+            if(!cs.length) return document.getElementById('companiesGrid').innerHTML = '<div class="empty-state">Nenhuma empresa</div>';
+            document.getElementById('companiesGrid').innerHTML = cs.map(c=>{const a=c.status?.toLowerCase()==='ativa';return'<div class="company-card"><div class="company-header"><div class="company-name">'+(c.trade_name||c.legal_name)+'</div><span class="company-status '+(a?'':'inactive')+'">'+(c.status||'Desconhecido')+'</span></div><div class="company-cnpj">'+(c.cnpj||'N/A')+'</div><div class="company-info">'+(c.activity?'<span>'+c.activity+'</span>':'')+'</div><div class="company-capital">Capital: <strong>'+fmtCurr(c.capital)+'</strong></div></div>'}).join('');
+        }
+        <script>
+        function fmtDate(s){if(!s)return'-';return new Date(s).toLocaleDateString('pt-BR')}
+        function fmtCurr(v){if(!v)return'-';return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v)}
+
+        function renderAll(DATA) {
+
+            function renderProperties(DATA){
+                const ps = DATA.properties||[];
+                if(!ps.length) return document.getElementById('propertiesGrid').innerHTML = '<div class="empty-state">Nenhum imóvel</div>';
+                document.getElementById('propertiesGrid').innerHTML = ps.map(p=>{const q=p.status?.toLowerCase().includes('quit');return'<div class="property-card"><div class="property-header"><span class="property-type">'+(p.property_type||'Imóvel')+'</span><span class="property-status">'+(q?'✓ Quitado':(p.financing_value?'Financiado':'Desconhecido'))+'</span></div><div class="property-address">'+p.address+'</div><div class="property-neighborhood">'+(p.neighborhood||'')+' '+(p.city||'Belo Horizonte')+'/'+(p.state||'MG')+'</div><div class="property-stats"><div class="property-stat"><div class="property-stat-value">'+(p.area_sqm||'-')+'</div><div class="property-stat-label">m²</div></div><div class="property-stat"><div class="property-stat-value">'+(p.bedrooms||'-')+'</div><div class="property-stat-label">Quartos</div></div><div class="property-stat"><div class="property-stat-value">'+(p.parking_spaces||'-')+'</div><div class="property-stat-label">Vagas</div></div></div><div class="property-value">Matrícula: <strong>'+(p.registration||'N/A')+'</strong>'+(p.current_value?'<br>Valor: <strong>'+fmtCurr(p.current_value)+'</strong>':'')+'</div></div>'}).join('');
+            }
+
+            function renderContacts(DATA){
+                const cs = DATA.contacts||[];
+                if(!cs.length) return document.getElementById('contactsCard').innerHTML = '<div class="empty-state">Nenhum contato</div>';
+                document.getElementById('contactsCard').innerHTML = cs.map(c=>'<div class="list-item"><div class="list-avatar">👤</div><div class="list-info"><div class="list-name">'+c.name+'</div><div class="list-meta">'+(c.role||'')+' '+(c.company?'• '+c.company:'')+'</div><div class="list-meta">'+(c.phone||'')+' '+(c.email?' • '+c.email:'')+'</div></div></div>').join('');
+            }
+
+            function renderDocuments(DATA){
+                const ds = DATA.documents||[];
+                if(!ds.length) return document.getElementById('documentsCard').innerHTML = '<div class="empty-state">Nenhum documento</div>';
+                const i={rg:'🆔',cpf:'🪪',crea:'📜',birth_certificate:'📃'};
+                document.getElementById('documentsCard').innerHTML = ds.map(d=>'<div class="list-item"><div class="list-avatar">'+(i[d.doc_type]||'📄')+'</div><div class="list-info"><div class="list-name">'+(d.title||d.doc_type)+'</div><div class="list-meta">'+(d.description||'')+'</div></div></div>').join('');
+            }
+
+            function renderLegal(DATA){
+                const ps = DATA.legal_processes||[];
+                if(!ps.length) return document.getElementById('legalGrid').innerHTML = '<div class="empty-state">Nenhum processo</div>';
+                document.getElementById('legalGrid').innerHTML = ps.map(p=>{let filingsHtml='';if(p.filings&&p.filings.length){filingsHtml='<div class="legal-filings">'+p.filings.map(f=>'<div class="legal-filing">• '+(f.date||'')+' - '+(f.description||'')+'</div>').join('')+'</div>'}return'<div class="legal-card"><div class="legal-number">'+p.process_number+'</div><div class="legal-court">'+p.court+'</div><div class="legal-subject">'+(p.subject||'-')+'</div><div class="legal-parties">Partes: '+(p.parties?p.parties.join(', '):'-')+'</div><span class="legal-status">'+(p.status||'Em andamento')+'</span>'+filingsHtml+'</div>'}).join('');
+            }
+                nep.forEach(n=>h+='<div class="family-card"><div class="family-avatar">'+n.name.split(' ').map(n=>n[0]).join('').substring(0,2)+'</div><div class="family-name">'+n.name+'</div><div class="family-relationship">'+(n.relationship==='niece'?'Sobrinha':'Sobrinho')+'</div><div class="family-details">'+(n.school?'<span>'+n.school+'</span>':'')+'</div></div>');
+                document.getElementById('familyGrid').innerHTML = h;
+            }
+            function renderCompanies(){
+                const cs = DATA.companies||[];
+                if(!cs.length) return document.getElementById('companiesGrid').innerHTML = '<div class="empty-state">Nenhuma empresa</div>';
+                document.getElementById('companiesGrid').innerHTML = cs.map(c=>{const a=c.status?.toLowerCase()==='ativa';return'<div class="company-card"><div class="company-header"><div class="company-name">'+(c.trade_name||c.legal_name)+'</div><span class="company-status '+(a?'':'inactive')+'">'+(c.status||'Desconhecido')+'</span></div><div class="company-cnpj">'+(c.cnpj||'N/A')+'</div><div class="company-info">'+(c.activity?'<span>'+c.activity+'</span>':'')+'</div><div class="company-capital">Capital: <strong>'+fmtCurr(c.capital)+'</strong></div></div>'}).join('');
+            }
+            function renderProperties(){
+                const ps = DATA.properties||[];
+                if(!ps.length) return document.getElementById('propertiesGrid').innerHTML = '<div class="empty-state">Nenhum imóvel</div>';
+                document.getElementById('propertiesGrid').innerHTML = ps.map(p=>{const q=p.status?.toLowerCase().includes('quit');return'<div class="property-card"><div class="property-header"><span class="property-type">'+(p.property_type||'Imóvel')+'</span><span class="property-status">'+(q?'✓ Quitado':(p.financing_value?'Financiado':'Desconhecido'))+'</span></div><div class="property-address">'+p.address+'</div><div class="property-neighborhood">'+(p.neighborhood||'')+' '+(p.city||'Belo Horizonte')+'/'+(p.state||'MG')+'</div><div class="property-stats"><div class="property-stat"><div class="property-stat-value">'+(p.area_sqm||'-')+'</div><div class="property-stat-label">m²</div></div><div class="property-stat"><div class="property-stat-value">'+(p.bedrooms||'-')+'</div><div class="property-stat-label">Quartos</div></div><div class="property-stat"><div class="property-stat-value">'+(p.parking_spaces||'-')+'</div><div class="property-stat-label">Vagas</div></div></div><div class="property-value">Matrícula: <strong>'+(p.registration||'N/A')+'</strong>'+(p.current_value?'<br>Valor: <strong>'+fmtCurr(p.current_value)+'</strong>':'')+'</div></div>'}).join('');
+            }
+            function renderContacts(){
+                const cs = DATA.contacts||[];
+                if(!cs.length) return document.getElementById('contactsCard').innerHTML = '<div class="empty-state">Nenhum contato</div>';
+                document.getElementById('contactsCard').innerHTML = cs.map(c=>'<div class="list-item"><div class="list-avatar">👤</div><div class="list-info"><div class="list-name">'+c.name+'</div><div class="list-meta">'+(c.role||'')+' '+(c.company?'• '+c.company:'')+'</div><div class="list-meta">'+(c.phone||'')+' '+(c.email?' • '+c.email:'')+'</div></div></div>').join('');
+            }
+            function renderDocuments(){
+                const ds = DATA.documents||[];
+                if(!ds.length) return document.getElementById('documentsCard').innerHTML = '<div class="empty-state">Nenhum documento</div>';
+                const i={rg:'🆔',cpf:'🪪',crea:'📜',birth_certificate:'📃'};
+                document.getElementById('documentsCard').innerHTML = ds.map(d=>'<div class="list-item"><div class="list-avatar">'+(i[d.doc_type]||'📄')+'</div><div class="list-info"><div class="list-name">'+(d.title||d.doc_type)+'</div><div class="list-meta">'+(d.description||'')+'</div></div></div>').join('');
+            }
+            function renderLegal(){
+                const ps = DATA.legal_processes||[];
+                if(!ps.length) return document.getElementById('legalGrid').innerHTML = '<div class="empty-state">Nenhum processo</div>';
+                document.getElementById('legalGrid').innerHTML = ps.map(p=>{let filingsHtml='';if(p.filings&&p.filings.length){filingsHtml='<div class="legal-filings">'+p.filings.map(f=>'<div class="legal-filing">• '+(f.date||'')+' - '+(f.description||'')+'</div>').join('')+'</div>'}return'<div class="legal-card"><div class="legal-number">'+p.process_number+'</div><div class="legal-court">'+p.court+'</div><div class="legal-subject">'+(p.subject||'-')+'</div><div class="legal-parties">Partes: '+(p.parties?p.parties.join(', '):'-')+'</div><span class="legal-status">'+(p.status||'Em andamento')+'</span>'+filingsHtml+'</div>'}).join('');
+            }
+            renderStats();renderPerson();renderFamily();renderCompanies();renderProperties();renderContacts();renderDocuments();renderLegal();
+        }
+
+        async function fetchAllData() {
+            const [person, spouse, siblings, nephews, companies, properties, contacts, documents, legal_processes] = await Promise.all([
+                fetch('/api/proxy/person').then(r=>r.json()),
+                fetch('/api/proxy/spouse').then(r=>r.json()),
+                fetch('/api/proxy/siblings').then(r=>r.json()),
+                fetch('/api/proxy/nephews').then(r=>r.json()),
+                fetch('/api/proxy/companies').then(r=>r.json()),
+                fetch('/api/proxy/properties').then(r=>r.json()),
+                fetch('/api/proxy/contacts').then(r=>r.json()),
+                fetch('/api/proxy/documents').then(r=>r.json()),
+                fetch('/api/proxy/legal/processes').then(r=>r.json()),
+            ]);
+            const DATA = {person, spouse, siblings, nephews, companies, properties, contacts, documents, legal_processes};
+            renderStats(DATA);
+            renderPerson(DATA);
+            renderFamily(DATA);
+            renderCompanies(DATA);
+            renderProperties(DATA);
+            renderContacts(DATA);
+            renderDocuments(DATA);
+            renderLegal(DATA);
+        }
+
+        fetchAllData();
+        </script>
+
+        // (Removed duplicate render functions and calls)
+    </script>
+</body>
+</html>

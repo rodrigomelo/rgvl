@@ -1,0 +1,36 @@
+# RGVL Platform
+
+This is the root .gitignore for the monorepo.
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+.env.*
+
+# Node
+node_modules/
+
+# Data
+*.db
+*.sqlite
+*.sqlite3
+*.bak
+*.log
+
+# VSCode
+.vscode/
+
+# System
+.DS_Store
+Thumbs.db
+
+# Backups
+.backups/
+
+# Misc
+.cache/
+.dist/
+.build/
+.trash/
