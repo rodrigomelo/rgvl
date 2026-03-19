@@ -4,123 +4,264 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RGVL - Dados Pessoais</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon16.png">
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
         .container { max-width: 1200px; margin: 0 auto; }
         h1 { color: #333; }
         .stats { display: flex; gap: 15px; flex-wrap: wrap; margin: 20px 0; }
-        .stat { background: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .stat { background: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex: 1; min-width: 100px; text-align: center; }
         .stat-value { font-size: 24px; font-weight: bold; color: #2196F3; }
         .stat-label { font-size: 12px; color: #666; }
         .section { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .section h2 { margin-top: 0; color: #333; }
+        .section h2 { margin-top: 0; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; }
         .card { border: 1px solid #eee; padding: 15px; margin: 10px 0; border-radius: 6px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
         .loading { text-align: center; padding: 50px; color: #666; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #2196F3; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .error { background: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; text-align: center; }
+        .info-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #f5f5f5; }
+        .info-label { color: #666; font-size: 13px; }
+        .info-value { font-weight: 500; }
+        .money { color: #2e7d32; font-weight: bold; }
+        .status-ativa { color: #2e7d32; }
+        .status-inativa { color: #c62828; }
+        .empty { color: #999; font-style: italic; }
+        .badge { display: inline-block; background: #e3f2fd; color: #1565c0; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin: 2px; }
+        @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } .stats { flex-direction: column; } }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>RGVL - Dados Pessoais</h1>
         <div id="app">
-            <div class="loading">Carregando dados...</div>
+            <div class="loading">
+                <div class="spinner"></div>
+                Carregando dados...
+            </div>
         </div>
     </div>
 
     <script>
-    const API = window.location.origin.replace(':5003', ':5004') + '/api';
+    // ============ Formatadores BR ============
+    function fmt(v) { return v || '-'; }
+    
+    function fmtCPF(cpf) {
+        if (!cpf || cpf.length !== 11) return cpf || '-';
+        return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    }
+    
+    function fmtCNPJ(cnpj) {
+        if (!cnpj || cnpj.length !== 14) return cnpj || '-';
+        return cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+    }
+    
+    function fmtDate(dateStr) {
+        if (!dateStr) return '-';
+        try {
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return dateStr;
+            return d.toLocaleDateString('pt-BR');
+        } catch(e) { return dateStr; }
+    }
+    
+    function fmtMoney(val) {
+        if (!val) return '-';
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    // ============ API Fallback ============
+    const PORTS = [5004, 5003];
+    let API_BASE = null;
+    
+    async function findAPI() {
+        const origin = window.location.origin;
+        for (const port of PORTS) {
+            try {
+                const testUrl = `${origin.replace(/:(\d+)/, ':' + port)}/api/health`;
+                const resp = await fetch(testUrl, { method: 'GET', signal: AbortSignal.timeout(3000) });
+                if (resp.ok) {
+                    API_BASE = `${origin.replace(/:(\d+)/, ':' + port)}/api`;
+                    console.log('API found at:', API_BASE);
+                    return API_BASE;
+                }
+            } catch(e) { continue; }
+        }
+        throw new Error('API não encontrada');
+    }
 
     async function loadData() {
         try {
+            // Find API with fallback
+            await findAPI();
+            if (!API_BASE) throw new Error('API não encontrada');
+            
             const [person, spouse, siblings, nephews, companies, properties, contacts, documents, legal] = await Promise.all([
-                fetch(API + '/person').then(r => r.json()).catch(() => null),
-                fetch(API + '/spouse').then(r => r.json()).catch(() => null),
-                fetch(API + '/siblings').then(r => r.json()).catch(() => []),
-                fetch(API + '/nephews').then(r => r.json()).catch(() => []),
-                fetch(API + '/companies').then(r => r.json()).catch(() => []),
-                fetch(API + '/properties').then(r => r.json()).catch(() => []),
-                fetch(API + '/contacts').then(r => r.json()).catch(() => []),
-                fetch(API + '/documents').then(r => r.json()).catch(() => []),
-                fetch(API + '/legal/processes').then(r => r.json()).catch(() => [])
+                fetch(API_BASE + '/person').then(r => r.ok ? r.json() : null).catch(() => null),
+                fetch(API_BASE + '/spouse').then(r => r.ok ? r.json() : null).catch(() => null),
+                fetch(API_BASE + '/siblings').then(r => r.ok ? r.json() : []).catch(() => []),
+                fetch(API_BASE + '/nephews').then(r => r.ok ? r.json() : []).catch(() => []),
+                fetch(API_BASE + '/companies').then(r => r.ok ? r.json() : []).catch(() => []),
+                fetch(API_BASE + '/properties').then(r => r.ok ? r.json() : []).catch(() => []),
+                fetch(API_BASE + '/contacts').then(r => r.ok ? r.json() : []).catch(() => []),
+                fetch(API_BASE + '/documents').then(r => r.ok ? r.json() : []).catch(() => []),
+                fetch(API_BASE + '/legal/processes').then(r => r.ok ? r.json() : []).catch(() => [])
             ]);
 
-            render({ person, spouse, siblings: siblings||[], nephews: nephews||[], companies: companies||[], properties: properties||[], contacts: contacts||[], documents: documents||[], legal_processes: legal||[] });
+            render({ 
+                person, 
+                spouse, 
+                siblings: siblings || [], 
+                nephews: nephews || [], 
+                companies: companies || [], 
+                properties: properties || [], 
+                contacts: contacts || [], 
+                documents: documents || [], 
+                legal_processes: legal || [] 
+            });
         } catch(e) {
-            document.getElementById('app').innerHTML = '<div class="section"><h2>Erro ao carregar dados</h2><p>' + e.message + '</p></div>';
+            document.getElementById('app').innerHTML = '<div class="section"><div class="error"><h2>Erro ao carregar dados</h2><p>' + escapeHtml(e.message) + '</p></div></div>';
         }
     }
 
-    function fmt(v) { return v || '-'; }
-
+    // ============ Render ============
     function render(DATA) {
         const p = DATA.person || {};
+        
+        // Família
+        const familyHtml = `
+            <div class="info-row"><span class="info-label">Cônjuge</span><span class="info-value">${escapeHtml(DATA.spouse ? DATA.spouse.name : '-')}</span></div>
+            <div class="info-row"><span class="info-label">Irmãos</span><span class="info-value">${DATA.siblings.length > 0 ? DATA.siblings.map(s => escapeHtml(s.name)).join(', ') : '-'}</span></div>
+            <div class="info-row"><span class="info-label">Sobrinhos</span><span class="info-value">${DATA.nephews.length > 0 ? DATA.nephews.map(n => escapeHtml(n.name)).join(', ') : '-'}</span></div>
+        `;
+        
+        // Empresas com partners e capital
+        const companiesHtml = DATA.companies.length > 0 
+            ? DATA.companies.map(c => `
+                <div class="card">
+                    <strong>${escapeHtml(c.trade_name || c.legal_name)}</strong><br>
+                    <small>${fmtCNPJ(c.cnpj)}</small><br>
+                    <span class="${c.status === 'ativa' ? 'status-ativa' : 'status-inativa'}">${escapeHtml(c.status || '-')}</span>
+                    ${c.capital ? `<div class="info-row"><span class="info-label">Capital</span><span class="info-value money">${fmtMoney(c.capital)}</span></div>` : ''}
+                    ${c.partners && c.partners.length > 0 ? `<div class="info-row"><span class="info-label">Sócios</span><span class="info-value">${c.partners.map(pt => escapeHtml(pt.nome || pt.name || JSON.stringify(pt))).join(', ')}</span></div>` : ''}
+                </div>
+            `).join('')
+            : '<div class="empty">Nenhuma empresa encontrada</div>';
+        
+        // Imóveis com valores
+        const propertiesHtml = DATA.properties.length > 0
+            ? DATA.properties.map(prop => `
+                <div class="card">
+                    <strong>${escapeHtml(prop.address)}</strong><br>
+                    <small>${escapeHtml(prop.city)}/${escapeHtml(prop.state)}</small>
+                    ${prop.property_type ? `<span class="badge">${escapeHtml(prop.property_type)}</span>` : ''}
+                    ${prop.current_value ? `<div class="info-row"><span class="info-label">Valor</span><span class="info-value money">${fmtMoney(prop.current_value)}</span></div>` : ''}
+                    ${prop.purchase_value ? `<div class="info-row"><span class="info-label">Compra</span><span class="info-value money">${fmtMoney(prop.purchase_value)}</span></div>` : ''}
+                    ${prop.owners && prop.owners.length > 0 ? `<div class="info-row"><span class="info-label">Proprietários</span><span class="info-value">${prop.owners.map(o => escapeHtml(o)).join(', ')}</span></div>` : ''}
+                </div>
+            `).join('')
+            : '<div class="empty">Nenhum imóvel encontrado</div>';
+        
+        // Contatos
+        const contactsHtml = DATA.contacts.length > 0
+            ? DATA.contacts.map(c => `
+                <div class="card">
+                    <strong>${escapeHtml(c.name)}</strong> - ${escapeHtml(c.role || '-')}<br>
+                    <small>${escapeHtml(c.phone || '-')}</small>
+                    ${c.email ? `<br><small>${escapeHtml(c.email)}</small>` : ''}
+                </div>
+            `).join('')
+            : '<div class="empty">Nenhum contato encontrado</div>';
+        
+        // Documents - NOVO!
+        const documentsHtml = DATA.documents.length > 0
+            ? DATA.documents.map(d => `
+                <div class="card">
+                    <strong>${escapeHtml(d.title || d.doc_type)}</strong><br>
+                    <small>${escapeHtml(d.doc_type || '-')}</small>
+                    ${d.issue_date ? `<br><small>📅 Emissão: ${fmtDate(d.issue_date)}</small>` : ''}
+                    ${d.expiry_date ? `<br><small>⏰ Validade: ${fmtDate(d.expiry_date)}</small>` : ''}
+                    ${d.description ? `<p>${escapeHtml(d.description)}</p>` : ''}
+                </div>
+            `).join('')
+            : '<div class="empty">Nenhum documento encontrado</div>';
+        
+        // Processos
+        const legalHtml = DATA.legal_processes.length > 0
+            ? DATA.legal_processes.map(lp => `
+                <div class="card">
+                    <strong>${escapeHtml(lp.process_number)}</strong><br>
+                    ${lp.subject ? `<p>${escapeHtml(lp.subject.substring(0, 100))}${lp.subject.length > 100 ? '...' : ''}</p>` : ''}
+                    <span class="badge">${escapeHtml(lp.status || '-')}</span>
+                    ${lp.value ? `<span class="money"> ${fmtMoney(lp.value)}</span>` : ''}
+                    ${lp.court ? `<br><small>${escapeHtml(lp.court)}</small>` : ''}
+                </div>
+            `).join('')
+            : '<div class="empty">Nenhum processo encontrado</div>';
+        
         const html = `
             <div class="stats">
                 <div class="stat"><div class="stat-value">${DATA.companies.length}</div><div class="stat-label">Empresas</div></div>
                 <div class="stat"><div class="stat-value">${DATA.properties.length}</div><div class="stat-label">Imóveis</div></div>
                 <div class="stat"><div class="stat-value">${DATA.legal_processes.length}</div><div class="stat-label">Processos</div></div>
+                <div class="stat"><div class="stat-value">${DATA.documents.length}</div><div class="stat-label">Documentos</div></div>
             </div>
 
             <div class="section">
-                <h2>👤 ${fmt(p.full_name)}</h2>
-                <p><strong>Profissão:</strong> ${fmt(p.profession)}</p>
-                <p><strong>CPF:</strong> ${fmt(p.cpf)}</p>
-                <p><strong>RG:</strong> ${fmt(p.rg)}</p>
-                <p><strong>Nascimento:</strong> ${fmt(p.birth_date)}</p>
-                <p><strong>Cidade:</strong> ${fmt(p.city)}/${fmt(p.state)}</p>
+                <h2>👤 ${escapeHtml(p.full_name || 'Dados Pessoais')}</h2>
+                <div class="info-row"><span class="info-label">Profissão</span><span class="info-value">${escapeHtml(p.profession || '-')}</span></div>
+                <div class="info-row"><span class="info-label">CPF</span><span class="info-value">${fmtCPF(p.cpf)}</span></div>
+                <div class="info-row"><span class="info-label">RG</span><span class="info-value">${escapeHtml(p.rg || '-')}${p.rg_uf ? ` (${escapeHtml(p.rg_uf)})` : ''}</span></div>
+                <div class="info-row"><span class="info-label">Nascimento</span><span class="info-value">${fmtDate(p.birth_date)}</span></div>
+                <div class="info-row"><span class="info-label">Cidade</span><span class="info-value">${escapeHtml(p.city || '-')}${p.state ? `/${escapeHtml(p.state)}` : ''}</span></div>
+                ${p.email ? `<div class="info-row"><span class="info-label">Email</span><span class="info-value">${escapeHtml(p.email)}</span></div>` : ''}
             </div>
 
             <div class="section">
                 <h2>👨‍👩‍👧 Família</h2>
-                <p><strong>Cônjuge:</strong> ${DATA.spouse ? DATA.spouse.name : '-'}</p>
-                <p><strong>Irmãos:</strong> ${DATA.siblings.length}</p>
-                <p><strong>Sobrinhos:</strong> ${DATA.nephews.length}</p>
+                ${familyHtml}
             </div>
 
             <div class="section">
                 <h2>🏢 Empresas (${DATA.companies.length})</h2>
                 <div class="grid">
-                    ${DATA.companies.map(c => `
-                        <div class="card">
-                            <strong>${fmt(c.trade_name || c.legal_name)}</strong><br>
-                            <small>${fmt(c.cnpj)}</small><br>
-                            <span style="color:${c.status === 'ativa' ? 'green' : 'red'}">${fmt(c.status)}</span>
-                        </div>
-                    `).join('')}
+                    ${companiesHtml}
                 </div>
             </div>
 
             <div class="section">
                 <h2>🏠 Imóveis (${DATA.properties.length})</h2>
                 <div class="grid">
-                    ${DATA.properties.map(p => `
-                        <div class="card">
-                            <strong>${fmt(p.address)}</strong><br>
-                            <small>${fmt(p.city)}/${fmt(p.state)}</small>
-                        </div>
-                    `).join('')}
+                    ${propertiesHtml}
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📄 Documentos (${DATA.documents.length})</h2>
+                <div class="grid">
+                    ${documentsHtml}
                 </div>
             </div>
 
             <div class="section">
                 <h2>📞 Contatos (${DATA.contacts.length})</h2>
-                ${DATA.contacts.map(c => `
-                    <div class="card">
-                        <strong>${fmt(c.name)}</strong> - ${fmt(c.role)}<br>
-                        <small>${fmt(c.phone)}</small>
-                    </div>
-                `).join('')}
+                ${contactsHtml}
             </div>
 
             <div class="section">
                 <h2>⚖️ Processos (${DATA.legal_processes.length})</h2>
-                ${DATA.legal_processes.map(p => `
-                    <div class="card">
-                        <strong>${fmt(p.process_number)}</strong><br>
-                        ${fmt(p.subject)}<br>
-                        <span>${fmt(p.status)}</span>
-                    </div>
-                `).join('')}
+                ${legalHtml}
             </div>
         `;
         document.getElementById('app').innerHTML = html;
