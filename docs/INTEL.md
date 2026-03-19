@@ -59,7 +59,7 @@ Edmundo de Vasconcellos Lanna (1922-1992) ⚰️
 |---------|------|-------|--------|---------|-------|
 | RVL Engenharia (EPP) | 22.676.938/0001-69 | Owner | ✅ Ativa (2015) | - | BH/MG |
 | F Ladeira Consultoria Ltda | 40.203.364/0001-93 | Sócio-Admin | ✅ Ativa (2020) | R$ 10.000 | BH/MG |
-| Construtora Barbosa Mello S/A | 17.185.786/0001-61 | Diretor | ✅ Ativa | R$ 154.768.281 | BH/MG |
+| Construtora Barbosa Mello S/A | 17.185.786/0001-61 | Diretor (desde 2013) | ✅ Ativa | R$ 154.768.281 | BH/MG |
 | Consórcio Sossego | 07.514.378/0001-52 | Admin | ✅ Ativa (2019) | - | Canaã dos Carajás/PA |
 | Construtora Barbosa Mello SCP (0125) | 41.929.586/0001-50 | Admin | ✅ Ativa (2021) | R$ 1.000.000 | Parauapebas/PA |
 | Consórcio Uchoa | - | - | ❌ Baixada | - | - |
@@ -117,8 +117,9 @@ Edmundo de Vasconcellos Lanna (1922-1992) ⚰️
 |-------|-------|
 | **Parentesco** | Irmão de RGVL (Tio) |
 | **Local** | Belo Horizonte, MG |
-| **Processos** | Requerente em processos TJMG |
+| **Processos** | 22-25 processos no TJMG (BMG, AF Administradora) |
 | **Observação** | Fiador em contrato de locação comercial (2005) |
+| **Problemas** | Envolvido em processos do BMG e massa falida AF Administradora |
 
 ### Júnia Gorgulho de Vasconcellos Lanna ✅ CONFIRMADO (IRMÃ)
 | Campo | Valor |
