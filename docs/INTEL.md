@@ -62,6 +62,7 @@ Edmundo de Vasconcellos Lanna (1922-1992) ⚰️
 | **Nascimento** | 17/12/1955 |
 | **Local** | Belo Horizonte, MG |
 | **CPF** | ***.516.326-* |
+| **RG** | 24.920/D (CREA/MG) |
 | **CREA** | CREA-MG 24.920/D (desde 1981) |
 | **Profissão** | Engenheiro Civil |
 | **Cargo** | Diretor de Engenharia na Construtora Barbosa Mello (desde 2013) |
@@ -70,6 +71,7 @@ Edmundo de Vasconcellos Lanna (1922-1992) ⚰️
 | **Email** | rodrigo.lanna@barbosamello.com.br |
 
 ### Endereços
+- Rua Ceará, 1305, Apto. 1202, bairro Funcionários, Belo Horizonte, MG (endereço antigo)
 - Rua Gonçalves Dias, 865, Apto 1201, Savassi, Belo Horizonte, MG (CEP 30140-091)
 - Rua Paraíba, 1124, Savassi, Belo Horizonte, MG (Construtora Barbosa Mello - CEP 30130-145)
 
@@ -112,6 +114,27 @@ Edmundo de Vasconcellos Lanna (1922-1992) ⚰️
 |------|----------|-------|-------------|
 | **Rodrigo Melo Lanna** | Vice President - J.P. Morgan Asset Management | São Paulo, SP | linkedin.com/in/melorodrigo |
 | **Outros?** | Desconhecido | - | Pesquisar mais! |
+
+### 📜 História da Paternidade (dos emails)
+
+| Evento | Data | Detalhes |
+|--------|------|----------|
+| Nascimento | ~1980-1981 | Rodrigo Melo nascido em Itaituba/PA |
+| Primeiro contato com família paterna | ~2008 | Através do telefone da avó paterna (cadastrado em haras) |
+| Segundo contato | ~2011-2012 | Email de trabalho encontrado |
+| Consulta jurídica inicial | Nov 2016 | Advogado Rodrigo da Cunha Pereira |
+| Pesquisa Facebook | Nov 2016 | Mapeamento completo da família via redes sociais |
+| Reconhecimento de paternidade | Fev 2017 | Escritura pública voluntária no cartório |
+| Abandono paterno afetivo | Dez 2018 | Processo consultado mas não ajuizado |
+| Alteração de nome | 2025 | Rodrigo da Silva Melo → Rodrigo Melo Lanna |
+
+**Mãe do Rodrigo:** A ser confirmada (não relacionada à família Lanna)
+
+**Arquivos importantes nos emails:**
+- `159fa891a9a5546f` - ESCRITURA DE RECONHECIMENTO DE PATERNIDADE (2017)
+- `16780f7dcc8a9212` - Caso Rodrigo Melo Lanna - Abandono paterno afetivo (2018)
+- `167e65a8b383218f` - Contatos com o Rodrigo Lanna (histórico completo)
+- `15873cdf25dc69e6` - Pesquisa Facebook da família (2016)
 
 ---
 
@@ -200,6 +223,44 @@ Edmundo de Vasconcellos Lanna (1922-1992) ⚰️
 
 ---
 
+## 🔍 Pesquisa Facebook (2016) - Família Confirmada
+
+```
+Júnia Gorgulho de Vasconcelos Lanna (Irmã do pai)
+Marcelo Gorgulho Vasconcellos Lanna (Irmão - confirmado via Facebook)
+  ├── Mônica Maria Almeida Lanna (Esposa)
+  ├── Fernanda Lanna (Sobrinha)
+  ├── Andre Lanna (Sobrinha)
+  ├── Luiza Lanna (Sobrinha)
+  └── Marcela Lanna (Sobrinha - filha de Marcelo)
+Henrique Gorgulho de Vasconcellos Lanna (Irmão)
+```
+
+---
+
 ## ⚠️ Limites LGPD
 - Apenas dados públicos
 - Não coletar: saúde, finanças, comunicações privadas
+
+---
+
+## 📧 Emails Importantes (Arquivados)
+
+| Thread ID | Assunto | Data | Importância |
+|-----------|---------|------|-------------|
+| 159fa891a9a5546f | ESCRITURA DE RECONHECIMENTO DE PATERNIDADE | 2017 | 🔴 Crítica |
+| 16780f7dcc8a9212 | Caso Rodrigo Melo Lanna - Abandono paterno afetivo | 2018 | 🔴 Alta |
+| 167e65a8b383218f | Contatos com o Rodrigo Lanna | 2018-2019 | 🔴 Alta |
+| 14d11fe198456ce0 | Rodrigo Gorgulho Vasconcelos Lanna | 2015 | 🟡 Média |
+| 12e074d9d4c753ec | RODRIGO GORGULHO VASCONCELOS LANNA | 2011 | 🟡 Média |
+
+### Contatos Legais (dos emails)
+| Nome | Função | Email |
+|------|--------|-------|
+| Rodrigo da Cunha Pereira | Advogado | rcp@rodrigodacunha.adv.br |
+| Caio César Brasil Ferreira | Advogado | caio@rodrigodacunha.adv.br |
+
+### Familiar Encontrado (dos emails)
+| Nome | Email | Observação |
+|------|-------|------------|
+| Edmundo de Vasconcellos Lanna Filho | elanna@cbmsa.com.br | Possível primo/tio |

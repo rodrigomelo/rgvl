@@ -414,6 +414,7 @@
                         <h3>${esc(pr.process_number)}</h3>
                         <div class="row"><span class="label">Tribunal</span><span class="value">${esc(pr.court)}</span></div>
                         <div class="row"><span class="label">Assunto</span><span class="value">${esc(pr.subject)}</span></div>
+                        <div class="row"><span class="label">Papel RGVL</span><span class="value" style="font-weight:600;color:${(pr.parties && pr.parties.papel_rgvl && pr.parties.papel_rgvl.includes('Réu'))?'var(--danger)':(pr.parties && pr.parties.papel_rgvl && pr.parties.papel_rgvl.includes('Autor'))?'var(--success)':'var(--text-muted)'}">${esc(pr.parties && pr.parties.papel_rgvl ? pr.parties.papel_rgvl : '-')}</span></div>
                         <div class="row"><span class="label">Status</span><span class="value">${esc(pr.status)}</span></div>
                         ${pr.value?`<div class="row"><span class="label">Valor</span><span class="value">${fmtMoney(pr.value)}</span></div>`:''}
                     </div>
