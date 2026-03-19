@@ -268,40 +268,43 @@
                     
                     <!-- Henrique's children -->
                     <div style="margin-bottom:16px">
-                        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">👨‍👧 Filhos de Henrique Gorgulho</div>
+                        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">👨‍👧 Filhos de Henrique Gorgulho (${D.nephews.filter(n => n.notes && n.notes.includes('Henrique')).length})</div>
                         <div class="gen-row">
                             ${D.nephews.filter(n => n.notes && n.notes.includes('Henrique')).map(n => `
                                 <div class="node nephew">
                                     <div class="node-name">${esc(n.name)}</div>
                                     <div class="node-detail">${esc(n.profession || n.school || '-')}</div>
+                                    ${n.notes ? `<div style="font-size:10px;color:#999;margin-top:4px">${esc(n.notes)}</div>` : ''}
                                 </div>
-                            `).join('')}
+                            `).join('') || '<div class="node"><div class="node-name">-</div></div>'}
                         </div>
                     </div>
                     
                     <!-- Marcelo's children -->
                     <div style="margin-bottom:16px">
-                        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">👨‍👧 Filhos de Marcelo Gorgulho</div>
+                        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">👨‍👧 Filhos de Marcelo Gorgulho (${D.nephews.filter(n => n.notes && n.notes.includes('Marcelo')).length})</div>
                         <div class="gen-row">
                             ${D.nephews.filter(n => n.notes && n.notes.includes('Marcelo')).map(n => `
                                 <div class="node nephew">
                                     <div class="node-name">${esc(n.name)}</div>
                                     <div class="node-detail">${esc(n.profession || n.school || '-')}</div>
+                                    ${n.notes ? `<div style="font-size:10px;color:#999;margin-top:4px">${esc(n.notes)}</div>` : ''}
                                 </div>
-                            `).join('')}
+                            `).join('') || '<div class="node"><div class="node-name">-</div></div>'}
                         </div>
                     </div>
                     
                     <!-- Júnia's children -->
                     <div style="margin-bottom:16px">
-                        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">👩‍👧 Filhos de Júnia Gorgulho</div>
+                        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">👩‍👧 Filhos de Júnia Gorgulho (${D.nephews.filter(n => n.notes && n.notes.includes('Júnia')).length})</div>
                         <div class="gen-row">
                             ${D.nephews.filter(n => n.notes && n.notes.includes('Júnia')).map(n => `
                                 <div class="node nephew">
                                     <div class="node-name">${esc(n.name)}</div>
                                     <div class="node-detail">${esc(n.profession || n.school || '-')}</div>
+                                    ${n.notes ? `<div style="font-size:10px;color:#999;margin-top:4px">${esc(n.notes)}</div>` : ''}
                                 </div>
-                            `).join('')}
+                            `).join('') || '<div class="node"><div class="node-name">-</div></div>'}
                         </div>
                     </div>
                 </div>

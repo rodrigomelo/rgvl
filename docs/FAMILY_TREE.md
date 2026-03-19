@@ -44,39 +44,33 @@ Rodrigo Gorgulho de Vasconcellos Lanna (nasc. 1955)
 
 ## 👥 Primos (16 registros - filhos dos Tios)
 
-### Tabela de Primos com Pares Identificados
+### Tabela de Primos com Pais Identificados
 
-| # | Nome | Escola | Provável Irmão | Tio (Pai) |
-|---|------|--------|----------------|-----------|
-| 1 | Luiza Lanna | Colégio Marista Dom Silvério | - | ❓ Desconhecido |
-| 2 | Fernanda Lanna | - | - | ❓ Desconhecido |
-| 3 | Marcela Lanna | Escola Santo Tomás de Aquino | Andre (mesma escola) | ❓ Desconhecido |
-| 4 | Andre Lanna | Escola Santo Tomás de Aquino | Marcela (mesma escola) | ❓ Desconhecido |
-| 5 | Andrea Lanna | Liceu Albert Sabin | Paula (mesma escola) | ❓ Desconhecido |
-| 6 | Paula Lanna Silva | Liceu Albert Sabin | Andrea (mesma escola) | ❓ Desconhecido |
-| 7 | Alessandra Lanna | - | - | ❓ Desconhecido |
-| 8 | Bruno Lanna | - | - | ❓ Desconhecido |
-| 10 | Antônio Bahury Lanna | Colégio Santa Doroteia | João Vítor (mesma escola) | ❓ Desconhecido |
-| 11 | João Vítor Lanna | Colégio Santa Doroteia | Antônio (mesma escola) | ❓ Desconhecido |
-| 12 | Paula Lanna | - | - | ❓ Desconhecido |
-| 13 | Edmundo Lanna | - | - | ❓ Desconhecido |
-| 14 | Vivi Lanna | - | - | ❓ Desconhecido |
-| 15 | Pichita Lanna | - | Dono de buffet | ❓ Desconhecido |
-| 16 | Julia Lanna | Colégio Marista | - | ❓ Desconhecido |
+| # | Nome | Escola | Tio (Pai) | Status |
+|---|------|--------|-----------|--------|
+| 1 | Luiza Lanna | Colégio Marista Dom Silvério | Henrique | ❓ Possível |
+| 2 | Fernanda Lanna | - | Henrique | ❓ Possível |
+| 7 | Alessandra Lanna | - | Henrique | ❓ Possível |
+| 10 | Antônio Bahury Lanna | Colégio Santa Doroteia | Henrique | ❓ Possível |
+| 11 | João Vítor Lanna | Colégio Santa Doroteia | Henrique | ❓ Possível |
+| 12 | Paula Lanna | - | Henrique | ❓ Possível |
+| 3 | Marcela Lanna | Escola Santo Tomás de Aquino | Marcelo | ✅ Confirmado |
+| 4 | Andre Lanna | Escola Santo Tomás de Aquino | Marcelo | ✅ Confirmado |
+| 8 | Bruno Lanna | - | Marcelo | ✅ Confirmado |
+| 13 | Edmundo Lanna | - | Marcelo | ✅ Confirmado |
+| 5 | Andrea Lanna | Liceu Albert Sabin (RP) | Júnia | ✅ Confirmado |
+| 6 | Paula Lanna Silva | Liceu Albert Sabin (RP) | Júnia | ✅ Confirmado |
+| 14 | Vivi Lanna | - | Júnia | ✅ Confirmado |
+| 15 | Pichita Lanna | - | Júnia | ✅ Confirmado (dona de buffet) |
+| 16 | Julia Lanna | Colégio Marista Dom Silvério | Júnia | ✅ Confirmado |
 
-### Hipóteses de Parentalidade (baseado em escolas)
+### Resumo por Tio
 
-**Grupo 1 - Colégio Marista:**
-- Luiza Lanna + Julia Lanna (possivelmente irmãs ou primas de mesmo tio)
-
-**Grupo 2 - Escola Santo Tomás de Aquino:**
-- Marcela Lanna + Andre Lanna (possivelmente irmãos)
-
-**Grupo 3 - Liceu Albert Sabin:**
-- Andrea Lanna + Paula Lanna Silva (possivelmente irmãs)
-
-**Grupo 4 - Colégio Santa Doroteia:**
-- Antônio Bahury Lanna + João Vítor Lanna (possivelmente irmãos)
+| Tio | Nº Filhos | Filhos Confirmados |
+|-----|-----------|-------------------|
+| **Henrique** | 6 (possíveis) | Luiza, Fernanda, Alessandra, Antônio Bahury, João Vítor, Paula |
+| **Marcelo** | 4 (confirmados) | Marcela, Andre, Bruno, Edmundo |
+| **Júnia** | 5 (confirmados) | Andrea, Paula Lanna Silva, Vivi, Pichita, Julia |
 
 ---
 
