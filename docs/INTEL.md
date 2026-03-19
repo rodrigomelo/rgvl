@@ -6,9 +6,9 @@
 
 ---
 
-## 🌳 Árvore Genealógica Completa (Gerações)
+## 🌳 Árvore Genealógica Completa (5 Gerações)
 
-### Geração 4 - Bisavôs
+### Geração 5 - Bisavôs
 ```
 Edmundo Mariano da Costa Lanna (1878-1968)
 + Maria da Glória de Vasconcellos
@@ -18,19 +18,38 @@ Edmundo Mariano da Costa Lanna (1878-1968)
        └── Maria Auxiliadora de Vasconcellos Lanna (1925-2018)
 ```
 
-### Geração 3 - Avós
+### Geração 4 - Avós
 ```
 Edmundo de Vasconcellos Lanna (1922-1992) ⚰️
 + Nice Gorgulho de Vasconcellos Lanna (1926-2019) ⚰️
        │
        ├── Henrique Gorgulho de Vasconcellos Lanna ✅ (nasc. 22/05/1966)
+       │      │
+       │      ├── Luiza Lanna (Colégio Marista Dom Silvério)
+       │      ├── Fernanda Lanna
+       │      ├── Alessandra Lanna
+       │      ├── Paula Lanna
+       │      ├── Antônio Bahury Lanna (Colégio Santa Doroteia)
+       │      └── João Vítor Lanna (Colégio Santa Doroteia)
+       │
        ├── Rodrigo Gorgulho de Vasconcellos Lanna ✅ (nasc. 17/12/1955)
        │      │
-       │      └── Rodrigo Melo Lanna ✅ - VP J.P. Morgan
+       │      └── Rodrigo Melo Lanna ✅ - VP J.P. Morgan (São Paulo)
        │
        ├── Marcelo Gorgulho de Vasconcellos Lanna ✅
+       │      │
+       │      ├── Marcela Lanna (Escola Santo Tomás de Aquino)
+       │      ├── Andre Lanna (Escola Santo Tomás de Aquino)
+       │      ├── Bruno Lanna
+       │      └── Edmundo Lanna
        │
        └── Júnia Gorgulho de Vasconcellos Lanna ✅ - President AVOSC
+              │
+              ├── Andrea Lanna (Liceu Albert Sabin - Ribeirão Preto)
+              ├── Paula Lanna Silva (Liceu Albert Sabin - Ribeirão Preto)
+              ├── Vivi Lanna
+              ├── Pichita Lanna (Dono de buffet e restaurante)
+              └── Julia Lanna (Colégio Marista Dom Silvério)
 ```
 
 ---

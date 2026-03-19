@@ -175,6 +175,25 @@
             </div>
         </div>
 
+        <!-- Patrimony -->
+        <div class="section" id="patrimony">
+            <div class="section-title">💰 Patrimônio Estimado</div>
+            <div class="stats">
+                <div class="stat" style="background:#E8F5E9;border-color:var(--success)">
+                    <div class="stat-value" style="color:var(--success)">${fmtMoney(D.properties.reduce((s,p)=>s+(p.current_value||0),0))}</div>
+                    <div class="stat-label">Imóveis</div>
+                </div>
+                <div class="stat" style="background:#E3F2FD;border-color:var(--primary-light)">
+                    <div class="stat-value" style="color:var(--primary-light)">${fmtMoney(D.companies.reduce((s,c)=>s+(c.capital||0),0))}</div>
+                    <div class="stat-label">Capital Empresas</div>
+                </div>
+                <div class="stat" style="background:#FFF3E0;border-color:var(--accent)">
+                    <div class="stat-value" style="color:var(--accent)">${fmtMoney(D.properties.reduce((s,p)=>s+(p.current_value||0),0) + D.companies.reduce((s,c)=>s+(c.capital||0),0))}</div>
+                    <div class="stat-label">Patrimônio Total</div>
+                </div>
+            </div>
+        </div>
+
         <!-- Family Tree -->
         <div class="section" id="family">
             <div class="section-title">🌳 Árvore Genealógica</div>
@@ -224,6 +243,8 @@
                             <div class="node spouse">
                                 <div class="node-name">👩 ${esc(D.spouse.name)}</div>
                                 <div class="node-detail">${esc(D.spouse.profession)}</div>
+                                ${D.spouse.rg?`<div class="node-detail">RG: ${esc(D.spouse.rg)}</div>`:''}
+                                ${D.spouse.cpf?`<div class="node-detail">CPF: ${esc(D.spouse.cpf)}</div>`:''}
                             </div>
                         </div>
                     </div>
@@ -244,13 +265,44 @@
                 <div class="connector"></div>
                 <div class="gen">
                     <div class="gen-label">Primos (Filhos dos Tios) — ${D.nephews.length}</div>
-                    <div class="gen-row">
-                        ${D.nephews.map(n => `
-                            <div class="node nephew">
-                                <div class="node-name">${esc(n.name)}</div>
-                                <div class="node-detail">${esc(n.profession || n.school || '-')}</div>
-                            </div>
-                        `).join('')}
+                    
+                    <!-- Henrique's children -->
+                    <div style="margin-bottom:16px">
+                        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">👨‍👧 Filhos de Henrique Gorgulho</div>
+                        <div class="gen-row">
+                            ${D.nephews.filter(n => n.notes && n.notes.includes('Henrique')).map(n => `
+                                <div class="node nephew">
+                                    <div class="node-name">${esc(n.name)}</div>
+                                    <div class="node-detail">${esc(n.profession || n.school || '-')}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <!-- Marcelo's children -->
+                    <div style="margin-bottom:16px">
+                        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">👨‍👧 Filhos de Marcelo Gorgulho</div>
+                        <div class="gen-row">
+                            ${D.nephews.filter(n => n.notes && n.notes.includes('Marcelo')).map(n => `
+                                <div class="node nephew">
+                                    <div class="node-name">${esc(n.name)}</div>
+                                    <div class="node-detail">${esc(n.profession || n.school || '-')}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <!-- Júnia's children -->
+                    <div style="margin-bottom:16px">
+                        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">👩‍👧 Filhos de Júnia Gorgulho</div>
+                        <div class="gen-row">
+                            ${D.nephews.filter(n => n.notes && n.notes.includes('Júnia')).map(n => `
+                                <div class="node nephew">
+                                    <div class="node-name">${esc(n.name)}</div>
+                                    <div class="node-detail">${esc(n.profession || n.school || '-')}</div>
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -300,6 +352,7 @@
                         ${c.capital?`<div class="row"><span class="label">Capital</span><span class="value">${fmtMoney(c.capital)}</span></div>`:''}
                         ${c.activity?`<div class="row"><span class="label">Atividade</span><span class="value">${esc(c.activity)}</span></div>`:''}
                         ${c.address?`<div class="row"><span class="label">Local</span><span class="value">${esc(c.address)}</span></div>`:''}
+                        ${c.partners?`<div style="margin-top:8px;font-size:11px;color:var(--text-muted)">📋 Sócios: ${esc(typeof c.partners === 'string' ? JSON.parse(c.partners).socios?.join(', ') || c.partners : c.partners)}</div>`:''}
                     </div>
                 `).join('')}
             </div>
@@ -314,11 +367,21 @@
                         <h3>${esc(pr.property_type)} — ${esc(pr.city)}/${esc(pr.state)}</h3>
                         <div class="row"><span class="label">Endereço</span><span class="value">${esc(pr.address)}</span></div>
                         <div class="row"><span class="label">Bairro</span><span class="value">${esc(pr.neighborhood)}</span></div>
-                        ${pr.area_total?`<div class="row"><span class="label">Área</span><span class="value">${pr.area_total} m²</span></div>`:''}
+                        ${pr.building_name?`<div class="row"><span class="label">Edifício</span><span class="value">${esc(pr.building_name)}</span></div>`:''}
+                        ${pr.floor?`<div class="row"><span class="label">Andar</span><span class="value">${esc(pr.floor)}</span></div>`:''}
+                        ${pr.area_total?`<div class="row"><span class="label">Área Total</span><span class="value">${pr.area_total} m²</span></div>`:''}
+                        ${pr.area_sqm?`<div class="row"><span class="label">Área Útil</span><span class="value">${pr.area_sqm} m²</span></div>`:''}
                         ${pr.bedrooms?`<div class="row"><span class="label">Quartos</span><span class="value">${pr.bedrooms}</span></div>`:''}
+                        ${pr.parking_spaces?`<div class="row"><span class="label">Vagas</span><span class="value">${pr.parking_spaces}</span></div>`:''}
                         <div class="row"><span class="label">Matrícula</span><span class="value">${esc(pr.registration)}</span></div>
                         <div class="row"><span class="label">Cartório</span><span class="value">${esc(pr.cartorio)}</span></div>
-                        <div class="row"><span class="label">Valor</span><span class="value">${fmtMoney(pr.current_value)}</span></div>
+                        ${pr.purchase_date?`<div class="row"><span class="label">Compra</span><span class="value">${fmtDate(pr.purchase_date)}</span></div>`:''}
+                        ${pr.purchase_value?`<div class="row"><span class="label">Valor Compra</span><span class="value">${fmtMoney(pr.purchase_value)}</span></div>`:''}
+                        ${pr.itbi?`<div class="row"><span class="label">ITBI</span><span class="value">${fmtMoney(pr.itbi)}</span></div>`:''}
+                        ${pr.fiscal_value?`<div class="row"><span class="label">Valor Fiscal</span><span class="value">${fmtMoney(pr.fiscal_value)}</span></div>`:''}
+                        ${pr.current_value?`<div class="row"><span class="label">Valor Atual</span><span class="value">${fmtMoney(pr.current_value)}</span></div>`:''}
+                        ${pr.status?`<div class="row"><span class="label">Status</span><span class="value">${esc(pr.status)}</span></div>`:''}
+                        ${pr.owners?`<div class="row"><span class="label">Proprietários</span><span class="value">${esc(typeof pr.owners === 'string' ? JSON.parse(pr.owners).join(', ') : pr.owners)}</span></div>`:''}
                     </div>
                 `).join('')}
             </div>
@@ -331,8 +394,9 @@
                 ${D.documents.map(d => `
                     <div class="info-card">
                         <h3>${esc(d.title || d.doc_type)}</h3>
+                        ${d.description?`<div class="row"><span class="label">Número</span><span class="value">${esc(d.description)}</span></div>`:''}
                         <div class="row"><span class="label">Tipo</span><span class="value">${esc(d.doc_type)}</span></div>
-                        <div class="row"><span class="label">Data</span><span class="value">${fmtDate(d.issue_date)}</span></div>
+                        ${d.issue_date?`<div class="row"><span class="label">Data</span><span class="value">${fmtDate(d.issue_date)}</span></div>`:''}
                     </div>
                 `).join('')}
             </div>
