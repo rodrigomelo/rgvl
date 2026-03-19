@@ -12,8 +12,13 @@ def index():
     return send_from_directory('.', 'index.html')
 
 
-@app.route('/favicon.png')
+@app.route('/favicon.ico')
 def favicon():
+    return send_from_directory('.', 'favicon.ico')
+
+
+@app.route('/favicon.png')
+def favicon_png():
     return send_from_directory('.', 'favicon.png')
 
 

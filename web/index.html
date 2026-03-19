@@ -4,48 +4,241 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RGVL - Dados Pessoais</title>
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon16.png">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        h1 { color: #333; }
-        .stats { display: flex; gap: 15px; flex-wrap: wrap; margin: 20px 0; }
-        .stat { background: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex: 1; min-width: 100px; text-align: center; }
-        .stat-value { font-size: 24px; font-weight: bold; color: #2196F3; }
-        .stat-label { font-size: 12px; color: #666; }
-        .section { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .section h2 { margin-top: 0; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .card { border: 1px solid #eee; padding: 15px; margin: 10px 0; border-radius: 6px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
-        .loading { text-align: center; padding: 50px; color: #666; }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #2196F3; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        :root {
+            --primary: #1E3A5F;
+            --primary-light: #2C5282;
+            --secondary: #4A90A4;
+            --accent: #E8B339;
+            --success: #2E7D32;
+            --danger: #C62828;
+            --warning: #F57C00;
+            --bg: #F5F7FA;
+            --card-bg: #FFFFFF;
+            --text: #2D3748;
+            --text-muted: #718096;
+            --border: #E2E8F0;
+            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-hover: 0 4px 12px rgba(0,0,0,0.12);
+        }
+        
+        * { box-sizing: border-box; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background: var(--bg); 
+            color: var(--text);
+        }
+        
+        /* Header */
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+        
+        .header h1 { margin: 0; font-size: 20px; }
+        
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: none;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 220px;
+            background: var(--primary);
+            color: white;
+            position: fixed;
+            top: 56px;
+            left: 0;
+            bottom: 0;
+            padding: 20px 0;
+            overflow-y: auto;
+            transition: transform 0.3s;
+            z-index: 99;
+        }
+        
+        .nav-item {
+            display: block;
+            padding: 12px 20px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: background 0.2s;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-left-color: var(--accent);
+        }
+        
+        /* Main Content */
+        .main {
+            margin-left: 220px;
+            padding: 70px 24px 24px;
+            max-width: 1200px;
+        }
+        
+        /* Stats */
+        .stats { display: flex; gap: 16px; flex-wrap: wrap; margin: 20px 0; }
+        .stat { 
+            background: var(--card-bg); 
+            padding: 20px 24px; 
+            border-radius: 12px; 
+            box-shadow: var(--shadow); 
+            border: 1px solid var(--border);
+            transition: transform 0.2s, box-shadow 0.2s;
+            flex: 1;
+            min-width: 140px;
+        }
+        .stat:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+        .stat-value { font-size: 28px; font-weight: bold; color: var(--primary); }
+        .stat-label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+        
+        /* Sections */
+        .section { 
+            background: var(--card-bg); 
+            padding: 24px; 
+            border-radius: 12px; 
+            margin: 20px 0; 
+            box-shadow: var(--shadow); 
+            border: 1px solid var(--border);
+        }
+        .section h2 { margin-top: 0; color: var(--primary); font-size: 18px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 16px; }
+        
+        /* Cards */
+        .card { 
+            border: 1px solid var(--border); 
+            padding: 16px; 
+            margin: 12px 0; 
+            border-radius: 8px; 
+            background: var(--bg);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+        
+        /* Badges */
+        .badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+        .badge-ativa { background: #C8E6C9; color: var(--success); }
+        .badge-inativa { background: #FFCDD2; color: var(--danger); }
+        
+        /* Timeline */
+        .timeline { border-left: 3px solid var(--border); padding-left: 20px; margin: 20px 0; }
+        .timeline-item { position: relative; margin-bottom: 20px; }
+        .timeline-item::before {
+            content: ''; position: absolute; left: -26px; top: 4px;
+            width: 10px; height: 10px; border-radius: 50%; background: var(--secondary);
+        }
+        
+        /* Loading */
+        .loading { text-align: center; padding: 60px; color: var(--text-muted); }
+        .spinner {
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px; height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .error { background: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; text-align: center; }
-        .info-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #f5f5f5; }
-        .info-label { color: #666; font-size: 13px; }
-        .info-value { font-weight: 500; }
-        .money { color: #2e7d32; font-weight: bold; }
-        .status-ativa { color: #2e7d32; }
-        .status-inativa { color: #c62828; }
-        .empty { color: #999; font-style: italic; }
-        .badge { display: inline-block; background: #e3f2fd; color: #1565c0; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin: 2px; }
-        @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } .stats { flex-direction: column; } }
+        
+        /* Mobile */
+        @media (max-width: 768px) {
+            .menu-toggle { display: block; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main { margin-left: 0; padding: 70px 16px 16px; }
+            .header { padding: 12px 16px; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- Header -->
+    <header class="header">
         <h1>RGVL - Dados Pessoais</h1>
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+    </header>
+    
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <a class="nav-item active" data-section="overview">📊 Visão Geral</a>
+        <a class="nav-item" data-section="person">👤 Dados Pessoais</a>
+        <a class="nav-item" data-section="family">👨‍👩‍👧 Família</a>
+        <a class="nav-item" data-section="companies">🏢 Empresas</a>
+        <a class="nav-item" data-section="properties">🏠 Imóveis</a>
+        <a class="nav-item" data-section="documents">📄 Documentos</a>
+        <a class="nav-item" data-section="legal">⚖️ Processos</a>
+        <a class="nav-item" data-section="contacts">📞 Contatos</a>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="main">
         <div id="app">
-            <div class="loading">
-                <div class="spinner"></div>
-                Carregando dados...
-            </div>
+            <div class="loading"><div class="spinner"></div>Carregando dados...</div>
         </div>
-    </div>
+    </main>
 
     <script>
-    // ============ Formatadores BR ============
+    // API - tries port 5004 first, then 5003
+    const PORTS = [5004, 5003];
+    let API_BASE = null;
+    
+    async function findAPI() {
+        const origin = window.location.origin;
+        for (const port of PORTS) {
+            try {
+                const testUrl = `${origin.replace(/:(\d+)/, ':' + port)}/api/health`;
+                const resp = await fetch(testUrl, { signal: AbortSignal.timeout(3000) });
+                if (resp.ok) {
+                    API_BASE = `${origin.replace(/:(\d+)/, ':' + port)}/api`;
+                    return API_BASE;
+                }
+            } catch(e) { continue; }
+        }
+        // Fallback
+        return `${window.location.origin.replace(/:(\d+)/, ':5004')}/api`;
+    }
+    
+    const API = findAPI();
+    
+    // Helpers
     function fmt(v) { return v || '-'; }
+    
+    function esc(s) {
+        if (!s) return '';
+        return String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
     
     function fmtCPF(cpf) {
         if (!cpf || cpf.length !== 11) return cpf || '-';
@@ -71,198 +264,150 @@
         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
     }
     
-    function escapeHtml(str) {
-        if (!str) return '';
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
+    // Menu toggle
+    function toggleMenu() {
+        document.getElementById('sidebar').classList.toggle('open');
     }
-
-    // ============ API Fallback ============
-    const PORTS = [5004, 5003];
-    let API_BASE = null;
     
-    async function findAPI() {
-        const origin = window.location.origin;
-        for (const port of PORTS) {
-            try {
-                const testUrl = `${origin.replace(/:(\d+)/, ':' + port)}/api/health`;
-                const resp = await fetch(testUrl, { method: 'GET', signal: AbortSignal.timeout(3000) });
-                if (resp.ok) {
-                    API_BASE = `${origin.replace(/:(\d+)/, ':' + port)}/api`;
-                    console.log('API found at:', API_BASE);
-                    return API_BASE;
-                }
-            } catch(e) { continue; }
-        }
-        throw new Error('API não encontrada');
-    }
-
+    // Navigation
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+            const section = this.dataset.section;
+            document.getElementById(section).scrollIntoView({ behavior: 'smooth' });
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+        });
+    });
+    
+    // Load data
     async function loadData() {
         try {
-            // Find API with fallback
-            await findAPI();
-            if (!API_BASE) throw new Error('API não encontrada');
-            
+            const api = await API;
             const [person, spouse, siblings, nephews, companies, properties, contacts, documents, legal] = await Promise.all([
-                fetch(API_BASE + '/person').then(r => r.ok ? r.json() : null).catch(() => null),
-                fetch(API_BASE + '/spouse').then(r => r.ok ? r.json() : null).catch(() => null),
-                fetch(API_BASE + '/siblings').then(r => r.ok ? r.json() : []).catch(() => []),
-                fetch(API_BASE + '/nephews').then(r => r.ok ? r.json() : []).catch(() => []),
-                fetch(API_BASE + '/companies').then(r => r.ok ? r.json() : []).catch(() => []),
-                fetch(API_BASE + '/properties').then(r => r.ok ? r.json() : []).catch(() => []),
-                fetch(API_BASE + '/contacts').then(r => r.ok ? r.json() : []).catch(() => []),
-                fetch(API_BASE + '/documents').then(r => r.ok ? r.json() : []).catch(() => []),
-                fetch(API_BASE + '/legal/processes').then(r => r.ok ? r.json() : []).catch(() => [])
+                fetch(api + '/person').then(r => r.json()).catch(() => null),
+                fetch(api + '/spouse').then(r => r.json()).catch(() => null),
+                fetch(api + '/siblings').then(r => r.json()).catch(() => []),
+                fetch(api + '/nephews').then(r => r.json()).catch(() => []),
+                fetch(api + '/companies').then(r => r.json()).catch(() => []),
+                fetch(api + '/properties').then(r => r.json()).catch(() => []),
+                fetch(api + '/contacts').then(r => r.json()).catch(() => []),
+                fetch(api + '/documents').then(r => r.json()).catch(() => []),
+                fetch(api + '/legal/processes').then(r => r.json()).catch(() => [])
             ]);
 
-            render({ 
-                person, 
-                spouse, 
-                siblings: siblings || [], 
-                nephews: nephews || [], 
-                companies: companies || [], 
-                properties: properties || [], 
-                contacts: contacts || [], 
-                documents: documents || [], 
-                legal_processes: legal || [] 
-            });
+            render({ person, spouse, siblings: siblings||[], nephews: nephews||[], companies: companies||[], properties: properties||[], contacts: contacts||[], documents: documents||[], legal_processes: legal||[] });
         } catch(e) {
-            document.getElementById('app').innerHTML = '<div class="section"><div class="error"><h2>Erro ao carregar dados</h2><p>' + escapeHtml(e.message) + '</p></div></div>';
+            document.getElementById('app').innerHTML = '<div class="section"><h2>⚠️ Erro ao carregar dados</h2><p>' + esc(e.message) + '</p></div>';
         }
     }
 
-    // ============ Render ============
     function render(DATA) {
         const p = DATA.person || {};
-        
-        // Família
-        const familyHtml = `
-            <div class="info-row"><span class="info-label">Cônjuge</span><span class="info-value">${escapeHtml(DATA.spouse ? DATA.spouse.name : '-')}</span></div>
-            <div class="info-row"><span class="info-label">Irmãos</span><span class="info-value">${DATA.siblings.length > 0 ? DATA.siblings.map(s => escapeHtml(s.name)).join(', ') : '-'}</span></div>
-            <div class="info-row"><span class="info-label">Sobrinhos</span><span class="info-value">${DATA.nephews.length > 0 ? DATA.nephews.map(n => escapeHtml(n.name)).join(', ') : '-'}</span></div>
-        `;
-        
-        // Empresas com partners e capital
-        const companiesHtml = DATA.companies.length > 0 
-            ? DATA.companies.map(c => `
-                <div class="card">
-                    <strong>${escapeHtml(c.trade_name || c.legal_name)}</strong><br>
-                    <small>${fmtCNPJ(c.cnpj)}</small><br>
-                    <span class="${c.status === 'ativa' ? 'status-ativa' : 'status-inativa'}">${escapeHtml(c.status || '-')}</span>
-                    ${c.capital ? `<div class="info-row"><span class="info-label">Capital</span><span class="info-value money">${fmtMoney(c.capital)}</span></div>` : ''}
-                    ${c.partners && c.partners.length > 0 ? `<div class="info-row"><span class="info-label">Sócios</span><span class="info-value">${c.partners.map(pt => escapeHtml(pt.nome || pt.name || JSON.stringify(pt))).join(', ')}</span></div>` : ''}
-                </div>
-            `).join('')
-            : '<div class="empty">Nenhuma empresa encontrada</div>';
-        
-        // Imóveis com valores
-        const propertiesHtml = DATA.properties.length > 0
-            ? DATA.properties.map(prop => `
-                <div class="card">
-                    <strong>${escapeHtml(prop.address)}</strong><br>
-                    <small>${escapeHtml(prop.city)}/${escapeHtml(prop.state)}</small>
-                    ${prop.property_type ? `<span class="badge">${escapeHtml(prop.property_type)}</span>` : ''}
-                    ${prop.current_value ? `<div class="info-row"><span class="info-label">Valor</span><span class="info-value money">${fmtMoney(prop.current_value)}</span></div>` : ''}
-                    ${prop.purchase_value ? `<div class="info-row"><span class="info-label">Compra</span><span class="info-value money">${fmtMoney(prop.purchase_value)}</span></div>` : ''}
-                    ${prop.owners && prop.owners.length > 0 ? `<div class="info-row"><span class="info-label">Proprietários</span><span class="info-value">${prop.owners.map(o => escapeHtml(o)).join(', ')}</span></div>` : ''}
-                </div>
-            `).join('')
-            : '<div class="empty">Nenhum imóvel encontrado</div>';
-        
-        // Contatos
-        const contactsHtml = DATA.contacts.length > 0
-            ? DATA.contacts.map(c => `
-                <div class="card">
-                    <strong>${escapeHtml(c.name)}</strong> - ${escapeHtml(c.role || '-')}<br>
-                    <small>${escapeHtml(c.phone || '-')}</small>
-                    ${c.email ? `<br><small>${escapeHtml(c.email)}</small>` : ''}
-                </div>
-            `).join('')
-            : '<div class="empty">Nenhum contato encontrado</div>';
-        
-        // Documents - NOVO!
-        const documentsHtml = DATA.documents.length > 0
-            ? DATA.documents.map(d => `
-                <div class="card">
-                    <strong>${escapeHtml(d.title || d.doc_type)}</strong><br>
-                    <small>${escapeHtml(d.doc_type || '-')}</small>
-                    ${d.issue_date ? `<br><small>📅 Emissão: ${fmtDate(d.issue_date)}</small>` : ''}
-                    ${d.expiry_date ? `<br><small>⏰ Validade: ${fmtDate(d.expiry_date)}</small>` : ''}
-                    ${d.description ? `<p>${escapeHtml(d.description)}</p>` : ''}
-                </div>
-            `).join('')
-            : '<div class="empty">Nenhum documento encontrado</div>';
-        
-        // Processos
-        const legalHtml = DATA.legal_processes.length > 0
-            ? DATA.legal_processes.map(lp => `
-                <div class="card">
-                    <strong>${escapeHtml(lp.process_number)}</strong><br>
-                    ${lp.subject ? `<p>${escapeHtml(lp.subject.substring(0, 100))}${lp.subject.length > 100 ? '...' : ''}</p>` : ''}
-                    <span class="badge">${escapeHtml(lp.status || '-')}</span>
-                    ${lp.value ? `<span class="money"> ${fmtMoney(lp.value)}</span>` : ''}
-                    ${lp.court ? `<br><small>${escapeHtml(lp.court)}</small>` : ''}
-                </div>
-            `).join('')
-            : '<div class="empty">Nenhum processo encontrado</div>';
-        
         const html = `
-            <div class="stats">
-                <div class="stat"><div class="stat-value">${DATA.companies.length}</div><div class="stat-label">Empresas</div></div>
-                <div class="stat"><div class="stat-value">${DATA.properties.length}</div><div class="stat-label">Imóveis</div></div>
-                <div class="stat"><div class="stat-value">${DATA.legal_processes.length}</div><div class="stat-label">Processos</div></div>
-                <div class="stat"><div class="stat-value">${DATA.documents.length}</div><div class="stat-label">Documentos</div></div>
-            </div>
+            <!-- Overview -->
+            <section class="section" id="overview">
+                <div class="stats">
+                    <div class="stat"><div class="stat-value">${DATA.companies.length}</div><div class="stat-label">Empresas</div></div>
+                    <div class="stat"><div class="stat-value">${DATA.properties.length}</div><div class="stat-label">Imóveis</div></div>
+                    <div class="stat"><div class="stat-value">${DATA.legal_processes.length}</div><div class="stat-label">Processos</div></div>
+                    <div class="stat"><div class="stat-value">${DATA.documents.length}</div><div class="stat-label">Documentos</div></div>
+                </div>
+            </section>
 
-            <div class="section">
-                <h2>👤 ${escapeHtml(p.full_name || 'Dados Pessoais')}</h2>
-                <div class="info-row"><span class="info-label">Profissão</span><span class="info-value">${escapeHtml(p.profession || '-')}</span></div>
-                <div class="info-row"><span class="info-label">CPF</span><span class="info-value">${fmtCPF(p.cpf)}</span></div>
-                <div class="info-row"><span class="info-label">RG</span><span class="info-value">${escapeHtml(p.rg || '-')}${p.rg_uf ? ` (${escapeHtml(p.rg_uf)})` : ''}</span></div>
-                <div class="info-row"><span class="info-label">Nascimento</span><span class="info-value">${fmtDate(p.birth_date)}</span></div>
-                <div class="info-row"><span class="info-label">Cidade</span><span class="info-value">${escapeHtml(p.city || '-')}${p.state ? `/${escapeHtml(p.state)}` : ''}</span></div>
-                ${p.email ? `<div class="info-row"><span class="info-label">Email</span><span class="info-value">${escapeHtml(p.email)}</span></div>` : ''}
-            </div>
+            <!-- Person -->
+            <section class="section" id="person">
+                <h2>👤 Dados Pessoais</h2>
+                <div class="grid">
+                    <div class="card"><strong>Nome</strong><br>${esc(p.full_name)}</div>
+                    <div class="card"><strong>CPF</strong><br>${esc(fmtCPF(p.cpf))}</div>
+                    <div class="card"><strong>RG</strong><br>${esc(p.rg)}</div>
+                    <div class="card"><strong>Nascimento</strong><br>${fmtDate(p.birth_date)}</div>
+                    <div class="card"><strong>Profissão</strong><br>${esc(p.profession)}</div>
+                    <div class="card"><strong>Cidade/UF</strong><br>${esc(p.city)}/${esc(p.state)}</div>
+                </div>
+            </section>
 
-            <div class="section">
+            <!-- Family -->
+            <section class="section" id="family">
                 <h2>👨‍👩‍👧 Família</h2>
-                ${familyHtml}
-            </div>
+                <div class="grid">
+                    <div class="card"><strong>Cônjuge</strong><br>${DATA.spouse ? esc(DATA.spouse.name) : '-'}</div>
+                    <div class="card"><strong>Irmãos</strong><br>${DATA.siblings.length > 0 ? DATA.siblings.map(s => esc(s.name)).join(', ') : '-'}</div>
+                    <div class="card"><strong>Sobrinhos</strong><br>${DATA.nephews.length > 0 ? DATA.nephews.map(n => esc(n.name)).join(', ') : '-'}</div>
+                </div>
+            </section>
 
-            <div class="section">
+            <!-- Companies -->
+            <section class="section" id="companies">
                 <h2>🏢 Empresas (${DATA.companies.length})</h2>
                 <div class="grid">
-                    ${companiesHtml}
+                    ${DATA.companies.map(c => `
+                        <div class="card">
+                            <strong>${esc(c.trade_name || c.legal_name)}</strong><br>
+                            <small>${fmtCNPJ(c.cnpj)}</small><br>
+                            <span class="badge ${c.status === 'ativa' ? 'badge-ativa' : 'badge-inativa'}">${esc(c.status)}</span>
+                            ${c.capital ? `<br><small>Capital: ${fmtMoney(c.capital)}</small>` : ''}
+                        </div>
+                    `).join('')}
                 </div>
-            </div>
+            </section>
 
-            <div class="section">
+            <!-- Properties -->
+            <section class="section" id="properties">
                 <h2>🏠 Imóveis (${DATA.properties.length})</h2>
                 <div class="grid">
-                    ${propertiesHtml}
+                    ${DATA.properties.map(p => `
+                        <div class="card">
+                            <strong>${esc(p.address)}</strong><br>
+                            <small>${esc(p.city)}/${esc(p.state)}</small><br>
+                            ${p.area_sqm ? `<small>Área: ${p.area_sqm}m²</small>` : ''}
+                        </div>
+                    `).join('')}
                 </div>
-            </div>
+            </section>
 
-            <div class="section">
+            <!-- Documents -->
+            <section class="section" id="documents">
                 <h2>📄 Documentos (${DATA.documents.length})</h2>
                 <div class="grid">
-                    ${documentsHtml}
+                    ${DATA.documents.map(d => `
+                        <div class="card">
+                            <strong>${esc(d.title || d.doc_type)}</strong><br>
+                            <small>${fmtDate(d.issue_date)}</small>
+                        </div>
+                    `).join('')}
                 </div>
-            </div>
+            </section>
 
-            <div class="section">
-                <h2>📞 Contatos (${DATA.contacts.length})</h2>
-                ${contactsHtml}
-            </div>
-
-            <div class="section">
+            <!-- Legal -->
+            <section class="section" id="legal">
                 <h2>⚖️ Processos (${DATA.legal_processes.length})</h2>
-                ${legalHtml}
-            </div>
+                <div class="timeline">
+                    ${DATA.legal_processes.map(p => `
+                        <div class="timeline-item">
+                            <strong>${esc(p.process_number)}</strong><br>
+                            ${esc(p.subject)}<br>
+                            <span class="badge ${p.status === 'ativo' ? 'badge-ativa' : ''}">${esc(p.status)}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </section>
+
+            <!-- Contacts -->
+            <section class="section" id="contacts">
+                <h2>📞 Contatos (${DATA.contacts.length})</h2>
+                <div class="grid">
+                    ${DATA.contacts.map(c => `
+                        <div class="card">
+                            <strong>${esc(c.name)}</strong> - ${esc(c.role)}<br>
+                            <small>${esc(c.phone)}</small>
+                        </div>
+                    `).join('')}
+                </div>
+            </section>
         `;
         document.getElementById('app').innerHTML = html;
     }
