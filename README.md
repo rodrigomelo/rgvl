@@ -1,117 +1,64 @@
 # RGVL Platform
 
-Personal data platform for family history and research.
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    RGVL Platform                        │
-├─────────────────────────────────────────────────────────┤
-│  Frontend (Flask)                                       │
-│  ├── Dashboard (port 5002)                             │
-│  ├── Family Tree                                        │
-│  ├── Net Worth                                          │
-│  └── Documents                                          │
-├─────────────────────────────────────────────────────────┤
-│  API (FastAPI)                                          │
-│  ├── /api/family/* (persons, tree)                     │
-│  ├── /api/assets/* (properties, companies)             │
-│  ├── /api/documents/* (docs, legal)                    │
-│  └── /api/search/* (global search)                     │
-├─────────────────────────────────────────────────────────┤
-│  Database (SQLite)                                      │
-│  ├── rgvl.db (main database)                           │
-│  └── .backups/ (automatic backups)                     │
-└─────────────────────────────────────────────────────────┘
-```
+Personal data platform for family history research — the Lanna family, spanning 5+ generations.
 
 ## Quick Start
 
-### Local Development
-
 ```bash
 # Install dependencies
-pip install -r requirements.txt
+pip install flask flask-cors sqlalchemy requests python-dotenv
 
-# Start API (FastAPI)
-cd data
-python -m uvicorn src.api.main:app --reload --port 5004
+# Seed the database (from INTEL.md research data)
+python -m etl.seed
 
-# Start Web (Flask)
-cd web
-python server.py
-# Access at http://localhost:5002
+# Start API (port 5003)
+python -m api.main
+
+# Start Web Dashboard (port 5002, separate terminal)
+cd web && python server.py
 ```
 
-### Docker
+Access:
+- **API:** http://localhost:5003 (docs at `/`)
+- **Dashboard:** http://localhost:5002
 
-```bash
-# Build and run
-docker-compose up -d
+## Data
 
-# Access:
-# API: http://localhost:5004/docs
-# Web: http://localhost:5002
-```
+| Entity | Count | Description |
+|--------|-------|-------------|
+| Pessoas | 26 | People across 5 generations |
+| Relacionamentos | 30 | Family relationships (confirmed + speculative) |
+| Empresas | 7 | Family companies (active + closed) |
+| Tarefas | 5 | Pending research tasks |
 
-### Tests
-
-```bash
-cd data
-python -m pytest src/tests/ -v
-```
-
-## API Documentation
-
-- **Swagger UI:** http://localhost:5004/docs
-- **ReDoc:** http://localhost:5004/redoc
-
-## Endpoints
+## API Endpoints
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/health` | Health check |
-| GET | `/api/stats` | Statistics |
-| GET | `/api/person` | Main person |
-| GET | `/api/spouse` | Spouse |
-| GET | `/api/siblings` | Siblings |
-| GET | `/api/nephews` | Nephews |
-| GET | `/api/children` | Children |
-| GET | `/api/family/summary` | Family summary |
-| GET | `/api/companies` | Companies |
-| GET | `/api/properties` | Properties |
-| GET | `/api/net-worth` | Net worth |
-| GET | `/api/contacts` | Contacts |
-| GET | `/api/documents` | Documents |
-| GET | `/api/legal/processes` | Legal processes |
-| GET | `/api/notes` | Notes |
-| GET | `/api/events` | Events |
+| GET | `/api/family/person/:id` | Person detail |
+| GET | `/api/family/person/:id/tree` | Full family tree for a person |
+| GET | `/api/family/person/:id/relatives` | All relatives |
+| GET | `/api/family/generation/:n` | People by generation |
+| GET | `/api/family/summary` | Family statistics |
+| GET | `/api/assets/companies` | Companies (filter: `?person_id=X&status=ativa`) |
+| GET | `/api/research/tasks` | Research tasks (filter: `?status=pendente`) |
+| GET | `/api/research/searches` | Search history |
 | GET | `/api/search?q=` | Global search |
+| GET | `/api/stats` | Database statistics |
+| GET | `/api/health` | Health check |
 
-## Features
+## Architecture
 
-- ✅ Family tree (5 generations)
-- ✅ Net worth tracking
-- ✅ Company management
-- ✅ Property valuation
-- ✅ Legal process tracking
-- ✅ Document management
-- ✅ Global search
-- ✅ Auto-backup
-- ✅ API documentation
-- ✅ Docker support
-- ✅ CI/CD pipeline
-- ✅ Test coverage
+See [ARCHITECTURE.md](ARCHITECTURE.md) for full documentation.
 
-## Security
+## Docker
 
-- API runs on 127.0.0.1 (localhost only)
-- Debug mode disabled in production
-- CORS configured
-- Input validation
-- SQL injection protection
+```bash
+docker-compose up -d
+# API: http://localhost:5003
+# Web: http://localhost:5002
+```
 
 ## License
 
-Private project - All rights reserved.
+Private project — All rights reserved.

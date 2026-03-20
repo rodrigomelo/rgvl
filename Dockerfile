@@ -1,28 +1,26 @@
-# RGVL API - FastAPI with SQLite
+# RGVL API - Flask with SQLite
 FROM python:3.11-slim
 
 WORKDIR /app
 
 # Install dependencies
-COPY data/requirements.txt .
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install FastAPI and uvicorn
-RUN pip install --no-cache-dir fastapi uvicorn pytest
-
 # Copy application
-COPY data/ .
-COPY src/ .
+COPY api/ api/
+COPY etl/ etl/
+COPY data/ data/
 
-# Create data directory
-RUN mkdir -p data .backups
+# Create data directory if not exists
+RUN mkdir -p data
 
-# Expose ports
-EXPOSE 5004
+# Expose API port
+EXPOSE 5003
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:5004/api/health || exit 1
+  CMD curl -f http://localhost:5003/api/health || exit 1
 
 # Run API
-CMD ["python", "-m", "uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "5004"]
+CMD ["python", "-m", "api.main"]

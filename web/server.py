@@ -27,7 +27,7 @@ def proxy(endpoint):
     """Proxy requests to RGVL Data API (now on 5004)"""
     import requests
     try:
-        resp = requests.get(f'http://localhost:5004/api/{endpoint}', timeout=10)
+        resp = requests.get(f'http://localhost:5003/api/{endpoint}', timeout=10)
         return jsonify(resp.json())
     except Exception as e:
         return jsonify({'error': str(e)})

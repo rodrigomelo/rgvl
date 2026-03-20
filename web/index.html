@@ -118,7 +118,7 @@
         for (const p of PORTS) {
             try { const r = await fetch(`${o.replace(/:\d+/, ':'+p)}/api/health`, {signal:AbortSignal.timeout(3000)}); if (r.ok) return `${o.replace(/:\d+/, ':'+p)}/api`; } catch(e) {}
         }
-        return `${o.replace(/:\d+/, ':5004')}/api`;
+        return `${o.replace(/:\d+/, ':5003')}/api`;
     }
     function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
     function fmtDate(d) { if (!d) return '-'; try { return new Date(d).toLocaleDateString('pt-BR'); } catch(e) { return d; } }

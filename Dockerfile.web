@@ -1,20 +1,12 @@
-# RGVL Web - Flask Dashboard
+# RGVL Web Dashboard - Flask
 FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install Flask
 RUN pip install --no-cache-dir flask requests
 
-# Copy web files
 COPY web/ .
 
-# Expose port
 EXPOSE 5002
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:5002/ || exit 1
-
-# Run web server
 CMD ["python", "server.py"]
