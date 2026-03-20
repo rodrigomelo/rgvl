@@ -191,7 +191,7 @@
             <div class="stats">
                 <div class="stat"><div class="stat-value">${D.summary.total_pessoas || 0}</div><div class="stat-label">Pessoas</div></div>
                 <div class="stat"><div class="stat-value">${siblings.length}</div><div class="stat-label">Tios</div></div>
-                <div class="stat"><div class="stat-value">${children.length}</div><div class="stat-label">Filhos</div></div>
+                <div class="stat"><div class="stat-value">${D.primos.length}</div><div class="stat-label">Geração 4</div></div>
                 <div class="stat"><div class="stat-value">${D.primos.length}</div><div class="stat-label">Primos</div></div>
                 <div class="stat"><div class="stat-value">${D.companies.length}</div><div class="stat-label">Empresas</div></div>
                 <div class="stat"><div class="stat-value">${D.properties.length}</div><div class="stat-label">Imóveis</div></div>
@@ -286,24 +286,22 @@
                 </div>
                 <div class="connector"></div>
 
-                <!-- Você -->
+                <!-- Você + Primos (all Gen 4) -->
                 <div class="gen">
-                    <div class="gen-label">Geração 2 — Você (${children.length})</div>
-                    <div class="gen-row">
-                        ${children.map(c => `
-                            <div class="node child">
-                                <div class="node-name">⚡ ${esc(c.nome_completo)}</div>
-                                <div class="node-detail">${esc(c.profissao || c.empresa || '-')}</div>
-                                ${c.local_nascimento ? `<div class="node-detail">Nasc: ${esc(c.local_nascimento)}</div>` : ''}
-                            </div>
-                        `).join('') || '<div class="node"><div class="node-name">—</div></div>'}
-                    </div>
-                </div>
-                <div class="connector"></div>
+                    <div class="gen-label">Geração 4 — Você e Primos (${D.primos.length})</div>
 
-                <!-- Primos -->
-                <div class="gen">
-                    <div class="gen-label">Geração 4 — Primos (${D.primos.length})</div>
+                    <div style="margin-bottom:16px">
+                        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">⚡ Você</div>
+                        <div class="gen-row">
+                            ${D.primos.filter(c => c.nome_completo === 'Rodrigo Melo Lanna').map(c => `
+                                <div class="node child" style="border-color:var(--accent);background:#FFF8E1">
+                                    <div class="node-name">⚡ ${esc(c.nome_completo)}</div>
+                                    <div class="node-detail">${esc(c.profissao || c.empresa || '-')}</div>
+                                    ${c.local_nascimento ? `<div class="node-detail">Nasc: ${esc(c.local_nascimento)}</div>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
 
                     ${primosHenrique.length ? `
                     <div style="margin-bottom:16px">
