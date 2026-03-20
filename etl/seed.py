@@ -50,18 +50,18 @@ def seed(force=False):
         # PESSOAS (26)
         # =====================================================================
 
-        # Geração 5 — Bisavós
+        # Geração 1 — Bisavós
         bisavo_edmundo = Pessoa(
             nome_completo='Edmundo Mariano da Costa Lanna',
             data_nascimento='1878',
             data_falecimento='1968',
             profissao='Dentista',
             status='falecido',
-            geracao=4,
+            geracao=1,
             fonte='FamilySearch (G9PX-G84)',
         )
 
-        # Geração 4 — Avós
+        # Geração 2 — Avós
         avo_edmundo = Pessoa(
             nome_completo='Edmundo de Vasconcellos Lanna',
             data_nascimento='1922-04-24',
@@ -187,7 +187,7 @@ def seed(force=False):
         pai.data_casamento = '1992'
         mae_conjuge_id = pai.id
 
-        # Geração 1 — Rodrigo Melo (the user) + Primos
+        # Geração 4 — Rodrigo Melo (the user) + Primos
         voce = Pessoa(
             nome_completo='Rodrigo Melo Lanna',
             nome_anterior='Rodrigo da Silva Melo',
@@ -205,7 +205,7 @@ def seed(force=False):
         db.add(voce)
         db.flush()
 
-        # Geração 1 — Primos
+        # Geração 4 — Primos
         primos_henrique = [
             ('Luiza Lanna', 'Filha de Henrique. Colégio Marista Dom Silvério.'),
             ('Fernanda Lanna', 'Filha de Henrique.'),

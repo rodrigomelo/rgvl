@@ -148,9 +148,10 @@
     async function load() {
         try {
             const api = await findAPI();
-            const [tree, gen1, gen3, gen4, companies, properties, summary, tasks] = await Promise.all([
+            const [tree, bisavos, avos, paisTios, primos, companies, properties, summary, tasks] = await Promise.all([
                 fetch(api+'/family/person/'+PAI_ID+'/tree').then(r=>r.json()).catch(()=>null),
                 fetch(api+'/family/generation/1').then(r=>r.json()).catch(()=>[]),
+                fetch(api+'/family/generation/2').then(r=>r.json()).catch(()=>[]),
                 fetch(api+'/family/generation/3').then(r=>r.json()).catch(()=>[]),
                 fetch(api+'/family/generation/4').then(r=>r.json()).catch(()=>[]),
                 fetch(api+'/assets/companies').then(r=>r.json()).catch(()=>[]),
@@ -158,7 +159,7 @@
                 fetch(api+'/family/summary').then(r=>r.json()).catch(()=>{}),
                 fetch(api+'/research/tasks?status=pendente').then(r=>r.json()).catch(()=>[]),
             ]);
-            render({tree, gen1:gen1||[], gen3:gen3||[], gen4:gen4||[], companies:companies||[], properties:properties||[], summary, tasks:tasks||[]});
+            render({tree, bisavos:bisavos||[], avos:avos||[], paisTios:paisTios||[], primos:primos||[], companies:companies||[], properties:properties||[], summary, tasks:tasks||[]});
         } catch(e) {
             document.getElementById('app').innerHTML = '<div class="section"><h2>⚠️ Erro</h2><p>'+esc(e.message)+'</p></div>';
         }
@@ -173,10 +174,10 @@
         const pai = t.pai || null;
         const mae = t.mae || null;
 
-        // Split gen1 by parent
-        const primosHenrique = D.gen1.filter(c => c.observacoes && c.observacoes.includes('Henrique'));
-        const primosMarcelo = D.gen1.filter(c => c.observacoes && c.observacoes.includes('Marcelo'));
-        const primosJunia = D.gen1.filter(c => c.observacoes && c.observacoes.includes('Júnia'));
+        // Split primos by parent
+        const primosHenrique = D.primos.filter(c => c.observacoes && c.observacoes.includes('Henrique'));
+        const primosMarcelo = D.primos.filter(c => c.observacoes && c.observacoes.includes('Marcelo'));
+        const primosJunia = D.primos.filter(c => c.observacoes && c.observacoes.includes('Júnia'));
 
         // Wealth calculations
         const totalCapital = D.companies.reduce((s,c) => s + (c.capital || 0), 0);
@@ -191,7 +192,7 @@
                 <div class="stat"><div class="stat-value">${D.summary.total_pessoas || 0}</div><div class="stat-label">Pessoas</div></div>
                 <div class="stat"><div class="stat-value">${siblings.length}</div><div class="stat-label">Tios</div></div>
                 <div class="stat"><div class="stat-value">${children.length}</div><div class="stat-label">Filhos</div></div>
-                <div class="stat"><div class="stat-value">${D.gen1.length}</div><div class="stat-label">Primos</div></div>
+                <div class="stat"><div class="stat-value">${D.primos.length}</div><div class="stat-label">Primos</div></div>
                 <div class="stat"><div class="stat-value">${D.companies.length}</div><div class="stat-label">Empresas</div></div>
                 <div class="stat"><div class="stat-value">${D.properties.length}</div><div class="stat-label">Imóveis</div></div>
                 <div class="stat"><div class="stat-value">${D.summary.relacionamentos_confirmados || 0}</div><div class="stat-label">Vínculos Confirmados</div></div>
@@ -249,7 +250,7 @@
                             <div class="node-detail">${esc(mae.data_nascimento || '?')} - ${esc(mae.data_falecimento || '?')}</div>
                         </div>` : ''}
                     </div>
-                    ${D.gen4.length > 2 ? `<div style="margin-top:6px;font-size:11px;color:var(--text-muted)">Irmãs: ${D.gen4.filter(g=>g.id!==pai?.id&&g.id!==mae?.id).map(g=>g.nome_completo.split(' ')[0]+' ('+g.data_nascimento+'-'+g.data_falecimento+')').join(' · ')}</div>` : ''}
+                    ${D.avos.length > 2 ? `<div style="margin-top:6px;font-size:11px;color:var(--text-muted)">Irmãs: ${D.avos.filter(g=>g.id!==pai?.id&&g.id!==mae?.id).map(g=>g.nome_completo.split(' ')[0]+' ('+g.data_nascimento+'-'+g.data_falecimento+')').join(' · ')}</div>` : ''}
                 </div>
                 <div class="connector"></div>
 
@@ -302,7 +303,7 @@
 
                 <!-- Primos -->
                 <div class="gen">
-                    <div class="gen-label">Geração 1 — Primos (${D.gen1.length})</div>
+                    <div class="gen-label">Geração 4 — Primos (${D.primos.length})</div>
 
                     ${primosHenrique.length ? `
                     <div style="margin-bottom:16px">
