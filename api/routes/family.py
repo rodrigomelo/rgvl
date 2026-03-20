@@ -111,7 +111,7 @@ def get_relatives(person_id):
 
 @family_bp.route('/generation/<int:n>')
 def get_generation(n):
-    """Get all people in a given generation (1=cousins, 2=RGVL, 3=parents/siblings, 4=grandparents, 5=great-grandparents)."""
+    """Get all people in a given generation (1=cousins+RGVL, 3=parents/siblings, 4=grandparents, 5=great-grandparents)."""
     db = get_session()
     try:
         people = db.query(Pessoa).filter(Pessoa.geracao == n).order_by(Pessoa.nome_completo).all()

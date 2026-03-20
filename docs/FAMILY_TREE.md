@@ -5,8 +5,7 @@
 - **Geração 5:** Bisavós
 - **Geração 4:** Avós
 - **Geração 3:** Pais + Tios
-- **Geração 2:** RGVL (Rodrigo Melo Lanna)
-- **Geração 1:** Primos
+- **Geração 1:** Primos (inclui Rodrigo Melo Lanna)
 
 > Dados completos no banco: `data/rgvl.db` via API na porta 5003.
 
@@ -64,19 +63,17 @@ Edmundo de Vasconcellos Lanna (1922-1992) ⚰️
 | Marcelo Gorgulho de Vasconcellos Lanna | - | - | ✅ Ativo |
 | Júnia Gorgulho de Vasconcellos Lanna | - | Presidente AVOSC | ✅ Ativa |
 
-## Geração 2 — Rodrigo Melo
+## Geração 1 — Primos (16, inclui Rodrigo Melo)
 
+### Rodrigo Melo Lanna ✅
 | Campo | Valor |
 |-------|-------|
-| Nome atual | Rodrigo Melo Lanna |
 | Nome anterior | Rodrigo da Silva Melo |
 | Local nascimento | Itaituba, PA |
 | Profissão | Vice President, J.P. Morgan Asset Management |
 | Localização | São Paulo, SP |
 | Paternidade reconhecida | Fev/2017 (escritura pública) |
 | Alteração de nome | 2025 |
-
-## Geração 1 — Primos (15)
 
 ### Filhos de Henrique (6)
 | Nome | Escola |
@@ -112,6 +109,5 @@ Edmundo de Vasconcellos Lanna (1922-1992) ⚰️
 | 5 (Bisavós) | 1 | 1 | 0 |
 | 4 (Avós) | 4 | 4 | 0 |
 | 3 (Pais/Tios) | 5 | 5 | 0 |
-| 2 (RGVL) | 1 | 1 | 0 |
-| 1 (Primos) | 15 | 9 | 6 |
+| 1 (Primos, inclui Rodrigo Melo) | 16 | 10 | 6 |
 | **Total** | **26** | **20** | **6** |

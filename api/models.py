@@ -57,7 +57,7 @@ class Pessoa(Base):
 
     # Metadata
     status = Column(String(20), default='ativo')
-    geracao = Column(Integer)  # 1=children, 2=RGVL, 3=siblings, 4=parents, 5=grandparents
+    geracao = Column(Integer)  # 1=cousins (inclui RGVL), 3=parents/siblings, 4=grandparents, 5=great-grandparents
 
     # Provenance
     fonte = Column(String(255))

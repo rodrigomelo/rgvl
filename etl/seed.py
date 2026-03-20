@@ -187,7 +187,7 @@ def seed(force=False):
         pai.data_casamento = '1992'
         mae_conjuge_id = pai.id
 
-        # Geração 2 — Rodrigo Melo (the user)
+        # Geração 1 — Rodrigo Melo (the user) + Primos
         voce = Pessoa(
             nome_completo='Rodrigo Melo Lanna',
             nome_anterior='Rodrigo da Silva Melo',
@@ -197,7 +197,7 @@ def seed(force=False):
             endereco='São Paulo, SP',
             pai_id=pai.id,
             status='ativo',
-            geracao=2,
+            geracao=1,
             fonte='LinkedIn (linkedin.com/in/melorodrigo)',
             observacoes='Nome alterado em 2025: Rodrigo da Silva Melo → Rodrigo Melo Lanna. Reconhecimento de paternidade fev/2017 (escritura pública).',
         )
