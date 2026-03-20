@@ -25,30 +25,24 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); }
 
-        /* Header */
         .header { background: var(--primary); color: white; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; left: 0; right: 0; z-index: 100; box-shadow: var(--shadow); }
         .header h1 { font-size: 18px; }
         .menu-toggle { background: none; border: none; color: white; font-size: 24px; cursor: pointer; display: none; }
 
-        /* Sidebar */
         .sidebar { width: 200px; background: var(--primary); position: fixed; top: 50px; left: 0; bottom: 0; padding: 16px 0; overflow-y: auto; z-index: 99; }
         .nav-item { display: block; padding: 10px 18px; color: rgba(255,255,255,0.8); text-decoration: none; border-left: 3px solid transparent; cursor: pointer; font-size: 14px; }
         .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); color: white; border-left-color: var(--accent); }
 
-        /* Main */
         .main { margin-left: 200px; padding: 66px 20px 20px; max-width: 1100px; }
 
-        /* Stats */
         .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 24px; }
         .stat { background: var(--card-bg); padding: 16px; border-radius: 10px; box-shadow: var(--shadow); border: 1px solid var(--border); text-align: center; }
         .stat-value { font-size: 24px; font-weight: bold; color: var(--primary); }
         .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
-        /* Section */
         .section { background: var(--card-bg); padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); }
         .section-title { font-size: 16px; color: var(--primary); font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--accent); }
 
-        /* Tree */
         .tree { text-align: center; }
         .gen { margin: 12px 0; }
         .gen-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
@@ -63,7 +57,6 @@
         .node-detail { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
         .connector { width: 2px; height: 20px; background: var(--border); margin: 0 auto; }
 
-        /* Info */
         .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
         .info-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
         .info-card h3 { font-size: 14px; color: var(--primary); margin-bottom: 12px; }
@@ -72,14 +65,12 @@
         .row .label { color: var(--text-muted); }
         .row .value { color: var(--text); text-align: right; font-weight: 500; }
 
-        /* Company card */
         .company { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
         .company-name { font-weight: 600; font-size: 15px; color: var(--primary); margin-bottom: 8px; }
         .badge { padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
         .badge-ativa { background: #C8E6C9; color: var(--success); }
         .badge-baixada { background: #FFCDD2; color: var(--danger); }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .menu-toggle { display: block; }
             .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
@@ -104,55 +95,23 @@
         <a class="nav-item" data-section="family">👨‍👩‍👧 Família</a>
         <a class="nav-item" data-section="person">👤 Dados Pessoais</a>
         <a class="nav-item" data-section="companies">🏢 Empresas</a>
-        <a class="nav-item" data-section="properties">🏠 Imóveis</a>
-        <a class="nav-item" data-section="documents">📄 Documentos</a>
-        <a class="nav-item" data-section="legal">⚖️ Processos</a>
-        <a class="nav-item" data-section="contacts">📞 Contatos</a>
-        <a class="nav-item" data-section="notes">📝 Notas</a>
+        <a class="nav-item" data-section="research">🔍 Pesquisa</a>
     </nav>
     <main class="main"><div id="app"><div class="loading"><div class="spinner"></div>Carregando...</div></div></main>
     <script>
-    const PORTS = [5003, 5002];
     async function findAPI() {
         const o = window.location.origin;
-        for (const p of PORTS) {
+        const ports = [5003];
+        for (const p of ports) {
             try { const r = await fetch(`${o.replace(/:\d+/, ':'+p)}/api/health`, {signal:AbortSignal.timeout(3000)}); if (r.ok) return `${o.replace(/:\d+/, ':'+p)}/api`; } catch(e) {}
         }
         return `${o.replace(/:\d+/, ':5003')}/api`;
     }
+
     function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
     function fmtDate(d) { if (!d) return '-'; try { return new Date(d).toLocaleDateString('pt-BR'); } catch(e) { return d; } }
     function fmtMoney(v) { if (!v) return '-'; return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v); }
-    function fmtPhone(p) { if (!p) return '-'; if (Array.isArray(p)) return p.join(', '); return p; }
-    function fmtContent(c) {
-        if (!c) return '';
-        try {
-            const parsed = JSON.parse(c);
-            return formatObject(parsed);
-        } catch(e) {}
-        return c.length > 500 ? c.substring(0, 500) + '...' : c;
-    }
-    function formatObject(obj, indent) {
-        indent = indent || 0;
-        if (typeof obj !== 'object' || obj === null) return String(obj);
-        if (Array.isArray(obj)) {
-            return obj.map((item, i) => {
-                if (typeof item === 'object' && item !== null) {
-                    return `<div style="margin:4px 0;padding:6px;background:var(--bg);border-radius:4px">${formatObject(item, indent+1)}</div>`;
-                }
-                return `<div style="margin:2px 0">${String(item)}</div>`;
-            }).join('');
-        }
-        return Object.entries(obj)
-            .filter(([k,v]) => v !== null && v !== '' && v !== undefined)
-            .map(([k,v]) => {
-                const label = k.replace(/_/g,' ').replace(/\b\w/g, l => l.toUpperCase());
-                if (typeof v === 'object' && v !== null) {
-                    return `<div style="margin:4px 0"><strong>${label}:</strong><div style="margin-left:12px">${formatObject(v, indent+1)}</div></div>`;
-                }
-                return `<div style="margin:2px 0"><strong>${label}:</strong> ${String(v)}</div>`;
-            }).join('');
-    }
+
     function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
     document.querySelectorAll('.nav-item').forEach(el => {
@@ -164,71 +123,86 @@
         });
     });
 
+    // RGVL pai ID — Rodrigo Gorgulho de Vasconcellos Lanna
+    const PAI_ID = 6;
+
     async function load() {
         try {
             const api = await findAPI();
-            const [person, spouse, siblings, nephews, companies, properties, contacts, documents, legal, notes, children] = await Promise.all([
-                fetch(api+'/person').then(r=>r.json()).catch(()=>null),
-                fetch(api+'/spouse').then(r=>r.json()).catch(()=>null),
-                fetch(api+'/siblings').then(r=>r.json()).catch(()=>[]),
-                fetch(api+'/nephews').then(r=>r.json()).catch(()=>[]),
-                fetch(api+'/companies').then(r=>r.json()).catch(()=>[]),
-                fetch(api+'/properties').then(r=>r.json()).catch(()=>[]),
-                fetch(api+'/contacts').then(r=>r.json()).catch(()=>[]),
-                fetch(api+'/documents').then(r=>r.json()).catch(()=>[]),
-                fetch(api+'/legal/processes').then(r=>r.json()).catch(()=>[]),
-                fetch(api+'/notes').then(r=>r.json()).catch(()=>[]),
-                fetch(api+'/children').then(r=>r.json()).catch(()=>[])
+            const [tree, gen1, gen3, gen4, companies, summary, tasks] = await Promise.all([
+                fetch(api+'/family/person/'+PAI_ID+'/tree').then(r=>r.json()).catch(()=>null),
+                fetch(api+'/family/generation/1').then(r=>r.json()).catch(()=>[]),
+                fetch(api+'/family/generation/3').then(r=>r.json()).catch(()=>[]),
+                fetch(api+'/family/generation/4').then(r=>r.json()).catch(()=>[]),
+                fetch(api+'/assets/companies').then(r=>r.json()).catch(()=>[]),
+                fetch(api+'/family/summary').then(r=>r.json()).catch(()=>{}),
+                fetch(api+'/research/tasks?status=pendente').then(r=>r.json()).catch(()=>[]),
             ]);
-            render({person,spouse,siblings:siblings||[],nephews:nephews||[],companies:companies||[],properties:properties||[],contacts:contacts||[],documents:documents||[],legal_processes:legal||[],notes:notes||[],children:children||[]});
+            render({tree, gen1:gen1||[], gen3:gen3||[], gen4:gen4||[], companies:companies||[], summary, tasks:tasks||[]});
         } catch(e) {
             document.getElementById('app').innerHTML = '<div class="section"><h2>⚠️ Erro</h2><p>'+esc(e.message)+'</p></div>';
         }
     }
 
     function render(D) {
-        const p = D.person || {};
+        const t = D.tree || {};
+        const p = t || {};
+        const spouse = t.conjuge || null;
+        const children = t.filhos || [];
+        const siblings = t.irmaos || [];
+        const pai = t.pai || null;
+        const mae = t.mae || null;
+
+        // Split gen1 by parent
+        const primosHenrique = D.gen1.filter(c => c.observacoes && c.observacoes.includes('Henrique'));
+        const primosMarcelo = D.gen1.filter(c => c.observacoes && c.observacoes.includes('Marcelo'));
+        const primosJunia = D.gen1.filter(c => c.observacoes && c.observacoes.includes('Júnia'));
+
+        // Soma capital empresas
+        const totalCapital = D.companies.reduce((s,c) => s + (c.capital || 0), 0);
+
         document.getElementById('app').innerHTML = `
         <!-- Overview -->
         <div class="section" id="overview">
             <div class="section-title">📊 Visão Geral</div>
             <div class="stats">
-                <div class="stat"><div class="stat-value">${D.siblings.length}</div><div class="stat-label">Tios</div></div>
-                <div class="stat"><div class="stat-value">${D.children.length}</div><div class="stat-label">Filhos</div></div>
-                <div class="stat"><div class="stat-value">${D.nephews.length}</div><div class="stat-label">Primos</div></div>
+                <div class="stat"><div class="stat-value">${D.summary.total_pessoas || 0}</div><div class="stat-label">Pessoas</div></div>
+                <div class="stat"><div class="stat-value">${siblings.length}</div><div class="stat-label">Tios</div></div>
+                <div class="stat"><div class="stat-value">${children.length}</div><div class="stat-label">Filhos</div></div>
+                <div class="stat"><div class="stat-value">${D.gen1.length}</div><div class="stat-label">Primos</div></div>
                 <div class="stat"><div class="stat-value">${D.companies.length}</div><div class="stat-label">Empresas</div></div>
-                <div class="stat"><div class="stat-value">${D.properties.length}</div><div class="stat-label">Imóveis</div></div>
-                <div class="stat"><div class="stat-value">${D.legal_processes.length}</div><div class="stat-label">Processos</div></div>
-                <div class="stat"><div class="stat-value">${D.documents.length}</div><div class="stat-label">Docs</div></div>
-                <div class="stat"><div class="stat-value">${D.contacts.length}</div><div class="stat-label">Contatos</div></div>
+                <div class="stat"><div class="stat-value">${D.summary.relacionamentos_confirmados || 0}</div><div class="stat-label">Vínculos Confirmados</div></div>
+                <div class="stat"><div class="stat-value">${D.tasks.length}</div><div class="stat-label">Tarefas Pendentes</div></div>
             </div>
         </div>
 
         <!-- Patrimony -->
-        <div class="section" id="patrimony">
-            <div class="section-title">💰 Patrimônio Estimado</div>
+        <div class="section">
+            <div class="section-title">💰 Capital Empresas</div>
             <div class="stats">
-                <div class="stat" style="background:#E8F5E9;border-color:var(--success)">
-                    <div class="stat-value" style="color:var(--success)">${fmtMoney(D.properties.reduce((s,p)=>s+(p.current_value||0),0))}</div>
-                    <div class="stat-label">Imóveis</div>
-                </div>
                 <div class="stat" style="background:#E3F2FD;border-color:var(--primary-light)">
-                    <div class="stat-value" style="color:var(--primary-light)">${fmtMoney(D.companies.reduce((s,c)=>s+(c.capital||0),0))}</div>
-                    <div class="stat-label">Capital Empresas</div>
+                    <div class="stat-value" style="color:var(--primary-light)">${fmtMoney(totalCapital)}</div>
+                    <div class="stat-label">Capital Social Total</div>
                 </div>
-                <div class="stat" style="background:#FFF3E0;border-color:var(--accent)">
-                    <div class="stat-value" style="color:var(--accent)">${fmtMoney(D.properties.reduce((s,p)=>s+(p.current_value||0),0) + D.companies.reduce((s,c)=>s+(c.capital||0),0))}</div>
-                    <div class="stat-label">Patrimônio Total</div>
+                <div class="stat" style="background:#C8E6C9;border-color:var(--success)">
+                    <div class="stat-value" style="color:var(--success)">${D.companies.filter(c=>c.status_jucemg==='ativa').length}</div>
+                    <div class="stat-label">Empresas Ativas</div>
+                </div>
+                <div class="stat" style="background:#FFCDD2;border-color:var(--danger)">
+                    <div class="stat-value" style="color:var(--danger)">${D.companies.filter(c=>c.status_jucemg==='baixa').length}</div>
+                    <div class="stat-label">Empresas Baixadas</div>
                 </div>
             </div>
         </div>
 
         <!-- Family Tree -->
         <div class="section" id="family">
-            <div class="section-title">🌳 Árvore Genealógica</div>
+            <div class="section-title">🌳 Árvore Genealógica (${D.summary.total_pessoas || 0} pessoas)</div>
             <div class="tree">
+
+                <!-- Bisavós -->
                 <div class="gen">
-                    <div class="gen-label">Geração 4 — Bisavós</div>
+                    <div class="gen-label">Geração 5 — Bisavós</div>
                     <div class="gen-row">
                         <div class="node grandparent">
                             <div class="node-name">Edmundo Mariano da Costa Lanna</div>
@@ -238,136 +212,159 @@
                     </div>
                 </div>
                 <div class="connector"></div>
+
+                <!-- Avós -->
                 <div class="gen">
-                    <div class="gen-label">Geração 3 — Avós</div>
+                    <div class="gen-label">Geração 4 — Avós</div>
                     <div class="gen-row">
-                        <div class="node grandparent">
-                            <div class="node-name">Edmundo de Vasconcellos Lanna</div>
-                            <div class="node-detail">1922-1992 · Dentista</div>
-                            <div class="node-detail">+ Nice Gorgulho (1926-2019)</div>
-                        </div>
+                        ${pai ? `<div class="node grandparent">
+                            <div class="node-name">${esc(pai.nome_completo)}</div>
+                            <div class="node-detail">${esc(pai.data_nascimento || '?')} - ${esc(pai.data_falecimento || '?')} · ${esc(pai.profissao || '-')}</div>
+                        </div>` : ''}
+                        ${mae ? `<div class="node grandparent">
+                            <div class="node-name">${esc(mae.nome_completo)}</div>
+                            <div class="node-detail">${esc(mae.data_nascimento || '?')} - ${esc(mae.data_falecimento || '?')}</div>
+                        </div>` : ''}
                     </div>
-                    <div style="margin-top:6px;font-size:11px;color:var(--text-muted)">Irmãs: Thereza (1923-2006) · Maria Auxiliadora (1925-2018)</div>
+                    ${D.gen4.length > 2 ? `<div style="margin-top:6px;font-size:11px;color:var(--text-muted)">Irmãs: ${D.gen4.filter(g=>g.id!==pai?.id&&g.id!==mae?.id).map(g=>g.nome_completo.split(' ')[0]+' ('+g.data_nascimento+'-'+g.data_falecimento+')').join(' · ')}</div>` : ''}
                 </div>
                 <div class="connector"></div>
+
+                <!-- Pais + Tios -->
                 <div class="gen">
-                    <div class="gen-label">Geração 2 — Pais + Tios</div>
+                    <div class="gen-label">Geração 3 — Pais + Tios</div>
                     <div class="gen-row">
-                        ${D.siblings.map(s => `
+                        ${siblings.map(s => `
                             <div class="node sibling">
-                                <div class="node-name">${esc(s.name)}</div>
-                                <div class="node-detail">${esc(s.notes || '').substring(0,60)}...</div>
+                                <div class="node-name">${esc(s.nome_completo)}</div>
+                                <div class="node-detail">${esc((s.observacoes || '').substring(0, 70))}${(s.observacoes||'').length > 70 ? '...' : ''}</div>
                             </div>
                         `).join('')}
                         <div class="node" style="border-color:var(--accent);background:#FFF8E1">
-                            <div class="node-name">👨 ${esc(p.full_name)}</div>
-                            <div class="node-detail">${esc(p.profession).substring(0,40)}</div>
-                            <div class="node-detail">${esc(p.city)}/${esc(p.state)} · ${esc(p.email)}</div>
+                            <div class="node-name">👨 ${esc(p.nome_completo)}</div>
+                            <div class="node-detail">${esc(p.profissao || '-')}</div>
+                            <div class="node-detail">${esc(p.empresa || '')}</div>
+                            <div class="node-detail">${esc(p.email || '')}</div>
                         </div>
                     </div>
-                    ${D.spouse ? `
+                    ${spouse ? `
                     <div style="margin-top:8px">
                         <div class="gen-label">Cônjuge</div>
                         <div class="gen-row">
                             <div class="node spouse">
-                                <div class="node-name">👩 ${esc(D.spouse.name)}</div>
-                                <div class="node-detail">${esc(D.spouse.profession)}</div>
-                                ${D.spouse.rg?`<div class="node-detail">RG: ${esc(D.spouse.rg)}</div>`:''}
-                                ${D.spouse.cpf?`<div class="node-detail">CPF: ${esc(D.spouse.cpf)}</div>`:''}
+                                <div class="node-name">👩 ${esc(spouse.nome_completo)}</div>
+                                <div class="node-detail">${esc(spouse.profissao || '-')}</div>
+                                ${spouse.rg ? `<div class="node-detail">RG: ${esc(spouse.rg)}</div>` : ''}
+                                ${spouse.cpf ? `<div class="node-detail">CPF: ${esc(spouse.cpf)}</div>` : ''}
                             </div>
                         </div>
-                    </div>
-                    ` : ''}
+                    </div>` : ''}
                 </div>
                 <div class="connector"></div>
+
+                <!-- Você -->
                 <div class="gen">
-                    <div class="gen-label">Geração 1 — Você (${D.children.length})</div>
+                    <div class="gen-label">Geração 2 — Você (${children.length})</div>
                     <div class="gen-row">
-                        ${D.children.map(c => `
+                        ${children.map(c => `
                             <div class="node child">
-                                <div class="node-name">⚡ ${esc(c.name)}</div>
-                                <div class="node-detail">${esc(c.profession || '-')}</div>
+                                <div class="node-name">⚡ ${esc(c.nome_completo)}</div>
+                                <div class="node-detail">${esc(c.profissao || c.empresa || '-')}</div>
+                                ${c.local_nascimento ? `<div class="node-detail">Nasc: ${esc(c.local_nascimento)}</div>` : ''}
                             </div>
-                        `).join('') || '<div class="node"><div class="node-name">-</div></div>'}
+                        `).join('') || '<div class="node"><div class="node-name">—</div></div>'}
                     </div>
                 </div>
                 <div class="connector"></div>
+
+                <!-- Primos -->
                 <div class="gen">
-                    <div class="gen-label">Primos (Filhos dos Tios) — ${D.nephews.length}</div>
-                    
-                    <!-- Henrique's children -->
+                    <div class="gen-label">Geração 1 — Primos (${D.gen1.length})</div>
+
+                    ${primosHenrique.length ? `
                     <div style="margin-bottom:16px">
-                        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">👨‍👧 Filhos de Henrique Gorgulho (${D.nephews.filter(n => n.notes && n.notes.includes('Henrique')).length})</div>
+                        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">👨‍👧 Filhos de Henrique (${primosHenrique.length})</div>
                         <div class="gen-row">
-                            ${D.nephews.filter(n => n.notes && n.notes.includes('Henrique')).map(n => `
+                            ${primosHenrique.map(c => `
                                 <div class="node nephew">
-                                    <div class="node-name">${esc(n.name)}</div>
-                                    <div class="node-detail">${esc(n.profession || n.school || '-')}</div>
-                                    ${n.notes ? `<div style="font-size:10px;color:#999;margin-top:4px">${esc(n.notes)}</div>` : ''}
+                                    <div class="node-name">${esc(c.nome_completo)}</div>
+                                    <div class="node-detail">${esc((c.observacoes||'').split('.')[0])}</div>
                                 </div>
-                            `).join('') || '<div class="node"><div class="node-name">-</div></div>'}
+                            `).join('')}
                         </div>
-                    </div>
-                    
-                    <!-- Marcelo's children -->
+                    </div>` : ''}
+
+                    ${primosMarcelo.length ? `
                     <div style="margin-bottom:16px">
-                        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">👨‍👧 Filhos de Marcelo Gorgulho (${D.nephews.filter(n => n.notes && n.notes.includes('Marcelo')).length})</div>
+                        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">👨‍👧 Filhos de Marcelo (${primosMarcelo.length})</div>
                         <div class="gen-row">
-                            ${D.nephews.filter(n => n.notes && n.notes.includes('Marcelo')).map(n => `
+                            ${primosMarcelo.map(c => `
                                 <div class="node nephew">
-                                    <div class="node-name">${esc(n.name)}</div>
-                                    <div class="node-detail">${esc(n.profession || n.school || '-')}</div>
-                                    ${n.notes ? `<div style="font-size:10px;color:#999;margin-top:4px">${esc(n.notes)}</div>` : ''}
+                                    <div class="node-name">${esc(c.nome_completo)}</div>
+                                    <div class="node-detail">${esc((c.observacoes||'').split('.')[0])}</div>
                                 </div>
-                            `).join('') || '<div class="node"><div class="node-name">-</div></div>'}
+                            `).join('')}
                         </div>
-                    </div>
-                    
-                    <!-- Júnia's children -->
+                    </div>` : ''}
+
+                    ${primosJunia.length ? `
                     <div style="margin-bottom:16px">
-                        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">👩‍👧 Filhos de Júnia Gorgulho (${D.nephews.filter(n => n.notes && n.notes.includes('Júnia')).length})</div>
+                        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">👩‍👧 Filhos de Júnia (${primosJunia.length})</div>
                         <div class="gen-row">
-                            ${D.nephews.filter(n => n.notes && n.notes.includes('Júnia')).map(n => `
+                            ${primosJunia.map(c => `
                                 <div class="node nephew">
-                                    <div class="node-name">${esc(n.name)}</div>
-                                    <div class="node-detail">${esc(n.profession || n.school || '-')}</div>
-                                    ${n.notes ? `<div style="font-size:10px;color:#999;margin-top:4px">${esc(n.notes)}</div>` : ''}
+                                    <div class="node-name">${esc(c.nome_completo)}</div>
+                                    <div class="node-detail">${esc((c.observacoes||'').split('.')[0])}</div>
                                 </div>
-                            `).join('') || '<div class="node"><div class="node-name">-</div></div>'}
+                            `).join('')}
                         </div>
-                    </div>
+                    </div>` : ''}
+
                 </div>
             </div>
         </div>
 
         <!-- Person -->
         <div class="section" id="person">
-            <div class="section-title">👤 Dados Pessoais</div>
+            <div class="section-title">👤 ${esc(p.nome_completo || 'Dados Pessoais')}</div>
             <div class="info-grid">
                 <div class="info-card">
                     <h3>Identificação</h3>
-                    <div class="row"><span class="label">Nome</span><span class="value">${esc(p.full_name)}</span></div>
-                    <div class="row"><span class="label">Apelido</span><span class="value">${esc(p.nickname)}</span></div>
-                    <div class="row"><span class="label">CPF</span><span class="value">${esc(p.cpf)}</span></div>
-                    <div class="row"><span class="label">RG</span><span class="value">${esc(p.rg)} ${esc(p.rg_uf)}</span></div>
-                    <div class="row"><span class="label">CREA</span><span class="value">${esc(p.crea)}</span></div>
+                    <div class="row"><span class="label">Nome</span><span class="value">${esc(p.nome_completo)}</span></div>
+                    ${p.cpf ? `<div class="row"><span class="label">CPF</span><span class="value">${esc(p.cpf)}</span></div>` : ''}
+                    ${p.rg ? `<div class="row"><span class="label">RG</span><span class="value">${esc(p.rg)}</span></div>` : ''}
+                    <div class="row"><span class="label">Profissão</span><span class="value">${esc(p.profissao || '-')}</span></div>
+                    <div class="row"><span class="label">Cargo</span><span class="value">${esc(p.cargo || '-')}</span></div>
+                    <div class="row"><span class="label">Empresa</span><span class="value">${esc(p.empresa || '-')}</span></div>
                 </div>
                 <div class="info-card">
                     <h3>Pessoal</h3>
-                    <div class="row"><span class="label">Nascimento</span><span class="value">${fmtDate(p.birth_date)}</span></div>
-                    <div class="row"><span class="label">Nacionalidade</span><span class="value">${esc(p.nationality)}</span></div>
-                    <div class="row"><span class="label">Profissão</span><span class="value">${esc(p.profession)}</span></div>
-                    <div class="row"><span class="label">Estado Civil</span><span class="value">${esc(p.civil_state)}</span></div>
-                    <div class="row"><span class="label">Casamento</span><span class="value">${fmtDate(p.marriage_date)}</span></div>
+                    <div class="row"><span class="label">Nascimento</span><span class="value">${esc(p.data_nascimento || '-')}</span></div>
+                    <div class="row"><span class="label">Local</span><span class="value">${esc(p.local_nascimento || '-')}</span></div>
+                    <div class="row"><span class="label">Geração</span><span class="value">${p.geracao || '-'}</span></div>
+                    <div class="row"><span class="label">Status</span><span class="value">${esc(p.status || '-')}</span></div>
                 </div>
                 <div class="info-card">
                     <h3>Contato</h3>
-                    <div class="row"><span class="label">Email</span><span class="value">${esc(p.email)}</span></div>
-                    <div class="row"><span class="label">Telefone</span><span class="value">${esc(fmtPhone(p.phones))}</span></div>
-                    <div class="row"><span class="label">Endereço</span><span class="value">${esc(p.address)}</span></div>
-                    <div class="row"><span class="label">CEP</span><span class="value">${esc(p.cep)}</span></div>
-                    <div class="row"><span class="label">Cidade</span><span class="value">${esc(p.city)}/${esc(p.state)}</span></div>
+                    <div class="row"><span class="label">Email</span><span class="value">${esc(p.email || '-')}</span></div>
+                    <div class="row"><span class="label">Telefone</span><span class="value">${esc(p.telefone || '-')}</span></div>
+                    <div class="row"><span class="label">Endereço</span><span class="value">${esc(p.endereco || '-')}</span></div>
                 </div>
+                ${pai ? `
+                <div class="info-card">
+                    <h3>👨 Pai</h3>
+                    <div class="row"><span class="label">Nome</span><span class="value">${esc(pai.nome_completo)}</span></div>
+                    <div class="row"><span class="label">Nascimento</span><span class="value">${esc(pai.data_nascimento || '-')}</span></div>
+                    <div class="row"><span class="label">Falecimento</span><span class="value">${esc(pai.data_falecimento || '-')}</span></div>
+                    <div class="row"><span class="label">Profissão</span><span class="value">${esc(pai.profissao || '-')}</span></div>
+                </div>` : ''}
+                ${mae ? `
+                <div class="info-card">
+                    <h3>👩 Mãe</h3>
+                    <div class="row"><span class="label">Nome</span><span class="value">${esc(mae.nome_completo)}</span></div>
+                    <div class="row"><span class="label">Nascimento</span><span class="value">${esc(mae.data_nascimento || '-')}</span></div>
+                    <div class="row"><span class="label">Falecimento</span><span class="value">${esc(mae.data_falecimento || '-')}</span></div>
+                </div>` : ''}
             </div>
         </div>
 
@@ -377,111 +374,39 @@
             <div class="info-grid">
                 ${D.companies.map(c => `
                     <div class="company">
-                        <div class="company-name">${esc(c.trade_name || c.legal_name)}</div>
+                        <div class="company-name">${esc(c.nome_fantasia || c.razao_social)}</div>
                         <div class="row"><span class="label">CNPJ</span><span class="value">${esc(c.cnpj)}</span></div>
-                        <div class="row"><span class="label">Razão Social</span><span class="value">${esc(c.legal_name)}</span></div>
-                        <div class="row"><span class="label">Status</span><span class="value"><span class="badge ${c.status==='ativa'?'badge-ativa':'badge-baixada'}">${esc(c.status)}</span></span></div>
-                        ${c.capital?`<div class="row"><span class="label">Capital</span><span class="value">${fmtMoney(c.capital)}</span></div>`:''}
-                        ${c.activity?`<div class="row"><span class="label">Atividade</span><span class="value">${esc(c.activity)}</span></div>`:''}
-                        ${c.address?`<div class="row"><span class="label">Local</span><span class="value">${esc(c.address)}</span></div>`:''}
-                        ${c.partners?`<div style="margin-top:8px;font-size:11px;color:var(--text-muted)">📋 Sócios: ${esc(typeof c.partners === 'string' ? JSON.parse(c.partners).socios?.join(', ') || c.partners : c.partners)}</div>`:''}
+                        <div class="row"><span class="label">Razão Social</span><span class="value">${esc(c.razao_social)}</span></div>
+                        <div class="row"><span class="label">Status</span><span class="value"><span class="badge ${c.status_jucemg==='ativa'?'badge-ativa':'badge-baixada'}">${esc(c.status_jucemg || '-')}</span></span></div>
+                        ${c.capital ? `<div class="row"><span class="label">Capital</span><span class="value">${fmtMoney(c.capital)}</span></div>` : ''}
+                        ${c.cidade ? `<div class="row"><span class="label">Local</span><span class="value">${esc(c.cidade)}/${esc(c.uf || '')}</span></div>` : ''}
+                        ${c.data_abertura ? `<div class="row"><span class="label">Abertura</span><span class="value">${esc(c.data_abertura)}</span></div>` : ''}
+                        ${c.data_baixa ? `<div class="row"><span class="label">Baixa</span><span class="value">${esc(c.data_baixa)}</span></div>` : ''}
+                        ${c.endereco ? `<div class="row"><span class="label">Endereço</span><span class="value">${esc(c.endereco)}</span></div>` : ''}
+                        ${c.socios ? (() => { try { return '<div style="margin-top:8px;font-size:11px;color:var(--text-muted)">📋 ' + JSON.parse(c.socios).map(s => s.nome + ' (' + s.participacao + ')').join(', ') + '</div>'; } catch(e) { return ''; } })() : ''}
+                        ${c.observacoes ? `<div style="margin-top:6px;font-size:11px;color:var(--text-muted)">${esc(c.observacoes.substring(0, 120))}</div>` : ''}
                     </div>
                 `).join('')}
             </div>
         </div>
 
-        <!-- Properties -->
-        <div class="section" id="properties">
-            <div class="section-title">🏠 Imóveis (${D.properties.length})</div>
+        <!-- Research -->
+        <div class="section" id="research">
+            <div class="section-title">🔍 Tarefas de Pesquisa (${D.tasks.length} pendentes)</div>
             <div class="info-grid">
-                ${D.properties.map(pr => `
+                ${D.tasks.map(t => `
                     <div class="info-card">
-                        <h3>${esc(pr.property_type)} — ${esc(pr.city)}/${esc(pr.state)}</h3>
-                        <div class="row"><span class="label">Endereço</span><span class="value">${esc(pr.address)}</span></div>
-                        <div class="row"><span class="label">Bairro</span><span class="value">${esc(pr.neighborhood)}</span></div>
-                        ${pr.building_name?`<div class="row"><span class="label">Edifício</span><span class="value">${esc(pr.building_name)}</span></div>`:''}
-                        ${pr.floor?`<div class="row"><span class="label">Andar</span><span class="value">${esc(pr.floor)}</span></div>`:''}
-                        ${pr.area_total?`<div class="row"><span class="label">Área Total</span><span class="value">${pr.area_total} m²</span></div>`:''}
-                        ${pr.area_sqm?`<div class="row"><span class="label">Área Útil</span><span class="value">${pr.area_sqm} m²</span></div>`:''}
-                        ${pr.bedrooms?`<div class="row"><span class="label">Quartos</span><span class="value">${pr.bedrooms}</span></div>`:''}
-                        ${pr.parking_spaces?`<div class="row"><span class="label">Vagas</span><span class="value">${pr.parking_spaces}</span></div>`:''}
-                        <div class="row"><span class="label">Matrícula</span><span class="value">${esc(pr.registration)}</span></div>
-                        <div class="row"><span class="label">Cartório</span><span class="value">${esc(pr.cartorio)}</span></div>
-                        ${pr.purchase_date?`<div class="row"><span class="label">Compra</span><span class="value">${fmtDate(pr.purchase_date)}</span></div>`:''}
-                        ${pr.purchase_value?`<div class="row"><span class="label">Valor Compra</span><span class="value">${fmtMoney(pr.purchase_value)}</span></div>`:''}
-                        ${pr.itbi?`<div class="row"><span class="label">ITBI</span><span class="value">${fmtMoney(pr.itbi)}</span></div>`:''}
-                        ${pr.fiscal_value?`<div class="row"><span class="label">Valor Fiscal</span><span class="value">${fmtMoney(pr.fiscal_value)}</span></div>`:''}
-                        ${pr.current_value?`<div class="row"><span class="label">Valor Atual</span><span class="value">${fmtMoney(pr.current_value)}</span></div>`:''}
-                        ${pr.status?`<div class="row"><span class="label">Status</span><span class="value">${esc(pr.status)}</span></div>`:''}
-                        ${pr.owners?`<div class="row"><span class="label">Proprietários</span><span class="value">${esc(typeof pr.owners === 'string' ? JSON.parse(pr.owners).join(', ') : pr.owners)}</span></div>`:''}
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-
-        <!-- Documents -->
-        <div class="section" id="documents">
-            <div class="section-title">📄 Documentos (${D.documents.length})</div>
-            <div class="info-grid">
-                ${D.documents.map(d => `
-                    <div class="info-card">
-                        <h3>${esc(d.title || d.doc_type)}</h3>
-                        ${d.description?`<div class="row"><span class="label">Número</span><span class="value">${esc(d.description)}</span></div>`:''}
-                        <div class="row"><span class="label">Tipo</span><span class="value">${esc(d.doc_type)}</span></div>
-                        ${d.issue_date?`<div class="row"><span class="label">Data</span><span class="value">${fmtDate(d.issue_date)}</span></div>`:''}
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-
-        <!-- Legal -->
-        <div class="section" id="legal">
-            <div class="section-title">⚖️ Processos (${D.legal_processes.length})</div>
-            <div class="info-grid">
-                ${D.legal_processes.map(pr => `
-                    <div class="info-card">
-                        <h3>${esc(pr.process_number)}</h3>
-                        <div class="row"><span class="label">Tribunal</span><span class="value">${esc(pr.court)}</span></div>
-                        <div class="row"><span class="label">Assunto</span><span class="value">${esc(pr.subject)}</span></div>
-                        <div class="row"><span class="label">Papel RGVL</span><span class="value" style="font-weight:600;color:${(pr.parties && pr.parties.papel_rgvl && pr.parties.papel_rgvl.includes('Réu'))?'var(--danger)':(pr.parties && pr.parties.papel_rgvl && pr.parties.papel_rgvl.includes('Autor'))?'var(--success)':'var(--text-muted)'}">${esc(pr.parties && pr.parties.papel_rgvl ? pr.parties.papel_rgvl : '-')}</span></div>
-                        <div class="row"><span class="label">Status</span><span class="value">${esc(pr.status)}</span></div>
-                        ${pr.value?`<div class="row"><span class="label">Valor</span><span class="value">${fmtMoney(pr.value)}</span></div>`:''}
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-
-        <!-- Contacts -->
-        <div class="section" id="contacts">
-            <div class="section-title">📞 Contatos (${D.contacts.length})</div>
-            <div class="info-grid">
-                ${D.contacts.map(c => `
-                    <div class="info-card">
-                        <h3>${esc(c.name)}</h3>
-                        <div class="row"><span class="label">Função</span><span class="value">${esc(c.role)}</span></div>
-                        ${c.phone?`<div class="row"><span class="label">Telefone</span><span class="value">${esc(c.phone)}</span></div>`:''}
-                        ${c.email?`<div class="row"><span class="label">Email</span><span class="value">${esc(c.email)}</span></div>`:''}
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-
-        <!-- Notes -->
-        <div class="section" id="notes">
-            <div class="section-title">📝 Notas (${D.notes.length})</div>
-            <div class="info-grid">
-                ${D.notes.map(n => `
-                    <div class="info-card">
-                        <h3>${esc(n.title || n.category || 'Nota')}</h3>
-                        <div class="row"><span class="label">Fonte</span><span class="value">${esc(n.source)}</span></div>
-                        <div class="row"><span class="label">Categoria</span><span class="value">${esc(n.category)}</span></div>
-                        ${n.content ? `<div style="margin-top:8px;font-size:12px;color:var(--text-muted);line-height:1.6">${fmtContent(n.content)}</div>` : ''}
+                        <h3>${esc(t.tarefa)}</h3>
+                        <div class="row"><span class="label">Prioridade</span><span class="value" style="font-weight:600;color:${t.prioridade==='ALTA'?'var(--danger)':t.prioridade==='MEDIA'?'var(--warning)':'var(--text-muted)'}">${esc(t.prioridade || '-')}</span></div>
+                        ${t.pessoa_alvo ? `<div class="row"><span class="label">Alvo</span><span class="value">${esc(t.pessoa_alvo)}</span></div>` : ''}
+                        ${t.fontes_sugeridas ? `<div class="row"><span class="label">Fontes</span><span class="value">${esc(t.fontes_sugeridas)}</span></div>` : ''}
                     </div>
                 `).join('')}
             </div>
         </div>
         `;
     }
+
     load();
     </script>
 </body>
