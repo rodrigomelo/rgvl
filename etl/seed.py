@@ -57,7 +57,7 @@ def seed(force=False):
             data_falecimento='1968',
             profissao='Dentista',
             status='falecido',
-            geracao=5,
+            geracao=4,
             fonte='FamilySearch (G9PX-G84)',
         )
 
@@ -70,7 +70,7 @@ def seed(force=False):
             cpf='000.558.676-*',
             profissao='Dentista',
             status='falecido',
-            geracao=4,
+            geracao=2,
             fonte='FamilySearch',
             observacoes='Sepultado em BH.',
         )
@@ -80,7 +80,7 @@ def seed(force=False):
             data_nascimento='1926',
             data_falecimento='2019',
             status='falecido',
-            geracao=4,
+            geracao=2,
             fonte='INTEL.md',
         )
 
@@ -89,7 +89,7 @@ def seed(force=False):
             data_nascimento='1923',
             data_falecimento='2006',
             status='falecido',
-            geracao=4,
+            geracao=2,
             fonte='familialana.com',
         )
 
@@ -98,7 +98,7 @@ def seed(force=False):
             data_nascimento='1925',
             data_falecimento='2018',
             status='falecido',
-            geracao=4,
+            geracao=2,
             fonte='familialana.com',
         )
 
@@ -197,7 +197,7 @@ def seed(force=False):
             endereco='São Paulo, SP',
             pai_id=pai.id,
             status='ativo',
-            geracao=1,
+            geracao=4,
             fonte='LinkedIn (linkedin.com/in/melorodrigo)',
             observacoes='Nome alterado em 2025: Rodrigo da Silva Melo → Rodrigo Melo Lanna. Reconhecimento de paternidade fev/2017 (escritura pública).',
         )
@@ -234,19 +234,19 @@ def seed(force=False):
         for nome, obs in primos_henrique:
             primos.append(Pessoa(
                 nome_completo=nome, pai_id=tio_henrique.id,
-                geracao=1, status='ativo',
+                geracao=4, status='ativo',
                 fonte='Facebook research 2016', observacoes=obs,
             ))
         for nome, obs in primos_marcelo:
             primos.append(Pessoa(
                 nome_completo=nome, pai_id=tio_marcelo.id,
-                geracao=1, status='ativo',
+                geracao=4, status='ativo',
                 fonte='Facebook research 2016', observacoes=obs,
             ))
         for nome, obs in primos_junia:
             primos.append(Pessoa(
                 nome_completo=nome, mae_id=tia_junia.id,
-                geracao=1, status='ativo',
+                geracao=4, status='ativo',
                 fonte='Facebook research 2016', observacoes=obs,
             ))
 

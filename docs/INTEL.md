@@ -11,7 +11,7 @@
 > **Nota:** Dados estruturados (pessoas, empresas, imóveis, processos) estão no banco `data/rgvl.db`.
 > Consultar via API: `http://localhost:5003/api/family/summary`
 
-### Geração 5 — Bisavós
+### Geração 1 — Bisavós
 ```
 Edmundo Mariano da Costa Lanna (1878-1968) — Dentista
 + Maria da Glória de Vasconcellos
@@ -21,7 +21,7 @@ Edmundo Mariano da Costa Lanna (1878-1968) — Dentista
        └── Maria Auxiliadora de Vasconcellos Lanna (1925-2018)
 ```
 
-### Geração 4 — Avós
+### Geração 2 — Avós
 ```
 Edmundo de Vasconcellos Lanna (1922-1992) ⚰️ — Dentista
 + Nice Gorgulho de Vasconcellos Lanna (1926-2019) ⚰️
@@ -39,13 +39,13 @@ Edmundo de Vasconcellos Lanna (1922-1992) ⚰️ — Dentista
 - **Marcelo** — 22-25 processos TJMG (BMG, AF Administradora). Casado com Mônica Maria Almeida Lanna.
 - **Júnia** — Presidente AVOSC (2016). CNPJ 17.508.888/0001-70.
 
-### Geração 2 — Rodrigo Melo (você)
+### Geração 4 — Primos (você)
 - Nascido ~1980 em Itaituba/PA
 - Nome anterior: Rodrigo da Silva Melo → alterado em 2025 para Rodrigo Melo Lanna
 - VP J.P. Morgan Asset Management, São Paulo
 - Reconhecimento de paternidade: fev/2017 (escritura pública)
 
-### Geração 1 — Primos (15 conhecidos)
+### Geração 4 — Primos (15 conhecidos)
 - **Henrique** (6): Luiza, Fernanda, Alessandra, Paula, Antônio Bahury, João Vítor
 - **Marcelo** (4): Marcela, Andre, Bruno, Edmundo
 - **Júnia** (5): Andrea, Paula Lanna Silva, Vivi, Pichita, Julia

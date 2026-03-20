@@ -2,10 +2,10 @@
 # Última atualização: 2026-03-20
 
 ## Gerações (convenção canônica)
-- **Geração 5:** Bisavós
-- **Geração 4:** Avós
+- **Geração 1:** Bisavós
+- **Geração 2:** Avós
 - **Geração 3:** Pais + Tios
-- **Geração 1:** Primos (inclui Rodrigo Melo Lanna)
+- **Geração 4:** Primos (inclui Rodrigo Melo Lanna)
 
 > Dados completos no banco: `data/rgvl.db` via API na porta 5003.
 
@@ -106,8 +106,8 @@ Edmundo de Vasconcellos Lanna (1922-1992) ⚰️
 
 | Geração | Pessoas | Confirmados | Especulativos |
 |---------|---------|-------------|---------------|
-| 5 (Bisavós) | 1 | 1 | 0 |
-| 4 (Avós) | 4 | 4 | 0 |
+| 1 (Bisavós) | 1 | 1 | 0 |
+| 2 (Avós) | 4 | 4 | 0 |
 | 3 (Pais/Tios) | 5 | 5 | 0 |
-| 1 (Primos, inclui Rodrigo Melo) | 16 | 10 | 6 |
+| 4 (Primos, inclui Rodrigo Melo) | 16 | 10 | 6 |
 | **Total** | **26** | **20** | **6** |
