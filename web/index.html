@@ -95,6 +95,7 @@
         <a class="nav-item" data-section="family">👨‍👩‍👧 Família</a>
         <a class="nav-item" data-section="person">👤 Dados Pessoais</a>
         <a class="nav-item" data-section="companies">🏢 Empresas</a>
+        <a class="nav-item" data-section="properties">🏠 Imóveis</a>
         <a class="nav-item" data-section="research">🔍 Pesquisa</a>
     </nav>
     <main class="main"><div id="app"><div class="loading"><div class="spinner"></div>Carregando...</div></div></main>
@@ -114,14 +115,32 @@
 
     function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
+    // Click navigation
     document.querySelectorAll('.nav-item').forEach(el => {
         el.addEventListener('click', function() {
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            this.classList.add('active');
             document.getElementById(this.dataset.section).scrollIntoView({behavior:'smooth'});
             if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
         });
     });
+
+    // Scroll-spy: update active nav item based on scroll position
+    function initScrollSpy() {
+        const sections = document.querySelectorAll('.section[id]');
+        if (!sections.length) return;
+
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.id;
+                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                    const active = document.querySelector(`.nav-item[data-section="${id}"]`);
+                    if (active) active.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+
+        sections.forEach(section => observer.observe(section));
+    }
 
     // RGVL pai ID — Rodrigo Gorgulho de Vasconcellos Lanna
     const PAI_ID = 6;
@@ -129,16 +148,17 @@
     async function load() {
         try {
             const api = await findAPI();
-            const [tree, gen1, gen3, gen4, companies, summary, tasks] = await Promise.all([
+            const [tree, gen1, gen3, gen4, companies, properties, summary, tasks] = await Promise.all([
                 fetch(api+'/family/person/'+PAI_ID+'/tree').then(r=>r.json()).catch(()=>null),
                 fetch(api+'/family/generation/1').then(r=>r.json()).catch(()=>[]),
                 fetch(api+'/family/generation/3').then(r=>r.json()).catch(()=>[]),
                 fetch(api+'/family/generation/4').then(r=>r.json()).catch(()=>[]),
                 fetch(api+'/assets/companies').then(r=>r.json()).catch(()=>[]),
+                fetch(api+'/assets/properties').then(r=>r.json()).catch(()=>[]),
                 fetch(api+'/family/summary').then(r=>r.json()).catch(()=>{}),
                 fetch(api+'/research/tasks?status=pendente').then(r=>r.json()).catch(()=>[]),
             ]);
-            render({tree, gen1:gen1||[], gen3:gen3||[], gen4:gen4||[], companies:companies||[], summary, tasks:tasks||[]});
+            render({tree, gen1:gen1||[], gen3:gen3||[], gen4:gen4||[], companies:companies||[], properties:properties||[], summary, tasks:tasks||[]});
         } catch(e) {
             document.getElementById('app').innerHTML = '<div class="section"><h2>⚠️ Erro</h2><p>'+esc(e.message)+'</p></div>';
         }
@@ -158,8 +178,10 @@
         const primosMarcelo = D.gen1.filter(c => c.observacoes && c.observacoes.includes('Marcelo'));
         const primosJunia = D.gen1.filter(c => c.observacoes && c.observacoes.includes('Júnia'));
 
-        // Soma capital empresas
+        // Wealth calculations
         const totalCapital = D.companies.reduce((s,c) => s + (c.capital || 0), 0);
+        const totalProperties = D.properties.reduce((s,p) => s + (p.current_value || 0), 0);
+        const totalWealth = totalCapital + totalProperties;
 
         document.getElementById('app').innerHTML = `
         <!-- Overview -->
@@ -171,6 +193,7 @@
                 <div class="stat"><div class="stat-value">${children.length}</div><div class="stat-label">Filhos</div></div>
                 <div class="stat"><div class="stat-value">${D.gen1.length}</div><div class="stat-label">Primos</div></div>
                 <div class="stat"><div class="stat-value">${D.companies.length}</div><div class="stat-label">Empresas</div></div>
+                <div class="stat"><div class="stat-value">${D.properties.length}</div><div class="stat-label">Imóveis</div></div>
                 <div class="stat"><div class="stat-value">${D.summary.relacionamentos_confirmados || 0}</div><div class="stat-label">Vínculos Confirmados</div></div>
                 <div class="stat"><div class="stat-value">${D.tasks.length}</div><div class="stat-label">Tarefas Pendentes</div></div>
             </div>
@@ -178,19 +201,19 @@
 
         <!-- Patrimony -->
         <div class="section">
-            <div class="section-title">💰 Capital Empresas</div>
+            <div class="section-title">💰 Patrimônio Estimado</div>
             <div class="stats">
+                <div class="stat" style="border:2px solid var(--primary);background:#F0F4FA">
+                    <div class="stat-value" style="color:var(--primary);font-size:26px;font-weight:800">${fmtMoney(totalWealth)}</div>
+                    <div class="stat-label">Patrimônio Total</div>
+                </div>
                 <div class="stat" style="background:#E3F2FD;border-color:var(--primary-light)">
                     <div class="stat-value" style="color:var(--primary-light)">${fmtMoney(totalCapital)}</div>
-                    <div class="stat-label">Capital Social Total</div>
+                    <div class="stat-label">Capital Social</div>
                 </div>
-                <div class="stat" style="background:#C8E6C9;border-color:var(--success)">
-                    <div class="stat-value" style="color:var(--success)">${D.companies.filter(c=>c.status_jucemg==='ativa').length}</div>
-                    <div class="stat-label">Empresas Ativas</div>
-                </div>
-                <div class="stat" style="background:#FFCDD2;border-color:var(--danger)">
-                    <div class="stat-value" style="color:var(--danger)">${D.companies.filter(c=>c.status_jucemg==='baixa').length}</div>
-                    <div class="stat-label">Empresas Baixadas</div>
+                <div class="stat" style="background:#E8F5E9;border-color:#2E7D32">
+                    <div class="stat-value" style="color:#2E7D32">${fmtMoney(totalProperties)}</div>
+                    <div class="stat-label">Patrimônio Imóveis</div>
                 </div>
             </div>
         </div>
@@ -390,6 +413,39 @@
             </div>
         </div>
 
+        <!-- Properties -->
+        <div class="section" id="properties">
+            <div class="section-title">🏠 Imóveis (${D.properties.length})</div>
+            <div class="info-grid">
+                ${D.properties.map(p => {
+                    let owners = [];
+                    try { owners = JSON.parse(p.owners || '[]'); } catch(e) {}
+                    return `
+                    <div class="company">
+                        <div class="company-name">${esc(p.building_name || p.address)}</div>
+                        ${p.building_name ? `<div class="row"><span class="label">Endereço</span><span class="value">${esc(p.address)}</span></div>` : ''}
+                        <div class="row"><span class="label">Tipo</span><span class="value">${esc(p.property_type || '-')}</span></div>
+                        <div class="row"><span class="label">Bairro</span><span class="value">${esc(p.neighborhood || '-')} / ${esc(p.city || '')}</span></div>
+                        ${p.floor ? `<div class="row"><span class="label">Andar</span><span class="value">${esc(p.floor)}</span></div>` : ''}
+                        ${p.area_sqm ? `<div class="row"><span class="label">Área Privativa</span><span class="value">${p.area_sqm} m²</span></div>` : ''}
+                        ${p.area_total ? `<div class="row"><span class="label">Área Total</span><span class="value">${p.area_total} m²</span></div>` : ''}
+                        ${p.bedrooms ? `<div class="row"><span class="label">Quartos</span><span class="value">${p.bedrooms}</span></div>` : ''}
+                        ${p.parking_spaces ? `<div class="row"><span class="label">Vagas</span><span class="value">${p.parking_spaces}</span></div>` : ''}
+                        ${owners.length ? `<div class="row"><span class="label">Proprietários</span><span class="value">${owners.map(o => esc(o)).join(' · ')}</span></div>` : ''}
+                        ${p.purchase_date ? `<div class="row"><span class="label">Compra</span><span class="value">${fmtDate(p.purchase_date)}</span></div>` : ''}
+                        ${p.purchase_value ? `<div class="row"><span class="label">Valor Compra</span><span class="value">${fmtMoney(p.purchase_value)}</span></div>` : ''}
+                        ${p.financing_value ? `<div class="row"><span class="label">Financiamento</span><span class="value">${fmtMoney(p.financing_value)}</span></div>` : ''}
+                        ${p.itbi ? `<div class="row"><span class="label">ITBI</span><span class="value">${fmtMoney(p.itbi)}</span></div>` : ''}
+                        ${p.fiscal_value ? `<div class="row"><span class="label">Valor Fiscal</span><span class="value">${fmtMoney(p.fiscal_value)}</span></div>` : ''}
+                        ${p.current_value ? `<div class="row"><span class="label" style="font-weight:700;color:#2E7D32">Valor Mercado</span><span class="value" style="font-weight:700;color:#2E7D32">${fmtMoney(p.current_value)}</span></div>` : ''}
+                        <div class="row"><span class="label">Status</span><span class="value"><span class="badge ${p.status==='paid_off'?'badge-ativa':'badge-baixada'}">${esc(p.status === 'paid_off' ? 'Quitado' : p.status)}</span></span></div>
+                        ${p.registration ? `<div class="row"><span class="label">Matrícula</span><span class="value">${esc(p.registration)}</span></div>` : ''}
+                        ${p.cartorio ? `<div class="row"><span class="label">Cartório</span><span class="value">${esc(p.cartorio)}</span></div>` : ''}
+                    </div>`;
+                }).join('')}
+            </div>
+        </div>
+
         <!-- Research -->
         <div class="section" id="research">
             <div class="section-title">🔍 Tarefas de Pesquisa (${D.tasks.length} pendentes)</div>
@@ -405,6 +461,7 @@
             </div>
         </div>
         `;
+        initScrollSpy();
     }
 
     load();

@@ -19,8 +19,9 @@ from api.db import engine, get_session, DB_PATH
 from api.models import Base, Pessoa, Relacionamento, Empresa, TarefaPesquisa
 
 
-def seed():
+def seed(force=False):
     """Populate the database with known family data."""
+    import sys
 
     # Create tables
     Base.metadata.create_all(bind=engine)
@@ -29,6 +30,13 @@ def seed():
     db = get_session()
 
     try:
+        # Safety check: refuse to wipe unless --force
+        existing_count = db.query(Pessoa).count()
+        if existing_count > 0 and not force:
+            print(f'⚠️  Database already has {existing_count} people.')
+            print('   Use --force to wipe and reseed: python -m etl.seed --force')
+            return
+
         # Clear existing data
         db.query(TarefaPesquisa).delete()
         db.query(Empresa).delete()
@@ -330,6 +338,7 @@ def seed():
                 razao_social='RVL Engenharia EPP',
                 cidade='Belo Horizonte', uf='MG',
                 status_jucemg='baixa',
+                data_abertura='2015',
                 pessoa_id=pai.id,
                 socios=json.dumps([{'nome': 'Rodrigo Gorgulho de Vasconcellos Lanna', 'participacao': '100%'}]),
                 fonte='INTEL.md',
@@ -474,4 +483,5 @@ def seed():
 
 
 if __name__ == '__main__':
-    seed()
+    force = '--force' in sys.argv
+    seed(force=force)

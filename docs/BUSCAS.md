@@ -102,7 +102,7 @@ Queries para executar:
 /*
 Nomes comuns para completar padrões:
 - Paulo Gorgulho de Vasconcellos Lanna
-- Carlos Gorgulho de Vasconcellos Lanna  
+- Carlos Gorgulho de Vasconcellos Lanna
 - Antonio Gorgulho de Vasconcellos Lanna
 - Fernando Gorgulho de Vasconcellos Lanna
 - Eduardo Gorgulho de Vasconcellos Lanna
@@ -113,4 +113,35 @@ Estratégia:
 1. Buscar todos com "Gorgulho" + "Vasconcellos" + "Lanna" no FamilySearch
 2. Cruzar com empresas no JUCEMG
 3. Validar nascimentos em BH 1950-1965
+*/
+
+-- ================================================
+-- CONSULTA 7: Imóveis - Propriedades da Família
+-- ================================================
+/*
+Objetivo: Pesquisar situação atual dos imóveis da família
+Fontes: cartórios de registro de imóveis, 3° Ofício (Cartório Bolívar) e 2° Ofício
+
+Imóvel 1 (RGVL - Pai):
+- Endereço: Rua Gonçalves Dias, 865, Apto. 1201, Savassi, BH/MG
+- Matrícula: 121.974
+- Cartório: 3° Ofício (Cartório Bolívar)
+- Status: ✅ Quitado (dados de 2026-03-18)
+
+Imóvel 2 (RGVL - Pai):
+- Endereço: Rua Oliveira, 259, Apto. 303, Cruzeiro, BH/MG
+- Matrícula: 15.902
+- Cartório: 2° Ofício de Registro de Imóveis
+- Status: ✅ Quitado (dados de 2026-03-18)
+
+Imóvel 3 (Avô - Edmundo de Vasconcellos Lanna):
+- Endereço: Apto 402, Ed. Rio Verde, Rua Nisio Batista de Oliveira, 158, Novo São Lucas, BH/MG
+- Referência: venda-imoveis.caixa.gov.br
+- Status: ❓ Necesita investigación — confirmar si está a nombre de herederos
+
+Consultas pendientes:
+1. Situação atual dos 2 imóveis do pai (ônus ou alienação)
+2. Inventário do avô Edmundo (falecido 1992) — partilha de bens
+3. IPTU: consultar Prefeitura Municipal de BH
+4. Transmissão: verificar 3° Ofício por mudanças de titularidade
 */

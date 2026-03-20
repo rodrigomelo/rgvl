@@ -51,18 +51,24 @@ def root():
                 'tree': '/api/family/person/<id>/tree',
                 'generation': '/api/family/generation/<n>',
                 'summary': '/api/family/summary',
+                'events': '/api/family/events',
             },
             'assets': {
                 'companies': '/api/assets/companies',
                 'company': '/api/assets/companies/<id>',
+                'properties': '/api/assets/properties',
+                'property': '/api/assets/properties/<id>',
             },
             'legal': {
                 'processes': '/api/legal/processes',
+                'process': '/api/legal/processes/<id>',
                 'summary': '/api/legal/summary',
             },
             'research': {
                 'searches': '/api/research/searches',
                 'tasks': '/api/research/tasks',
+                'documents': '/api/research/documents',
+                'contacts': '/api/research/contacts',
             },
             'system': {
                 'health': '/api/health',
@@ -78,7 +84,7 @@ def root():
 @app.route('/api/health')
 def health():
     import sqlite3
-    from datetime import datetime
+    from datetime import datetime, timezone
 
     db_ok = False
     db_tables = 0
@@ -98,7 +104,7 @@ def health():
         'database_exists': DB_PATH.exists(),
         'database_connected': db_ok,
         'database_tables': db_tables,
-        'timestamp': datetime.utcnow().isoformat(),
+        'timestamp': datetime.now(timezone.utc).isoformat(),
         'version': '5.0.0'
     })
 
@@ -108,7 +114,7 @@ def health():
 @app.route('/api/stats')
 def get_stats():
     from api.db import get_session
-    from api.models import Pessoa, Relacionamento, Empresa, BuscaRealizada, TarefaPesquisa
+    from api.models import Pessoa, Relacionamento, Empresa, Imovel, ProcessoJudicial, Documento, Contato, Evento, BuscaRealizada, TarefaPesquisa
 
     db = get_session()
     try:
@@ -116,6 +122,11 @@ def get_stats():
             'pessoas': db.query(Pessoa).count(),
             'relacionamentos': db.query(Relacionamento).count(),
             'empresas': db.query(Empresa).count(),
+            'imoveis': db.query(Imovel).count(),
+            'processos': db.query(ProcessoJudicial).count(),
+            'documentos': db.query(Documento).count(),
+            'eventos': db.query(Evento).count(),
+            'contatos': db.query(Contato).count(),
             'buscas': db.query(BuscaRealizada).count(),
             'tarefas': db.query(TarefaPesquisa).count(),
             'tarefas_pendentes': db.query(TarefaPesquisa).filter(
@@ -136,7 +147,7 @@ def global_search():
         return jsonify({'error': 'Query parameter q is required'}), 400
 
     from api.db import get_session
-    from api.models import Pessoa, Empresa, TarefaPesquisa
+    from api.models import Pessoa, Empresa, TarefaPesquisa, Imovel
 
     db = get_session()
     try:
@@ -159,6 +170,13 @@ def global_search():
             (TarefaPesquisa.pessoa_alvo.ilike(like))
         ).limit(20).all()
 
+        properties = db.query(Imovel).filter(
+            (Imovel.address.ilike(like)) |
+            (Imovel.building_name.ilike(like)) |
+            (Imovel.neighborhood.ilike(like)) |
+            (Imovel.owners.ilike(like))
+        ).limit(20).all()
+
         from api.utils import model_to_dict
         return jsonify({
             'query': q,
@@ -166,8 +184,9 @@ def global_search():
                 'pessoas': [model_to_dict(p) for p in people],
                 'empresas': [model_to_dict(c) for c in companies],
                 'tarefas': [model_to_dict(t) for t in tasks],
+                'imoveis': [model_to_dict(p) for p in properties],
             },
-            'total': len(people) + len(companies) + len(tasks),
+            'total': len(people) + len(companies) + len(tasks) + len(properties),
         })
     finally:
         db.close()

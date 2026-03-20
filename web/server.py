@@ -24,10 +24,11 @@ def favicon_png():
 
 @app.route('/api/proxy/<path:endpoint>')
 def proxy(endpoint):
-    """Proxy requests to RGVL Data API (now on 5004)"""
+    """Proxy requests to RGVL Data API."""
     import requests
+    api_url = os.environ.get('API_URL', 'http://localhost:5003')
     try:
-        resp = requests.get(f'http://localhost:5003/api/{endpoint}', timeout=10)
+        resp = requests.get(f'{api_url}/api/{endpoint}', timeout=10)
         return jsonify(resp.json())
     except Exception as e:
         return jsonify({'error': str(e)})

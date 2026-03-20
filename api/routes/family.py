@@ -1,9 +1,9 @@
 """
-RGVL API - Family routes
+RGVL API - Family routes (persons, relationships, events)
 """
 from flask import Blueprint, jsonify, request
 from api.db import get_session
-from api.models import Pessoa, Relacionamento
+from api.models import Pessoa, Relacionamento, Evento
 from api.utils import model_to_dict, models_to_list
 
 family_bp = Blueprint('family', __name__, url_prefix='/api/family')
@@ -11,7 +11,7 @@ family_bp = Blueprint('family', __name__, url_prefix='/api/family')
 
 @family_bp.route('/person/<int:person_id>')
 def get_person(person_id):
-    """Get a single person by ID."""
+    """Get a person by ID."""
     db = get_session()
     try:
         person = db.query(Pessoa).filter(Pessoa.id == person_id).first()
@@ -22,89 +22,99 @@ def get_person(person_id):
         db.close()
 
 
-@family_bp.route('/person/<int:person_id>/relatives')
-def get_relatives(person_id):
-    """Get all relatives of a person."""
-    db = get_session()
-    try:
-        relationships = db.query(Relacionamento).filter(
-            (Relacionamento.pessoa_de == person_id) |
-            (Relacionamento.pessoa_para == person_id)
-        ).all()
-
-        results = []
-        for rel in relationships:
-            d = model_to_dict(rel)
-            # Fetch the related person's name
-            other_id = rel.pessoa_para if rel.pessoa_de == person_id else rel.pessoa_de
-            other = db.query(Pessoa).filter(Pessoa.id == other_id).first()
-            d['pessoa_nome'] = other.nome_completo if other else None
-            d['pessoa_status'] = other.status if other else None
-            results.append(d)
-
-        return jsonify(results)
-    finally:
-        db.close()
-
-
 @family_bp.route('/person/<int:person_id>/tree')
-def get_tree(person_id):
-    """Get a person and their direct family (parents, spouse, children, siblings)."""
+def get_family_tree(person_id):
+    """Get full family tree for a person (up to 5 generations)."""
     db = get_session()
     try:
         person = db.query(Pessoa).filter(Pessoa.id == person_id).first()
         if not person:
             return jsonify({'error': 'Person not found'}), 404
 
-        result = model_to_dict(person)
+        # Recursive ancestor helper
+        def get_ancestors(p, depth=0, max_depth=5):
+            if depth >= max_depth or not p:
+                return None
+            result = model_to_dict(p)
+            if p.pai_id:
+                result['pai'] = get_ancestors(db.query(Pessoa).get(p.pai_id), depth+1, max_depth)
+            if p.mae_id:
+                result['mae'] = get_ancestors(db.query(Pessoa).get(p.mae_id), depth+1, max_depth)
+            if p.conjuge_id:
+                result['conjuge'] = model_to_dict(db.query(Pessoa).get(p.conjuge_id))
+            return result
 
-        # Parents
-        if person.pai_id:
-            pai = db.query(Pessoa).filter(Pessoa.id == person.pai_id).first()
-            result['pai'] = model_to_dict(pai)
-        if person.mae_id:
-            mae = db.query(Pessoa).filter(Pessoa.id == person.mae_id).first()
-            result['mae'] = model_to_dict(mae)
-
-        # Spouse
-        if person.conjuge_id:
-            conjuge = db.query(Pessoa).filter(Pessoa.id == person.conjuge_id).first()
-            result['conjuge'] = model_to_dict(conjuge)
-
-        # Children (people whose pai or mae is this person)
-        children = db.query(Pessoa).filter(
-            (Pessoa.pai_id == person_id) | (Pessoa.mae_id == person_id)
+        # Get children via relationships
+        child_rels = db.query(Relacionamento).filter(
+            Relacionamento.pessoa_de == person_id,
+            Relacionamento.tipo.in_(['filho', 'filha'])
         ).all()
-        result['filhos'] = models_to_list(children)
+        child_ids = [r.pessoa_para for r in child_rels]
+        children_map = {p.id: p for p in db.query(Pessoa).filter(Pessoa.id.in_(child_ids)).all()} if child_ids else {}
+        children = [model_to_dict(children_map[cid]) for cid in child_ids if cid in children_map]
 
-        # Siblings (people who share a parent)
-        sibling_conditions = []
+        # Get siblings via same parents (pai_id or mae_id)
+        sibling_ids = set()
         if person.pai_id:
-            sibling_conditions.append(Pessoa.pai_id == person.pai_id)
-        if person.mae_id:
-            sibling_conditions.append(Pessoa.mae_id == person.mae_id)
-
-        if sibling_conditions:
-            from sqlalchemy import or_
-            siblings = db.query(Pessoa).filter(
-                or_(*sibling_conditions),
+            siblings_via_pai = db.query(Pessoa).filter(
+                Pessoa.pai_id == person.pai_id,
                 Pessoa.id != person_id
             ).all()
-            result['irmaos'] = models_to_list(siblings)
-        else:
-            result['irmaos'] = []
+            sibling_ids.update(s.id for s in siblings_via_pai)
+        if person.mae_id:
+            siblings_via_mae = db.query(Pessoa).filter(
+                Pessoa.mae_id == person.mae_id,
+                Pessoa.id != person_id
+            ).all()
+            sibling_ids.update(s.id for s in siblings_via_mae)
+        siblings_map = {p.id: p for p in db.query(Pessoa).filter(Pessoa.id.in_(sibling_ids)).all()} if sibling_ids else {}
+        siblings = [model_to_dict(siblings_map[sid]) for sid in sibling_ids if sid in siblings_map]
 
-        return jsonify(result)
+        tree = get_ancestors(person)
+        tree['filhos'] = children
+        tree['irmaos'] = siblings
+        return jsonify(tree)
     finally:
         db.close()
 
 
-@family_bp.route('/generation/<int:gen>')
-def get_by_generation(gen):
-    """List all people in a given generation."""
+@family_bp.route('/person/<int:person_id>/relatives')
+def get_relatives(person_id):
+    """Get all relatives of a person."""
     db = get_session()
     try:
-        people = db.query(Pessoa).filter(Pessoa.geracao == gen).order_by(Pessoa.nome_completo).all()
+        person = db.query(Pessoa).filter(Pessoa.id == person_id).first()
+        if not person:
+            return jsonify({'error': 'Person not found'}), 404
+
+        rels = db.query(Relacionamento).filter(
+            (Relacionamento.pessoa_de == person_id) |
+            (Relacionamento.pessoa_para == person_id)
+        ).all()
+
+        relatives = []
+        for r in rels:
+            other_id = r.pessoa_para if r.pessoa_de == person_id else r.pessoa_de
+            other = db.query(Pessoa).get(other_id)
+            if other:
+                relatives.append({
+                    'pessoa': model_to_dict(other),
+                    'tipo': r.tipo,
+                    'confirmado': bool(r.confirmado),
+                    'fonte': r.fonte,
+                })
+
+        return jsonify(relatives)
+    finally:
+        db.close()
+
+
+@family_bp.route('/generation/<int:n>')
+def get_generation(n):
+    """Get all people in a given generation (1=cousins, 2=RGVL, 3=parents/siblings, 4=grandparents, 5=great-grandparents)."""
+    db = get_session()
+    try:
+        people = db.query(Pessoa).filter(Pessoa.geracao == n).order_by(Pessoa.nome_completo).all()
         return jsonify(models_to_list(people))
     finally:
         db.close()
@@ -116,20 +126,24 @@ def get_summary():
     db = get_session()
     try:
         total = db.query(Pessoa).count()
-        by_gen = {}
-        for gen in range(1, 7):
-            count = db.query(Pessoa).filter(Pessoa.geracao == gen).count()
-            if count > 0:
-                by_gen[f'geracao_{gen}'] = count
-
-        confirmed_rels = db.query(Relacionamento).filter(Relacionamento.confirmado == 1).count()
-        speculative_rels = db.query(Relacionamento).filter(Relacionamento.confirmado == 0).count()
-
+        confirmed = db.query(Relacionamento).filter(Relacionamento.confirmado == 1).count()
+        speculative = db.query(Relacionamento).filter(Relacionamento.confirmado == 0).count()
         return jsonify({
             'total_pessoas': total,
-            'por_geracao': by_gen,
-            'relacionamentos_confirmados': confirmed_rels,
-            'relacionamentos_especulativos': speculative_rels,
+            'total_relacionamentos': confirmed + speculative,
+            'relacionamentos_confirmados': confirmed,
+            'relacionamentos_espericulativos': speculative,
         })
+    finally:
+        db.close()
+
+
+@family_bp.route('/events')
+def get_events():
+    """List all family events (births, deaths, marriages, career)."""
+    db = get_session()
+    try:
+        events = db.query(Evento).order_by(Evento.event_date).all()
+        return jsonify(models_to_list(events))
     finally:
         db.close()

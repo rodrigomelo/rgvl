@@ -2,6 +2,7 @@
 RGVL Database - SQLAlchemy setup
 """
 import os
+from contextlib import contextmanager
 from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -29,3 +30,22 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 def get_session():
     """Get a new database session. Caller must close it."""
     return SessionLocal()
+
+
+@contextmanager
+def session_scope():
+    """Provide a transactional session scope. Auto-commits on success, rolls back on error.
+
+    Usage:
+        with session_scope() as db:
+            results = db.query(Pessoa).all()
+    """
+    session = get_session()
+    try:
+        yield session
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
+    finally:
+        session.close()
