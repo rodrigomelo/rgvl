@@ -35,15 +35,15 @@ data/rgvl.db (SQLite — schema canônico único, 12 tabelas)
 pessoas                  26 rows  — membros da família
 relacionamentos          30 rows  — vínculos entre pessoas
 empresas_familia         10 rows  — empresas vinculadas à família
-imoveis                  2 rows  — imóveis do pai (dados de cartório)
-processos_judiciais      9 rows  — processos TRT3, TJMG, TJSP
-documentos               7 rows  — RG, CPF, CREA, certidões
-contatos                 4 rows  — advogados, cartório, familiares
-eventos                  9 rows  — nascimentos, casamentos, mortes, carreira
-diarios_oficiais         0 rows  — publicações em diário oficial
-perfis                   1 row   — perfis online encontrados
-buscas_realizadas        0 rows  — histórico de buscas realizadas
-tarefas_pesquisa         5 rows  — tarefas de pesquisa pendentes
+imoveis                   3 rows  — imóveis do pai + avô
+processos_judiciais       9 rows  — processos TRT3, TJMG, TJSP
+documentos                5 rows  — RG, CPF, certidões
+contatos                  3 rows  — advogados, cartório, familiares
+eventos                   9 rows  — nascimentos, casamentos, mortes, carreira
+diarios_oficiais          0 rows  — publicações em diário oficial
+perfis                    0 rows  — perfis online encontrados
+buscas_realizadas         0 rows  — histórico de buscas realizadas
+tarefas_pesquisa          5 rows  — tarefas de pesquisa pendentes
 ```
 
 ## Project Structure
