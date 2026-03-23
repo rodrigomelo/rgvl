@@ -98,33 +98,7 @@ Contact(
 
 ---
 
-### 1.3 `github.py` — GitHub Profile & Repository Sync
-
-| Attribute | Detail |
-|-----------|--------|
-| **What it collects** | GitHub user profile, repositories (name, stars, forks, language, topics), recent events/activity |
-| **Source** | GitHub REST API v3 (`api.github.com`) |
-| **Access method** | `requests` library with `GITHUB_TOKEN` header |
-| **Output format** | Database → `profiles`, `repositories`, `activities` tables |
-| **Update frequency** | Every 12h via `rgvl-data-collector` cron |
-| **Auth required** | `GITHUB_TOKEN` env var (optional but recommended for higher rate limits) |
-| **Target user** | `GITHUB_USERNAME` env var (default: `rodrigomelo`) |
-
-**Endpoints used:**
-- `GET /users/{username}` — profile data
-- `GET /users/{username}/repos?per_page=100&sort=updated` — repositories (paginated, max 100)
-- `GET /users/{username}/events?per_page=100` — recent activity events
-
-**Output tables:**
-```python
-Profile(source='github', external_id=<GitHub user ID>, name, bio, location, company, email, avatar_url, ...)
-Repository(external_id=<repo ID>, name, full_name, description, language, stars, forks, topics, is_private, html_url, ...)
-Activity(external_id=<event ID>, event_type, repo_name, actor, payload, created_at)
-```
-
----
-
-### 1.4 `jucemg.py` — Junta Comercial de Minas Gerais
+### 1.3 `jucemg.py` — Junta Comercial de Minas Gerais
 
 | Attribute | Detail |
 |-----------|--------|
@@ -164,7 +138,7 @@ Company(
 
 ---
 
-### 1.5 `jucesp.py` — Junta Comercial de São Paulo
+### 1.4 `jucesp.py` — Junta Comercial de São Paulo
 
 | Attribute | Detail |
 |-----------|--------|
@@ -197,7 +171,7 @@ Note(
 
 ---
 
-### 1.6 `local.py` — Workspace File Harvester
+### 1.5 `local.py` — Workspace File Harvester
 
 | Attribute | Detail |
 |-----------|--------|
@@ -226,7 +200,7 @@ cpf:     r'\d{3}\.\d{3}\.\d{3}-\d{2}'
 
 ---
 
-### 1.7 `tjmg.py` — Tribunal de Justiça de Minas Gerais
+### 1.6 `tjmg.py` — Tribunal de Justiça de Minas Gerais
 
 | Attribute | Detail |
 |-----------|--------|
@@ -259,7 +233,7 @@ Note(
 
 ---
 
-### 1.8 `tjsp.py` — Tribunal de Justiça de São Paulo
+### 1.7 `tjsp.py` — Tribunal de Justiça de São Paulo
 
 | Attribute | Detail |
 |-----------|--------|
@@ -296,7 +270,7 @@ Note(
 
 ---
 
-### 1.9 `twitter.py` — X/Twitter Social Search
+### 1.8 `twitter.py` — X/Twitter Social Search
 
 | Attribute | Detail |
 |-----------|--------|
@@ -381,8 +355,8 @@ Params: q=<query>, count=<count>
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                              DATA SOURCES                                    │
-│  Gmail          Google Drive    GitHub API   JUCEMG    JUCESP   Local Files  │
-│  (gog CLI)      (static)       (requests)   (HTTP)    (HTTP)    (pathlib)  │
+│  Gmail          Google Drive    JUCEMG         JUCESP    Local Files       │
+│  (gog CLI)      (static)       (HTTP)          (HTTP)    (pathlib)        │
 │                                                                             │
 │  tjmg.jus.br   esaj.tjsp   X API       Brave API                        │
 │  (HTTP)        (HTTP)       (xurl)      (requests)                        │
@@ -430,7 +404,7 @@ Params: q=<query>, count=<count>
 
 | Stage | Component | Technology | Description |
 |-------|-----------|------------|-------------|
-| **Source** | Email, Drive, GitHub, Court sites, X, Web | gog CLI, requests, xurl | Fetch raw data from external sources |
+| **Source** | Email, Drive, Court sites, X, Web | gog CLI, requests, xurl | Fetch raw data from external sources |
 | **Collect** | `data/collectors/*.py` | Python, SQLAlchemy | Extract, transform, deduplicate |
 | **Store** | `data/rgvl.db` | SQLite | Canonical structured storage |
 | **Serve** | `api/main.py` | Flask + SQLAlchemy | REST API on port 5003 |
@@ -489,7 +463,6 @@ cd ~/.openclaw/workspace/projects/rgvl
 # Run a specific collector
 python3 -m data.collectors.email
 python3 -m data.collectors.father_drive
-python3 -m data.collectors.github
 python3 -m data.collectors.jucemg
 python3 -m data.collectors.jucesp
 python3 -m data.collectors.local
@@ -510,7 +483,6 @@ Currently **not implemented**. Potential future triggers:
 | Trigger | Action | Implementation |
 |---------|--------|----------------|
 | New email thread from unknown contact | Run `email.py` | OpenClaw email plugin webhook |
-| New GitHub event on watched repos | Run `github.py` | GitHub webhook |
 | Manual request via Discord command | Run selected collectors | Hermes command handler |
 
 ---
@@ -520,8 +492,6 @@ Currently **not implemented**. Potential future triggers:
 | Service | Credential | Config location |
 |---------|-----------|----------------|
 | Gmail | `gog` CLI session | `gog auth add` (stores in OS keychain) |
-| GitHub | `GITHUB_TOKEN` | `~/.openclaw/workspace/projects/rgvl/.env` |
-| GitHub username | `GITHUB_USERNAME` | `~/.openclaw/workspace/projects/rgvl/.env` |
 | X/Twitter | `xurl` OAuth2 | `xurl auth oauth2` |
 | Brave Search | `BRAVE_API_KEY` | `~/.openclaw/workspace/projects/rgvl/.env` |
 | Google Workspace | `gog` session | `gog auth` (keyring) |
@@ -534,7 +504,6 @@ Currently **not implemented**. Potential future triggers:
 |-----------|---------------|
 | `email.py` | Skips if `gog` not authenticated; logs warning |
 | `father_drive.py` | Upsert logic — safe to re-run; commits per-section |
-| `github.py` | Per-endpoint try/except; continues on partial failure |
 | `jucemg.py` | Try/except per search attempt; logs and continues |
 | `jucesp.py` | 3 search methods fallback chain; saves attempt note even on failure |
 | `local.py` | Per-file try/except; continues if one file missing |
@@ -552,7 +521,6 @@ All collectors are subject to RGVL's LGPD rules:
 
 - ✅ **Allowed:** Public business registrations (JUCEMG, JUCESP), court records (TJMG, TJSP), professional profiles, property records
 - ✅ **Allowed:** Your own Gmail contacts (you control your inbox)
-- ✅ **Allowed:** GitHub profile and public repositories
 - ❌ **Prohibited:** Health data, financial records of third parties, private communications
 - ❌ **Prohibited:** Collecting data about minors without explicit justification
 - ❌ **Prohibited:** Using scraped data for commercial purposes beyond family research
@@ -569,7 +537,6 @@ All collectors are subject to RGVL's LGPD rules:
 |-----------|-------------|------|-------------|-----------|
 | `email.py` | Gmail (gog CLI) | gog session | `contacts` | 12h cron |
 | `father_drive.py` | Static/hardcoded | None | `profiles`, `contacts`, `documents`, `notes` | 12h cron |
-| `github.py` | GitHub REST API | `GITHUB_TOKEN` | `profiles`, `repositories`, `activities` | 12h cron |
 | `jucemg.py` | jucemg.gov.br | None | `companies` | 12h cron |
 | `jucesp.py` | jucesponline.sp.gov.br | None | `notes` (business) | 12h cron |
 | `local.py` | Local workspace files | None | `contacts`, `documents`, `notes` | 12h cron |
@@ -589,7 +556,6 @@ rgvl/
 │       ├── __init__.py
 │       ├── email.py               # Gmail contact discovery
 │       ├── father_drive.py        # Father profile from Drive
-│       ├── github.py              # GitHub API sync
 │       ├── jucemg.py              # Junta Comercial MG
 │       ├── jucesp.py              # Junta Comercial SP
 │       ├── local.py               # Workspace file harvester
