@@ -26,8 +26,8 @@ if ! check_service "API" "5003"; then
     sleep 2
 fi
 
-# Check Web (runs on 5004, not 5002)
-if ! check_service "Web" "5004"; then
+# Check Web (runs on 5002)
+if ! check_service "Web" "5002"; then
     launchctl unload ~/Library/LaunchAgents/com.rgvl.web.plist 2>/dev/null
     sleep 1
     launchctl load ~/Library/LaunchAgents/com.rgvl.web.plist 2>/dev/null
