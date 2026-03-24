@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RGVL - Dados Pessoais</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <script src="auth.js"></script>
+    <script src="auth.js?v=3"></script>
     <style>
         :root {
             --primary: #1E3A5F;
@@ -297,9 +297,11 @@
         </div>
     </div>
 
-    <main class="main">
-        <div id="app"><div class="loading"><div class="spinner"></div>Carregando...</div></div>
-    </main>
+    <div id="main-content">
+        <main class="main">
+            <div id="app"><div class="loading"><div class="spinner"></div>Carregando...</div></div>
+        </main>
+    </div>
     <script>
     async function findAPI() {
         const o = window.location.origin;
