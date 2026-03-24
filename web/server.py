@@ -22,6 +22,11 @@ def callback_html():
     return send_from_directory('.', 'callback.html')
 
 
+@app.route('/callback')
+def callback():
+    return send_from_directory('.', 'callback.html')
+
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory('.', 'favicon.ico')
