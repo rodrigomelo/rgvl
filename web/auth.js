@@ -118,7 +118,7 @@ function renderUserMenu() {
     const container = document.getElementById('user-menu');
     if (!container) return;
     
-    if (isAuthenticated() && user) {
+    if (isAuthenticated()) {
         const name = user.name || user.email || 'User';
         const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
         container.innerHTML = `
