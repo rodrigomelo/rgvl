@@ -108,6 +108,13 @@
         .source-count { font-size: 20px; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
         .source-tables { display: flex; flex-wrap: wrap; gap: 4px; }
         .source-table { font-size: 10px; padding: 2px 6px; background: var(--bg); border-radius: 4px; color: var(--text-muted); }
+        .sources-person-group { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; }
+        .sources-person-name { font-weight: 600; font-size: 13px; color: var(--primary); margin-bottom: 8px; }
+        .sources-person-records { display: flex; flex-direction: column; gap: 5px; }
+        .sources-record-item { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 4px 0; border-bottom: 1px solid var(--border); }
+        .sources-record-item:last-child { border-bottom: none; }
+        .sources-record-type { color: var(--text-muted); font-size: 10px; text-transform: uppercase; min-width: 60px; }
+        .sources-record-label { color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .company { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
         .company-name { font-weight: 600; font-size: 15px; color: var(--primary); margin-bottom: 8px; }
@@ -405,21 +412,51 @@
         renderSourcesRecords(data);
     }
 
-    function renderSourcesRecords(data) {
+    function renderSourcesRecords(recordsData) {
         const container = document.getElementById('sources-list');
         const totalEl = document.getElementById('sources-view-total');
         if (!container) return;
 
-        const sources = (data.sources || []).filter(s => s.count > 0);
-        const total = sources.reduce((s, x) => s + x.count, 0);
-        totalEl.textContent = `${sources.length} fontes · ${total} registros`;
+        // recordsData is the D.sources object which has summary data
+        // We need to fetch the /api/sources/records endpoint
+        fetch(api+'/sources/records')
+            .then(r => r.json())
+            .then(data => {
+                const records = data.records || [];
+                totalEl.textContent = `${data.total} registros por pessoa`;
 
-        // Build facts per person from the main person + relatives
-        // We'll fetch person sources lazily per person
-        container.innerHTML = `
-        <div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px">
-            📋 Navegue pelo Dashboard acima para ver cada fonte. Clique em um card para ver os detalhes.
-        </div>`;
+                if (records.length === 0) {
+                    container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px">Nenhum registro encontrado</div>';
+                    return;
+                }
+
+                // Group by person_name
+                const byPerson = {};
+                for (const r of records) {
+                    const name = r.person_name || 'Desconhecido';
+                    if (!byPerson[name]) byPerson[name] = [];
+                    byPerson[name].push(r);
+                }
+
+                const persons = Object.entries(byPerson).sort((a,b) => a[0].localeCompare(b[0]));
+                container.innerHTML = persons.map(([name, recs]) => `
+                    <div class="sources-person-group">
+                        <div class="sources-person-name">${esc(name)} <span style="color:var(--text-muted);font-weight:400">(${recs.length} registros)</span></div>
+                        <div class="sources-person-records">
+                            ${recs.map(r => `
+                                <div class="sources-record-item">
+                                    <span class="source-badge source-${r.source_type || 'default'} sm">${r.source_emoji || '🔗'} ${esc(r.source_label || r.source_type || 'Outro')}</span>
+                                    <span class="sources-record-type">${esc(r.record_type)}</span>
+                                    <span class="sources-record-label">${esc(String(r.record_label || '').substring(0, 60))}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            })
+            .catch(() => {
+                container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px">Erro ao carregar registros</div>';
+            });
     }
 
     function initScrollSpy() {
