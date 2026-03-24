@@ -69,6 +69,46 @@ Edmundo de Vasconcellos Lanna (1922-1992) ⚰️ — Dentista
 
 ---
 
+## 🏢 Empresas — Construtora Barbosa Mello S/A
+
+**CNPJ:** 17.185.786/0001-61
+**Abertura:** 11/08/1966 (59+ anos de operação)
+**Capital Social:** R$ 229.489.195,82
+**Natureza:** Sociedade Anônima Fechada
+**Sede:** Rua Paraíba, 1124, Savassi, Belo Horizonte/MG
+**Telefone:** (31) 3490-3600
+**Email:** setorfiscal@cbmsa.com.br
+**Site:** www.cbmsa.com.br
+
+### Quadro Societário (2025)
+| Sócio | Qualificação |
+|-------|-------------|
+| JOAO MIGUEL BEAUDETTE DRUMMOND | DIRETOR |
+| GUILHERME MOREIRA TEIXEIRA | PRESIDENTE |
+| JULIO CESAR DE MELO FRANCO FILHO | DIRETOR |
+| **RODRIGO GORGULHO DE VASCONCELLOS LANNA** | **DIRETOR (desde 22/02/2013)** |
+| ALICIA MARIA GROSS FIGUEIRO | DIRETOR |
+
+### Dados Financeiros
+- **Recursos recebidos do governo federal:** R$ 15.038.572,53
+- **Renúncias fiscais:** R$ 3.574.656,34
+- **Faturamento:** R$ 658.045.987,83
+
+### Consórcios
+- CONSÓRCIO ANDRADE GUTIERREZ/BARBOSA MELLO/SERVENG
+- CONSÓRCIO CONLUZ
+- CONSÓRCIO ALUSA-CBM
+
+### ⚠️ Alertas
+- **1 Declaração de Inidoneidade** (sem prazo determinado) no CEIS
+
+### Participação do RGVL
+- RGVL é **DIRETOR desde 22/02/2013** (12+ anos)
+- **% de participação não disponível** (S.A. Fechada — informação privada)
+- Fonte: Receita Federal (Ago/2025), CNPJA, Portal da Transparência
+
+---
+
 ## 🔍 Fontes Consultadas
 - FamilySearch.org (perfil Edmundo: G9PX-G84)
 - consultasocio.com (empresas)
