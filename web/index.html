@@ -409,7 +409,7 @@
         }).join('');
 
         // Per-record list — fetch from API
-        renderSourcesRecords(data, window.__rgvl_api || 'http://localhost:5003');
+        // Records view handled in load() after API URL is resolved
     }
 
     function renderSourcesRecords(recordsData, apiCtx) {
@@ -419,7 +419,7 @@
 
         // recordsData is the D.sources object which has summary data
         // We need to fetch the /api/sources/records endpoint
-        const records = (recordsData || []);
+        const records = (recordsData && recordsData.records) ? recordsData.records : (recordsData || []);
                 totalEl.textContent = `${records.length} registros`;
 
                 if (records.length === 0) {
@@ -477,7 +477,8 @@ if (records.length === 0) { container.innerHTML = '<div style="text-align:center
     async function load() {
         try {
             const api = await findAPI();
-            window.__rgvl_api = api; // global for sub-functions
+            window.__rgvl_api = api;
+            window.__rgvl_records = records; // global for sub-functions
             const [tree, bisavos, avos, paisTios, primos, companies, properties, summary, timeline, sources] = await Promise.all([
                 fetch(api+'/family/person/'+PAI_ID+'/tree').then(r=>r.json()).catch(()=>null),
                 fetch(api+'/family/generation/1').then(r=>r.json()).catch(()=>[]),
