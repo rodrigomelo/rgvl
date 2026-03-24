@@ -4,7 +4,7 @@
 const AUTH0_DOMAIN = 'dev-4mhbzq6x4yvyckmt.us.auth0.com';
 const AUTH0_CLIENT_ID = '8DwXpULitPs2L1CyT4QKRdLMAOZ3mXJi';
 const AUTH0_AUDIENCE = 'http://localhost:5003';
-const CALLBACK_URL = window.location.origin + '/callback.html';
+const CALLBACK_URL = window.location.origin + '/callback';
 
 // Check if authenticated
 function isAuthenticated() {
@@ -23,8 +23,7 @@ function login() {
         `response_type=token&` +
         `client_id=${AUTH0_CLIENT_ID}&` +
         `redirect_uri=${encodeURIComponent(CALLBACK_URL)}&` +
-        `scope=openid profile email&` +
-        `audience=${AUTH0_AUDIENCE}`;
+        `scope=openid profile email`;
     window.location.href = authUrl;
 }
 

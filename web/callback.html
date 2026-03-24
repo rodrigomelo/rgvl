@@ -20,6 +20,7 @@
             padding: 40px;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 500px;
         }
         .spinner {
             width: 40px;
@@ -36,6 +37,7 @@
         h1 { color: #1F2937; font-size: 20px; margin-bottom: 10px; }
         p { color: #6B7280; font-size: 14px; }
         .error { color: #DC2626; }
+        .debug { background: #F3F4F6; padding: 12px; border-radius: 6px; margin-top: 16px; font-size: 11px; text-align: left; word-break: break-all; }
     </style>
 </head>
 <body>
@@ -49,6 +51,28 @@
     <script>
         async function init() {
             const content = document.getElementById('content');
+            const hash = window.location.hash;
+            
+            // Debug: show what we received
+            console.log('Callback hash:', hash);
+            
+            // Check for Auth0 error
+            if (hash) {
+                const params = new URLSearchParams(hash.substring(1));
+                const error = params.get('error');
+                const errorDesc = params.get('error_description');
+                
+                if (error) {
+                    content.innerHTML = `
+                        <h1 class="error">⚠️ Erro Auth0</h1>
+                        <p><strong>${escapeHtml(error)}</strong></p>
+                        <p>${escapeHtml(errorDesc || '')}</p>
+                        <div class="debug"><strong>URL:</strong> ${escapeHtml(window.location.href)}</div>
+                        <p style="margin-top:20px"><a href="/">Voltar ao portal</a></p>
+                    `;
+                    return;
+                }
+            }
             
             try {
                 const token = handleCallback();
@@ -66,20 +90,23 @@
                     content.innerHTML = `
                         <h1 class="error">⚠️ Erro na autenticação</h1>
                         <p>Não foi possível completar o login.</p>
-                        <p style="margin-top:20px">
-                            <a href="/">Voltar ao portal</a>
-                        </p>
+                        <div class="debug"><strong>Hash:</strong> ${escapeHtml(hash || 'vazio')}</div>
+                        <p style="margin-top:20px"><a href="/">Voltar ao portal</a></p>
                     `;
                 }
             } catch(e) {
                 content.innerHTML = `
                     <h1 class="error">⚠️ Erro</h1>
                     <p>${escapeHtml(e.message)}</p>
-                    <p style="margin-top:20px">
-                        <a href="/">Voltar ao portal</a>
-                    </p>
+                    <div class="debug"><strong>Hash:</strong> ${escapeHtml(hash || 'vazio')}</div>
+                    <p style="margin-top:20px"><a href="/">Voltar ao portal</a></p>
                 `;
             }
+        }
+        
+        function escapeHtml(s) {
+            if (!s) return '';
+            return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
         }
         
         init();

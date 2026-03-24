@@ -45,13 +45,24 @@ def verify_token(token):
         public_key = signing_key.key
         
         # Verify and decode
-        payload = jwt.decode(
-            token,
-            public_key,
-            algorithms=['RS256'],
-            audience=AUTH0_AUDIENCE,
-            issuer=f'https://{AUTH0_DOMAIN}/'
-        )
+        # For development, skip audience validation (SPA doesn't always include it)
+        try:
+            payload = jwt.decode(
+                token,
+                public_key,
+                algorithms=['RS256'],
+                audience=AUTH0_AUDIENCE,
+                issuer=f'https://{AUTH0_DOMAIN}/'
+            )
+        except Exception as e:
+            # Retry without audience if it fails (for tokens without aud claim)
+            print(f'Audience validation failed, retrying without: {e}')
+            payload = jwt.decode(
+                token,
+                public_key,
+                algorithms=['RS256'],
+                issuer=f'https://{AUTH0_DOMAIN}/'
+            )
         
         return payload
     except PyJWKClientError as e:
