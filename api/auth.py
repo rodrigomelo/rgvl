@@ -5,20 +5,98 @@ import os
 import functools
 import requests
 from flask import request, jsonify, g
-from jwt import PyJWKClient, PyJWKClientError
 
 AUTH0_DOMAIN = os.getenv('AUTH0_DOMAIN', 'dev-4mhbzq6x4yvyckmt.us.auth0.com')
 AUTH0_AUDIENCE = os.getenv('AUTH0_AUDIENCE', 'http://localhost:5003')
 
-# Cache JWKS client
-_jwks_client = None
+# Cache for Auth0 public keys
+_auth0_jwks_cache = None
+_jwks_cache_time = 0
 
-def get_jwks_client():
-    global _jwks_client
-    if _jwks_client is None:
-        jwks_url = f'https://{AUTH0_DOMAIN}/.well-known/jwks.json'
-        _jwks_client = PyJWKClient(jwks_url)
-    return _jwks_client
+def get_auth0_public_key(token):
+    """Get the public key from Auth0 for token verification using OIDC metadata."""
+    import jwt
+    
+    global _auth0_jwks_cache, _jwks_cache_time
+    
+    import time
+    now = time.time()
+    
+    # Cache keys for 1 hour
+    if _auth0_jwks_cache is None or (now - _jwks_cache_time) > 3600:
+        # Get the OIDC metadata which contains the JWKS
+        oidc_url = f'https://{AUTH0_DOMAIN}/.well-known/openid-configuration'
+        try:
+            oidc_config = requests.get(oidc_url, timeout=10).json()
+            jwks_uri = oidc_config.get('jwks_uri')
+            if jwks_uri:
+                _auth0_jwks_cache = requests.get(jwks_uri, timeout=10).json()
+                _jwks_cache_time = now
+                print(f'[AUTH] Fetched JWKS from {jwks_uri}')
+        except Exception as e:
+            print(f'[AUTH] Failed to fetch JWKS: {e}')
+            return None
+    
+    if not _auth0_jwks_cache:
+        return None
+    
+    # Decode header to get kid
+    try:
+        unverified_header = jwt.decode(token, options={"verify_signature": False})
+    except Exception as e:
+        print(f'[AUTH] Failed to decode token header: {e}')
+        return None
+    
+    # Get the kid from the header
+    header_b64 = token.split('.')[0]
+    import base64
+    padding = 4 - len(header_b64) % 4
+    if padding != 4:
+        header_b64 += '=' * padding
+    header = jwt.get_unverified_header(token)
+    kid = header.get('kid')
+    
+    print(f'[AUTH] Token header kid: {kid}')
+    
+    # Find matching key in JWKS
+    keys = _auth0_jwks_cache.get('keys', [])
+    for key_data in keys:
+        if key_data.get('kid') == kid or kid is None:
+            # Construct the public key from JWK
+            from cryptography.hazmat.primitives import serialization
+            from cryptography.hazmat.primitives.asymmetric import rsa
+            from cryptography.hazmat.backends import default_backend
+            
+            # Convert JWK to PEM
+            n = int.from_bytes(base64.urlsafe_b64decode(key_data['n'] + '=='), 'big')
+            e = int.from_bytes(base64.urlsafe_b64decode(key_data['e'] + '=='), 'big')
+            
+            public_key = rsa.RSAPublicNumbers(e, n).public_key(default_backend())
+            pem = public_key.public_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PublicFormat.SubjectPublicKeyInfo
+            )
+            return pem
+    
+    # If no kid match, try first RSA key anyway (for tokens without kid)
+    for key_data in keys:
+        if key_data.get('kty') == 'RSA':
+            from cryptography.hazmat.primitives import serialization
+            from cryptography.hazmat.primitives.asymmetric import rsa
+            from cryptography.hazmat.backends import default_backend
+            
+            n = int.from_bytes(base64.urlsafe_b64decode(key_data['n'] + '=='), 'big')
+            e = int.from_bytes(base64.urlsafe_b64decode(key_data['e'] + '=='), 'big')
+            
+            public_key = rsa.RSAPublicNumbers(e, n).public_key(default_backend())
+            pem = public_key.public_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PublicFormat.SubjectPublicKeyInfo
+            )
+            return pem
+    
+    print(f'[AUTH] No matching key found for kid: {kid}')
+    return None
 
 def get_token_from_header():
     """Extract Bearer token from Authorization header"""
@@ -29,23 +107,19 @@ def get_token_from_header():
 
 def verify_token(token):
     """Verify JWT token with Auth0"""
+    import jwt
+    
+    print(f'[AUTH] Verifying token: {token[:50]}...')
+    
     try:
-        jwks_client = get_jwks_client()
-        signing_key = jwks_client.get_signing_key_from_jwt(token)
+        # Get the public key
+        public_key = get_auth0_public_key(token)
         
-        # For Auth0 tokens, we need to verify differently
-        # Auth0 tokens are RS256 signed
-        import jwt
-        from jwt import algorithms
+        if not public_key:
+            print('[AUTH] Failed to get public key')
+            return None
         
-        # Decode without verification first to get the header
-        unverified = jwt.decode(token, options={"verify_signature": False})
-        
-        # Get the key from JWKS
-        public_key = signing_key.key
-        
-        # Verify and decode
-        # For development, skip audience validation (SPA doesn't always include it)
+        # Try to decode with audience first
         try:
             payload = jwt.decode(
                 token,
@@ -54,22 +128,26 @@ def verify_token(token):
                 audience=AUTH0_AUDIENCE,
                 issuer=f'https://{AUTH0_DOMAIN}/'
             )
+            print(f'[AUTH] Token verified with audience')
+            return payload
         except Exception as e:
-            # Retry without audience if it fails (for tokens without aud claim)
-            print(f'Audience validation failed, retrying without: {e}')
-            payload = jwt.decode(
-                token,
-                public_key,
-                algorithms=['RS256'],
-                issuer=f'https://{AUTH0_DOMAIN}/'
-            )
-        
-        return payload
-    except PyJWKClientError as e:
-        print(f'JWKS error: {e}')
-        return None
+            print(f'[AUTH] Audience validation failed: {e}')
+            # Try without audience
+            try:
+                payload = jwt.decode(
+                    token,
+                    public_key,
+                    algorithms=['RS256'],
+                    issuer=f'https://{AUTH0_DOMAIN}/'
+                )
+                print(f'[AUTH] Token verified without audience')
+                return payload
+            except Exception as e2:
+                print(f'[AUTH] Token decode failed: {e2}')
+                return None
+                
     except Exception as e:
-        print(f'Token verification error: {e}')
+        print(f'[AUTH] Token verification error: {e}')
         return None
 
 def require_auth(f):
@@ -79,16 +157,17 @@ def require_auth(f):
         token = get_token_from_header()
         
         if not token:
+            print('[AUTH] No token provided')
             return jsonify({'error': 'Authorization required'}), 401
         
         payload = verify_token(token)
         
         if not payload:
+            print('[AUTH] Token verification failed')
             return jsonify({'error': 'Invalid or expired token'}), 401
         
         # Store user info in Flask's g object
         g.user = payload
-        
         return f(*args, **kwargs)
     return decorated
 
