@@ -419,7 +419,7 @@
 
         // recordsData is the D.sources object which has summary data
         // We need to fetch the /api/sources/records endpoint
-        const apiUrl = apiCtx || api || 'http://localhost:5003';
+        const apiUrl = apiCtx || window.__rgvl_api || 'http://localhost:5003';
         fetch(apiUrl+'/sources/records')
             .then(r => r.json())
             .then(data => {
@@ -484,6 +484,7 @@
     async function load() {
         try {
             const api = await findAPI();
+            window.__rgvl_api = api; // global for sub-functions
             const [tree, bisavos, avos, paisTios, primos, companies, properties, summary, tasks, timeline, sources] = await Promise.all([
                 fetch(api+'/family/person/'+PAI_ID+'/tree').then(r=>r.json()).catch(()=>null),
                 fetch(api+'/family/generation/1').then(r=>r.json()).catch(()=>[]),
