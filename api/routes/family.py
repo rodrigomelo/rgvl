@@ -151,31 +151,49 @@ def get_events():
 
 @family_bp.route('/timeline')
 def get_timeline():
-    """List all events for the family timeline with person names."""
+    """List all events from both events and eventos tables with person names."""
     from sqlalchemy import text
     db = get_session()
     try:
-        # Query events table with person names
-        query = text("""
+        # Query events table (RGVL, Henrique, Edmundo)
+        events_query = text("""
         SELECT e.id, e.person_id, p.nome_completo as person_name, 
-               e.event_type, e.event_date, e.description
+               e.event_type, e.event_date, e.description, 'events' as source_table
         FROM events e
         LEFT JOIN pessoas p ON e.person_id = p.id
-        ORDER BY e.event_date
         """)
-        result = db.execute(query)
-        rows = result.fetchall()
+        
+        # Query eventos table (Rodrigo Melo and others)
+        eventos_query = text("""
+        SELECT e.id, e.person_id, p.nome_completo as person_name, 
+               e.event_type, e.event_date, e.description, 'eventos' as source_table
+        FROM eventos e
+        LEFT JOIN pessoas p ON e.person_id = p.id
+        """)
+        
+        events_result = db.execute(events_query).fetchall()
+        eventos_result = db.execute(eventos_query).fetchall()
         
         timeline = []
-        for row in rows:
+        for row in events_result + eventos_result:
             timeline.append({
                 'id': row[0],
                 'person_id': row[1],
                 'person_name': row[2] or 'Unknown',
                 'event_type': row[3],
                 'event_date': row[4],
-                'description': row[5]
+                'description': row[5],
+                'source': row[6]
             })
+        
+        # Sort by event_date (handle None/null dates)
+        def sort_key(e):
+            d = e.get('event_date')
+            if not d:
+                return '9999-12-31'  # Put events without date at the end
+            return str(d)
+        
+        timeline.sort(key=sort_key)
         
         return jsonify(timeline)
     finally:
