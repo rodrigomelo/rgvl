@@ -67,6 +67,16 @@
 
         .timeline { position: relative; padding-left: 30px; }
         .timeline::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 3px; background: linear-gradient(to bottom, var(--primary), var(--accent)); border-radius: 2px; }
+        .timeline-section {
+            max-height: 400px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #CBD5E1 #F1F5F9;
+        }
+        .timeline-section::-webkit-scrollbar { width: 6px; }
+        .timeline-section::-webkit-scrollbar-track { background: #F1F5F9; border-radius: 3px; }
+        .timeline-section::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+        .timeline-section::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
         .timeline-event { position: relative; margin-bottom: 24px; padding: 16px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow); }
         .timeline-event::before { content: ''; position: absolute; left: -26px; top: 20px; width: 14px; height: 14px; border-radius: 50%; border: 3px solid var(--accent); background: var(--primary); }
         .timeline-date { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
@@ -480,8 +490,7 @@
         try {
             const api = await findAPI();
             window.__rgvl_api = api;
-            window.__rgvl_records = records; // global for sub-functions
-            const [tree, bisavos, avos, paisTios, primos, companies, properties, summary, timeline, sources] = await Promise.all([
+            const [tree, bisavos, avos, paisTios, primos, companies, properties, summary, timeline, sources, records] = await Promise.all([
                 fetch(api+'/family/person/'+PAI_ID+'/tree').then(r=>r.json()).catch(()=>null),
                 fetch(api+'/family/generation/1').then(r=>r.json()).catch(()=>[]),
                 fetch(api+'/family/generation/2').then(r=>r.json()).catch(()=>[]),
@@ -495,6 +504,7 @@
                 fetch(api+'/sources/summary').then(r=>r.json()).catch(()=>({total_records:0,sources:[]})),
                 fetch(api+'/sources/records').then(r=>r.json()).catch(()=>({total:0,records:[]})),
             ]);
+            window.__rgvl_records = records;
             render({tree, bisavos:bisavos||[], avos:avos||[], paisTios:paisTios||[], primos:primos||[], companies:companies||[], properties:properties||[], summary, timeline:timeline||[], sources:sources||{}, records:records||[]});
         } catch(e) {
             document.getElementById('app').innerHTML = '<div class="section"><h2>⚠️ Erro</h2><p>'+esc(e.message)+'</p></div>';
@@ -527,8 +537,7 @@
             <div class="stats">
                 <div class="stat"><div class="stat-value">${D.summary.total_pessoas || 0}</div><div class="stat-label">Pessoas</div></div>
                 <div class="stat"><div class="stat-value">${siblings.length}</div><div class="stat-label">Tios</div></div>
-                <div class="stat"><div class="stat-value">${D.primos.length}</div><div class="stat-label">Geração 4</div></div>
-                <div class="stat"><div class="stat-value">${D.primos.length}</div><div class="stat-label">Primos</div></div>
+                <div class="stat"><div class="stat-value">${D.primos.length}</div><div class="stat-label">Geração 4 (Primos)</div></div>
                 <div class="stat"><div class="stat-value">${D.companies.length}</div><div class="stat-label">Empresas</div></div>
                 <div class="stat"><div class="stat-value">${D.properties.length}</div><div class="stat-label">Imóveis</div></div>
                 <div class="stat"><div class="stat-value">${D.summary.relacionamentos_confirmados || 0}</div><div class="stat-label">Vínculos Confirmados</div></div>
@@ -783,7 +792,7 @@
         </div>
 
         <!-- Timeline -->
-        <div class="section" id="timeline">
+        <div class="section timeline-section" id="timeline">
             <div class="section-title">📅 Linha do Tempo</div>
             <div class="timeline" id="timeline-container">
                 <div class="loading">Carregando eventos...</div>
