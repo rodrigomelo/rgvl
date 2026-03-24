@@ -75,8 +75,14 @@
         .timeline-type.birth { background: #E8F5E9; color: #2E7D32; }
         .timeline-type.death, .timeline-type.falecimento { background: #ECEFF1; color: #546E7A; }
         .timeline-type.marriage { background: #FFF8E1; color: #F57C00; }
-        .timeline-type.company { background: #E3F2FD; color: #1565C0; }
+        .timeline-type.company { background: #DBEAFE; color: #1D4ED8; }
+        .timeline-type.name_change { background: #EDE9FE; color: #7C3AED; }
+        .timeline-type.legal { background: #FEF3C7; color: #B45309; }
+        .timeline-type.paternity { background: #FCE7F3; color: #BE185D; }
+        .timeline-type.family_contact { background: #E0E7FF; color: #3730A3; }
         .timeline-type.default { background: var(--bg); color: var(--text-muted); }
+        .timeline-event.company::before { content: '🏢 '; }
+        .timeline-event.name_change::before { content: '✏️ '; }
         .timeline-desc { font-size: 14px; color: var(--text); line-height: 1.5; }
         .timeline-empty { text-align: center; color: var(--text-muted); padding: 40px; }
 
