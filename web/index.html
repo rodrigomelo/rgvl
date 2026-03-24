@@ -81,8 +81,6 @@
         .timeline-type.paternity { background: #FCE7F3; color: #BE185D; }
         .timeline-type.family_contact { background: #E0E7FF; color: #3730A3; }
         .timeline-type.default { background: var(--bg); color: var(--text-muted); }
-        .timeline-event.company::before { content: '🏢 '; }
-        .timeline-event.name_change::before { content: '✏️ '; }
         .timeline-desc { font-size: 14px; color: var(--text); line-height: 1.5; }
         .timeline-empty { text-align: center; color: var(--text-muted); padding: 40px; }
 
@@ -518,12 +516,20 @@
                 
                 const typeKey = e.event_type || 'default';
                 const cssClass = typeClasses[typeKey] || 'default';
+                // Add emoji to type label
+                const typeEmoji = {
+                    'birth': '👶', 'death': '⚰️', 'marriage': '💍',
+                    'company': '🏢', 'name_change': '✏️', 'legal': '⚖️',
+                    'paternity': '🤝', 'family_contact': '📞',
+                    'research': '🔍', 'default': '📋'
+                };
+                const emoji = typeEmoji[typeKey] || '';
                 
                 return `
                 <div class="timeline-event">
                     <div class="timeline-date">${dateDisplay}</div>
                     <div class="timeline-person">${esc(e.person_name || 'Unknown')}</div>
-                    <span class="timeline-type ${cssClass}">${esc(typeKey)}</span>
+                    <span class="timeline-type ${cssClass}">${emoji} ${esc(typeKey)}</span>
                     <div class="timeline-desc">${esc(e.description || '')}</div>
                 </div>`;
             }).join('');
