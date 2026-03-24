@@ -3,7 +3,7 @@ RGVL API - Sources routes (provenance tracking)
 """
 from flask import Blueprint, jsonify
 from api.db import get_session
-from api.models import Pessoa, Empresa, Imovel, Evento, ProcessoJudicial, Contato, Documento, BuscaRealizada
+from api.models import Pessoa, Empresa, Imovel, Evento, ProcessoJudicial, Contato, Documento
 from api.utils import model_to_dict
 
 sources_bp = Blueprint('sources', __name__, url_prefix='/api/sources')
@@ -100,26 +100,6 @@ def aggregate_sources():
                 counts[stype]['count'] += 1
                 counts[stype]['records'].add('empresa')
 
-        # Events
-        eventos = db.query(Evento).all()
-        for e in eventos:
-            fonte = e.fonte or ''
-            if fonte:
-                stype = get_source_info(fonte)['type']
-                counts[stype] = counts.get(stype, {'count': 0, 'records': set()})
-                counts[stype]['count'] += 1
-                counts[stype]['records'].add('evento')
-
-        # Searches
-        buscas = db.query(BuscaRealizada).all()
-        for b in buscas:
-            fonte = b.fonte or ''
-            if fonte:
-                stype = get_source_info(fonte)['type']
-                counts[stype] = counts.get(stype, {'count': 0, 'records': set()})
-                counts[stype]['count'] += 1
-                counts[stype]['records'].add('busca')
-
         # Properties
         imoveis = db.query(Imovel).all()
         for i in imoveis:
@@ -186,6 +166,85 @@ def get_summary():
     })
 
 
+@sources_bp.route('/records')
+def get_all_records():
+    """Get all records grouped by fonte for the Por Registro view."""
+    db = get_session()
+    try:
+        records = []
+        
+        # Pessoas
+        pessoas = db.query(Pessoa).filter(Pessoa.fonte.isnot(None), Pessoa.fonte != '').all()
+        for p in pessoas:
+            info = get_source_info(p.fonte)
+            records.append({
+                'person_id': p.id,
+                'person_name': p.nome_completo,
+                'fonte': p.fonte,
+                'source_type': info['type'],
+                'source_emoji': info['emoji'],
+                'source_label': info['label'],
+                'record_type': 'pessoa',
+                'record_label': 'Pessoa',
+                'record_id': p.id
+            })
+        
+        # Empresas
+        empresas = db.query(Empresa).filter(Empresa.fonte.isnot(None), Empresa.fonte != '').all()
+        for e in empresas:
+            info = get_source_info(e.fonte)
+            records.append({
+                'person_id': getattr(e, 'pessoa_id', None),
+                'person_name': getattr(e, 'pessoa_nome', ''),
+                'fonte': e.fonte,
+                'source_type': info['type'],
+                'source_emoji': info['emoji'],
+                'source_label': info['label'],
+                'record_type': 'empresa',
+                'record_label': e.nome_fantasia or e.razao_social or 'Empresa',
+                'record_id': e.id
+            })
+        
+        # Imoveis
+        imoveis = db.query(Imovel).filter(Imovel.fonte.isnot(None), Imovel.fonte != '').all()
+        for i in imoveis:
+            info = get_source_info(i.fonte)
+            records.append({
+                'person_id': getattr(i, 'pessoa_id', None),
+                'person_name': getattr(i, 'pessoa_nome', ''),
+                'fonte': i.fonte,
+                'source_type': info['type'],
+                'source_emoji': info['emoji'],
+                'source_label': info['label'],
+                'record_type': 'imovel',
+                'record_label': (i.address or 'Imóvel')[:50],
+                'record_id': i.id
+            })
+        
+        # Processos
+        processos = db.query(ProcessoJudicial).filter(ProcessoJudicial.fonte.isnot(None), ProcessoJudicial.fonte != '').all()
+        for l in processos:
+            info = get_source_info(l.fonte)
+            records.append({
+                'person_id': getattr(l, 'pessoa_id', None),
+                'person_name': getattr(l, 'pessoa_nome', ''),
+                'fonte': l.fonte,
+                'source_type': info['type'],
+                'source_emoji': info['emoji'],
+                'source_label': info['label'],
+                'record_type': 'processo',
+                'record_label': l.process_number or 'Processo',
+                'record_id': l.id
+            })
+        
+        return jsonify({
+            'records': records,
+            'total': len(records)
+        })
+    finally:
+        db.close()
+
+
 @sources_bp.route('/person/<int:person_id>')
 def get_person_sources(person_id):
     """Get all sources for a specific person."""
@@ -225,15 +284,22 @@ def get_person_sources(person_id):
                 **get_source_info(person.fonte or '')
             })
 
-        # Events for this person
+        # Events for this person (get fonte via reference_table/id)
         eventos = db.query(Evento).filter(Evento.pessoa_id == person_id).all()
         for e in eventos:
+            ref_fonte = ''
+            if e.reference_table == 'pessoas' and e.reference_id:
+                ref = db.query(Pessoa).filter(Pessoa.id == e.reference_id).first()
+                ref_fonte = ref.fonte if ref else ''
+            elif e.reference_table == 'empresas_familia' and e.reference_id:
+                ref = db.query(Empresa).filter(Empresa.id == e.reference_id).first()
+                ref_fonte = ref.fonte if ref else ''
             facts.append({
-                'fact_type': e.tipo or 'event',
-                'fact_label': e.tipo or 'Evento',
-                'date': e.data.strftime('%Y-%m-%d') if e.data else None,
-                'description': e.descricao,
-                **get_source_info(e.fonte or '')
+                'fact_type': e.event_type or 'event',
+                'fact_label': e.event_type or 'Evento',
+                'date': e.event_date,
+                'description': e.description,
+                **get_source_info(ref_fonte)
             })
 
         # Companies for this person
@@ -257,21 +323,46 @@ def get_person_sources(person_id):
 
 @sources_bp.route('/timeline')
 def get_timeline_with_sources():
-    """Get timeline events with source info embedded."""
+    """Get timeline events with source info embedded (via reference_table/reference_id)."""
     db = get_session()
     try:
-        eventos = db.query(Evento).order_by(Evento.data.asc()).all()
+        eventos = db.query(Evento).order_by(Evento.event_date.asc()).all()
         result = []
+
+        # Build a cache for fonte lookups by table
+        fonte_cache = {'pessoas': {}, 'empresas_familia': {}}
+
+        def get_fonte_from_ref(ref_table, ref_id):
+            if ref_table not in fonte_cache:
+                return ''
+            if ref_id not in fonte_cache[ref_table]:
+                # Lazy load
+                try:
+                    if ref_table == 'pessoas':
+                        from api.models import Pessoa
+                        obj = db.query(Pessoa).filter(Pessoa.id == ref_id).first()
+                        fonte_cache[ref_table][ref_id] = obj.fonte if obj else ''
+                    elif ref_table == 'empresas_familia':
+                        from api.models import Empresa
+                        obj = db.query(Empresa).filter(Empresa.id == ref_id).first()
+                        fonte_cache[ref_table][ref_id] = obj.fonte if obj else ''
+                    else:
+                        fonte_cache[ref_table][ref_id] = ''
+                except Exception:
+                    fonte_cache[ref_table][ref_id] = ''
+            return fonte_cache[ref_table].get(ref_id, '')
+
         for e in eventos:
             pessoa = db.query(Pessoa).filter(Pessoa.id == e.pessoa_id).first()
-            source_info = get_source_info(e.fonte or '')
+            ref_fonte = get_fonte_from_ref(e.reference_table or '', e.reference_id)
+            source_info = get_source_info(ref_fonte or '')
             result.append({
                 'id': e.id,
-                'event_type': e.tipo,
+                'event_type': e.event_type,
                 'person_id': e.pessoa_id,
                 'person_name': pessoa.nome_completo if pessoa else 'Desconhecido',
-                'description': e.descricao,
-                'event_date': e.data.strftime('%Y-%m-%d') if e.data else None,
+                'description': e.description,
+                'event_date': e.event_date,
                 'source_type': source_info['type'],
                 'source_emoji': source_info['emoji'],
                 'source_label': source_info['label'],

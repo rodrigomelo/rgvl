@@ -658,6 +658,7 @@
                     <div class="row"><span class="label">Profissão</span><span class="value">${esc(p.profissao || '-')}</span></div>
                     <div class="row"><span class="label">Cargo</span><span class="value">${esc(p.cargo || '-')}</span></div>
                     <div class="row"><span class="label">Empresa</span><span class="value">${esc(p.empresa || '-')}</span></div>
+                    ${p.fonte ? `<div class="row"><span class="label">Fonte</span><span class="value">${sourceBadgeHTML(p.fonte || 'default')}</span></div>` : ''}
                 </div>
                 <div class="info-card">
                     <h3>Pessoal</h3>
@@ -697,6 +698,7 @@
                 ${D.companies.map(c => `
                     <div class="company">
                         <div class="company-name">${esc(c.nome_fantasia || c.razao_social)}</div>
+                        ${c.fonte ? `<div style="margin-bottom:8px">${sourceBadgeHTML(c.fonte || 'default')}</div>` : ''}
                         <div class="row"><span class="label">CNPJ</span><span class="value">${esc(c.cnpj)}</span></div>
                         <div class="row"><span class="label">Razão Social</span><span class="value">${esc(c.razao_social)}</span></div>
                         <div class="row"><span class="label">Status</span><span class="value"><span class="badge ${c.status_jucemg==='ativa'?'badge-ativa':'badge-baixada'}">${esc(c.status_jucemg || '-')}</span></span></div>
@@ -802,7 +804,7 @@
                     'family_contact': 'family_contact', 'paternity': 'paternity',
                     'name_change': 'name_change', 'default': 'default'
                 };
-                
+
                 // Handle dates: ~ prefix means approximate
                 let dateDisplay = '-';
                 if (e.event_date) {
@@ -813,33 +815,40 @@
                         dateDisplay = fmtDate(raw);
                     }
                 }
-                
+
                 const typeKey = e.event_type || 'default';
                 const cssClass = typeClasses[typeKey] || 'default';
+                const TL_EMOJI = {'birth':'👶','death':'⚰️','marriage':'💍','company':'🏢','name_change':'✏️','legal':'⚖️','paternity':'🤝','family_contact':'📞','default':'📋'};
+                const tlEmoji = TL_EMOJI[typeKey] || '';
+
+                // Source badge from event's source field or source_type
+                let sourceBadge = '';
+                const srcType = e.source_type || e.fonte || 'default';
+                if (srcType && srcType !== 'eventos') {
+                    sourceBadge = ' ' + sourceBadgeHTML(srcType, 'sm');
+                }
+
                 return `
                 <div class="timeline-event">
                     <div class="timeline-date">${dateDisplay}</div>
                     <div class="timeline-person">${esc(e.person_name || 'Unknown')}</div>
-                    <span class="timeline-type ${cssClass}">${esc(typeKey)}</span>
+                    <span class="timeline-type ${cssClass}">${tlEmoji} ${esc(typeKey)}</span>${sourceBadge}
                     <div class="timeline-desc">${esc(e.description || '')}</div>
                 </div>`;
             }).join('');
         } else if (tl) {
             tl.innerHTML = '<div class="timeline-empty">Nenhum evento encontrado</div>';
+
         }
-        
-        // Render Sources
-        const sc = document.getElementById('sources-container');
-        if (sc && D.sources && D.sources.sources) {
-            const srcList = Object.entries(D.sources.sources).sort((a,b) => b[1].count - a[1].count);
-            sc.innerHTML = '<div class="sources-grid">' + srcList.map(([name, data]) => `
-                <div class="source-card">
-                    <div class="source-name">${esc(name)}</div>
-                    <div class="source-count">${data.count}</div>
-                    <div class="source-tables">${data.tables.map(t => '<span class="source-table">'+esc(t)+'</span>').join(' ')}</div>
-                </div>`).join('') + '</div>';
+
+        // Render Sources panel
+        if (D.sources && D.sources.sources) {
+            renderSources(D.sources);
+        } else if (D.sources && Array.isArray(D.sources)) {
+            // Legacy format: { sources: [...] }
+            renderSources({ sources: D.sources, total_records: D.sources.reduce((s,x) => s + (x.count||0), 0) });
         }
-    }
+        }
 
     load();
     </script>
