@@ -191,6 +191,14 @@ def get_timeline():
                 pid, pname, etype, edate, desc = r[1], r[2], r[3], r[4], r[5]
                 norm_type = TYPE_LABELS.get(etype, etype)
                 norm_date, approx = normalize_date(edate)
+                
+                # Skip: no date known (null date)
+                if norm_date is None:
+                    continue
+                # Skip: research events
+                if norm_type == 'research':
+                    continue
+                
                 key = (pid, norm_date, norm_type)
                 if key not in seen:
                     seen[key] = True
