@@ -31,7 +31,6 @@ def get_family_tree(person_id):
         if not person:
             return jsonify({'error': 'Person not found'}), 404
 
-        # Recursive ancestor helper
         def get_ancestors(p, depth=0, max_depth=5):
             if depth >= max_depth or not p:
                 return None
@@ -44,7 +43,6 @@ def get_family_tree(person_id):
                 result['conjuge'] = model_to_dict(db.query(Pessoa).get(p.conjuge_id))
             return result
 
-        # Get children via relationships
         child_rels = db.query(Relacionamento).filter(
             Relacionamento.pessoa_de == person_id,
             Relacionamento.tipo.in_(['filho', 'filha'])
@@ -53,7 +51,6 @@ def get_family_tree(person_id):
         children_map = {p.id: p for p in db.query(Pessoa).filter(Pessoa.id.in_(child_ids)).all()} if child_ids else {}
         children = [model_to_dict(children_map[cid]) for cid in child_ids if cid in children_map]
 
-        # Get siblings via same parents (pai_id or mae_id)
         sibling_ids = set()
         if person.pai_id:
             siblings_via_pai = db.query(Pessoa).filter(
@@ -111,7 +108,7 @@ def get_relatives(person_id):
 
 @family_bp.route('/generation/<int:n>')
 def get_generation(n):
-    """Get all people in a given generation (1=bisavós, 2=avós, 3=pais/tios, 4=primos+RGVL)."""
+    """Get all people in a given generation."""
     db = get_session()
     try:
         people = db.query(Pessoa).filter(Pessoa.geracao == n).order_by(Pessoa.nome_completo).all()
@@ -151,50 +148,81 @@ def get_events():
 
 @family_bp.route('/timeline')
 def get_timeline():
-    """List all events from both events and eventos tables with person names."""
+    """List all events from both events and eventos tables with person names.
+    Normalizes dates, deduplicates, and sorts chronologically.
+    """
     from sqlalchemy import text
     db = get_session()
     try:
-        # Query events table (RGVL, Henrique, Edmundo)
-        events_query = text("""
-        SELECT e.id, e.person_id, p.nome_completo as person_name, 
-               e.event_type, e.event_date, e.description, 'events' as source_table
-        FROM events e
-        LEFT JOIN pessoas p ON e.person_id = p.id
+        # Translation: event_type -> English label
+        TYPE_LABELS = {
+            'birth': 'birth', 'nascimento': 'birth',
+            'death': 'death', 'falecimento': 'death',
+            'marriage': 'marriage', 'casamento': 'marriage',
+            'company': 'company',
+            'juridico': 'legal', 'pesquisa': 'research',
+            'contato_familiar': 'family_contact',
+            'reconhecimento_paternidade': 'paternity',
+            'alteracao_nome': 'name_change',
+        }
+
+        def normalize_date(edate):
+            """Normalize date to YYYY-MM-DD for sorting. ~ prefix means approximate."""
+            raw = str(edate) if edate else ''
+            approx = False
+            if raw.startswith('~'):
+                approx = True
+                raw = raw[1:]
+            if not raw:
+                return None, approx
+            parts = raw.split('-')
+            if len(parts) == 1:
+                return f"{parts[0]}-01-01", approx
+            elif len(parts) == 2:
+                return f"{parts[0]}-{parts[1]}-01", approx
+            else:
+                return raw, approx
+
+        # Single seen dict for cross-table deduplication
+        seen = {}
+        def process_rows(rows, source):
+            out = []
+            for r in rows:
+                pid, pname, etype, edate, desc = r[1], r[2], r[3], r[4], r[5]
+                norm_type = TYPE_LABELS.get(etype, etype)
+                norm_date, approx = normalize_date(edate)
+                key = (pid, norm_date, norm_type)
+                if key not in seen:
+                    seen[key] = True
+                    out.append({
+                        'id': r[0],
+                        'person_id': pid,
+                        'person_name': pname or 'Unknown',
+                        'event_type': norm_type,
+                        'event_date': edate,
+                        'norm_date': norm_date or '9999-12-31',
+                        'approx': approx,
+                        'description': desc,
+                        'source': source
+                    })
+            return out
+
+        # Query both tables
+        events_q = text("""
+        SELECT e.id, e.person_id, p.nome_completo, e.event_type, e.event_date, e.description
+        FROM events e LEFT JOIN pessoas p ON e.person_id = p.id
         """)
-        
-        # Query eventos table (Rodrigo Melo and others)
-        eventos_query = text("""
-        SELECT e.id, e.person_id, p.nome_completo as person_name, 
-               e.event_type, e.event_date, e.description, 'eventos' as source_table
-        FROM eventos e
-        LEFT JOIN pessoas p ON e.person_id = p.id
+        eventos_q = text("""
+        SELECT e.id, e.person_id, p.nome_completo, e.event_type, e.event_date, e.description
+        FROM eventos e LEFT JOIN pessoas p ON e.person_id = p.id
         """)
-        
-        events_result = db.execute(events_query).fetchall()
-        eventos_result = db.execute(eventos_query).fetchall()
-        
-        timeline = []
-        for row in events_result + eventos_result:
-            timeline.append({
-                'id': row[0],
-                'person_id': row[1],
-                'person_name': row[2] or 'Unknown',
-                'event_type': row[3],
-                'event_date': row[4],
-                'description': row[5],
-                'source': row[6]
-            })
-        
-        # Sort by event_date (handle None/null dates)
-        def sort_key(e):
-            d = e.get('event_date')
-            if not d:
-                return '9999-12-31'  # Put events without date at the end
-            return str(d)
-        
-        timeline.sort(key=sort_key)
-        
+
+        rows_e = db.execute(events_q).fetchall()
+        rows_ev = db.execute(eventos_q).fetchall()
+
+        timeline = process_rows(rows_e, 'events') + process_rows(rows_ev, 'eventos')
+        timeline.sort(key=lambda x: x['norm_date'])
+
         return jsonify(timeline)
     finally:
         db.close()

@@ -491,13 +491,33 @@
         const tl = document.getElementById('timeline-container');
         if (tl && D.timeline && D.timeline.length > 0) {
             tl.innerHTML = D.timeline.map(e => {
-                const typeClass = e.event_type || 'default';
-                const dateDisplay = e.event_date ? fmtDate(e.event_date) : 'Data不确定';
+                // CSS class map for event types
+                const typeClasses = {
+                    'birth': 'birth', 'death': 'death', 'marriage': 'marriage',
+                    'company': 'company', 'legal': 'legal', 'research': 'research',
+                    'family_contact': 'family_contact', 'paternity': 'paternity',
+                    'name_change': 'name_change', 'default': 'default'
+                };
+                
+                // Handle dates: ~ prefix means approximate
+                let dateDisplay = '-';
+                if (e.event_date) {
+                    const raw = String(e.event_date);
+                    if (raw.startsWith('~')) {
+                        dateDisplay = fmtDate(raw.substring(1)) + ' <span style="color:var(--text-muted);font-size:11px">(aproximado)</span>';
+                    } else {
+                        dateDisplay = fmtDate(raw);
+                    }
+                }
+                
+                const typeKey = e.event_type || 'default';
+                const cssClass = typeClasses[typeKey] || 'default';
+                
                 return `
                 <div class="timeline-event">
-                    <div class="timeline-date">${esc(dateDisplay)}</div>
-                    <div class="timeline-person">${esc(e.person_name || 'Desconhecido')}</div>
-                    <span class="timeline-type ${typeClass}">${esc(e.event_type || 'evento')}</span>
+                    <div class="timeline-date">${dateDisplay}</div>
+                    <div class="timeline-person">${esc(e.person_name || 'Unknown')}</div>
+                    <span class="timeline-type ${cssClass}">${esc(typeKey)}</span>
                     <div class="timeline-desc">${esc(e.description || '')}</div>
                 </div>`;
             }).join('');
