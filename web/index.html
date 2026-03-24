@@ -409,17 +409,18 @@
         }).join('');
 
         // Per-record list — group by person (from PAI_ID tree)
-        renderSourcesRecords(data);
+        renderSourcesRecords(data, api);
     }
 
-    function renderSourcesRecords(recordsData) {
+    function renderSourcesRecords(recordsData, apiCtx) {
         const container = document.getElementById('sources-list');
         const totalEl = document.getElementById('sources-view-total');
         if (!container) return;
 
         // recordsData is the D.sources object which has summary data
         // We need to fetch the /api/sources/records endpoint
-        fetch(api+'/sources/records')
+        const apiUrl = apiCtx || api || 'http://localhost:5003';
+        fetch(apiUrl+'/sources/records')
             .then(r => r.json())
             .then(data => {
                 const records = data.records || [];
