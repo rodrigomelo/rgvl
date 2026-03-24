@@ -135,7 +135,6 @@
         <a class="nav-item" data-section="companies">🏢 Empresas</a>
         <a class="nav-item" data-section="properties">🏠 Imóveis</a>
         <a class="nav-item" data-section="timeline">📅 Timeline</a>
-        <a class="nav-item" data-section="research">🔍 Pesquisa</a>
     </nav>
     <main class="main"><div id="app"><div class="loading"><div class="spinner"></div>Carregando...</div></div></main>
     <script>
@@ -490,21 +489,6 @@
             <div class="section-title">📅 Linha do Tempo</div>
             <div class="timeline" id="timeline-container">
                 <div class="loading">Carregando eventos...</div>
-            </div>
-        </div>
-
-        <!-- Research -->
-        <div class="section" id="research">
-            <div class="section-title">🔍 Tarefas de Pesquisa (${D.tasks.length} pendentes)</div>
-            <div class="info-grid">
-                ${D.tasks.map(t => `
-                    <div class="info-card">
-                        <h3>${esc(t.tarefa)}</h3>
-                        <div class="row"><span class="label">Prioridade</span><span class="value" style="font-weight:600;color:${t.prioridade==='ALTA'?'var(--danger)':t.prioridade==='MEDIA'?'var(--warning)':'var(--text-muted)'}">${esc(t.prioridade || '-')}</span></div>
-                        ${t.pessoa_alvo ? `<div class="row"><span class="label">Alvo</span><span class="value">${esc(t.pessoa_alvo)}</span></div>` : ''}
-                        ${t.fontes_sugeridas ? `<div class="row"><span class="label">Fontes</span><span class="value">${esc(t.fontes_sugeridas)}</span></div>` : ''}
-                    </div>
-                `).join('')}
             </div>
         </div>
         `;
