@@ -540,7 +540,188 @@ Sections to build when data is ready:
 
 ---
 
-## Poseidon Review
+## Poseidon Review — Architecture Improvements
+
+### 1. Current DB vs MASTER_PLAN Mismatch
+
+**Issue:** MASTER_PLAN references tables that don't exist in current schema:
+
+| MASTER_PLAN says | Actual table | Status |
+|-----------------|---------------|--------|
+| `pessoas` | `persons` | ✅ exists |
+| `eventos` / `events` | ❌ MISSING | 🔴 |
+| `empresas_familia` | `companies` | ✅ exists |
+| `imoveis` | `properties` | ✅ exists |
+| `processos_judiciais` | `legal_processes` | ✅ exists |
+| `relacionamentos` | ❌ MISSING | 🔴 |
+| `perfis` | ❌ MISSING | 🔴 |
+| `tarefas_pesquisa` | ❌ MISSING | 🔴 |
+| `buscas_realizadas` | ❌ MISSING | 🔴 |
+
+**Fix:** Update MASTER_PLAN to reflect actual schema. Use English naming throughout.
+
+### 2. Raw Intelligence Layer — Refined Proposal
+
+**Problem:** The proposed `raw_intelligence/` with YAML metadata is too complex for initial implementation.
+
+**Simpler approach:**
+
+```
+data/
+├── raw/                    # Unstructured data (PDFs, screenshots, emails)
+│   ├── court_cases/       # HTML/PDF from TJMG, TJSP
+│   ├── company_records/    # JUCEMG/JUCESP prints
+│   ├── documents/         # Certidões, contratos (scanned)
+│   └── research/          # Markdown notes per topic
+└── rgvl.db               # Canonical DB (current)
+```
+
+**Raw items tracked via simple manifest file:**
+```json
+// data/raw/manifest.json
+[
+  {
+    "id": "rc_001",
+    "type": "court_case",
+    "source": "tjmg",
+    "person": "RGVL",
+    "file": "court_cases/1044263_2026.html",
+    "collected": "2026-03-23",
+    "processed": false
+  }
+]
+```
+
+**Why not `raw_intelligence.db`?** SQLite is overkill for metadata. JSON manifest is simpler, versionable via git, and sufficient.
+
+### 3. Event Tracking — New Table Needed
+
+**Issue:** We have life events (birth, death, marriage) but no dedicated table.
+
+**Proposed:**
+```sql
+CREATE TABLE events (
+    id INTEGER PRIMARY KEY,
+    person_id INTEGER,
+    event_type TEXT,      -- 'birth', 'death', 'marriage', 'divorce', 'property_acquired'
+    event_date DATE,
+    location TEXT,
+    source TEXT,
+    document_id INTEGER,  -- FK to documents
+    confidence TEXT,       -- 'confirmed', 'probable', 'speculative'
+    notes TEXT
+);
+```
+
+### 4. Relationships Table — Needed
+
+**Issue:** `relacionamentos` is missing. Currently relationships are implicit via tables (siblings, spouses, children).
+
+**Proposed:**
+```sql
+CREATE TABLE relationships (
+    id INTEGER PRIMARY KEY,
+    person_a_id INTEGER,
+    person_b_id INTEGER,
+    relationship_type TEXT,  -- 'sibling', 'spouse', 'parent_child', 'cousin'
+    source TEXT,
+    confidence TEXT,
+    verified BOOLEAN DEFAULT 0,
+    notes TEXT
+);
+```
+
+**Note:** This doesn't replace sibling/spouse tables — it provides a graph view for complex family relationships.
+
+### 5. Research Tasks — New Table
+
+**Issue:** `tarefas_pesquisa` is referenced but doesn't exist.
+
+**Proposed:**
+```sql
+CREATE TABLE research_tasks (
+    id INTEGER PRIMARY KEY,
+    task TEXT NOT NULL,
+    priority TEXT,          -- 'HIGH', 'MEDIUM', 'LOW'
+    status TEXT,           -- 'pending', 'in_progress', 'completed'
+    assigned_to TEXT,      -- 'Artemis', 'Poseidon', etc.
+    created_at DATETIME,
+    completed_at DATETIME,
+    result TEXT
+);
+```
+
+### 6. Duplicate `events`/`eventos` Reference — Fix
+
+Remove all Portuguese table name references. Use English consistently:
+- `persons` ✅ (already English)
+- `children` ✅ (already English)
+- `legal_processes` ✅ (already English)
+- `companies` ✅ (already English)
+- `properties` ✅ (already English)
+
+### 7. Clean Import Workflow
+
+```
+raw/ (unstructured files)
+    ↓
+Collector reviews raw/
+    ↓
+If data is clean and fits existing table → import directly
+If data is new type → create new table via migration
+    ↓
+Update manifest.json (processed: true)
+    ↓
+Commit to git (small delta)
+```
+
+### 8. Schema Addition Priority
+
+| Priority | Table | Reason |
+|----------|-------|--------|
+| 🔴 HIGH | `events` | Life events (birth, death, marriage) currently scattered |
+| 🔴 HIGH | `relationships` | Complex family graph beyond siblings/spouses |
+| 🟡 MEDIUM | `research_tasks` | Track pending research |
+| 🟢 LOW | `raw_intelligence.db` | Only if JSON manifest becomes insufficient |
+
+---
+
+## Technical Decisions
+
+### Language
+- All code, schemas, table names, column names, documentation: **English**
+- User-facing content (portal labels, alerts): **Portuguese**
+
+### DB Naming
+- Canonical DB: `data/rgvl.db` (keep)
+- Raw intelligence DB: `data/raw_intelligence.db` (new)
+- All table names: snake_case English (`research_notes`, not `notas_pesquisa`)
+
+### Commit Convention
+```
+feat(raw): description — new raw collector or source
+feat(schema): description — DB table or column addition
+feat(monitor): description — monitoring rule or alert
+feat(collection): description — collection result or finding
+fix(schema): description — schema correction
+docs: description — documentation update
+```
+
+### Rules for All Agents
+1. **Report only** — document findings, don't implement
+2. **Two-layer approval** — Rodrigo → Hermes → Agent
+3. **Raw first** — collect unstructured, then structure
+4. **No direct commits** — all changes go through Hermes + Rodrigo approval
+5. **Confidence tags** — every fact needs a confidence level
+
+---
+
+*Plan version: 1.0 — 2026-03-23*
+*Author: Hermes (Orchestrated with Poseidon, Athena, Hefesto inputs)*
+
+---
+
+## Poseidon Review — Data Model
 
 ### 0. Current State Audit
 
@@ -1018,7 +1199,7 @@ The plan has temporal priorities (immediate/short/medium/long) but no **data ric
 
 ---
 
-## Hefesto Review
+## Hefesto Review — Technical Integration
 
 > This section documents integration concerns, conflicts, and concrete recommendations before Phase 2 begins. No code will be written — only architectural guidance.
 
@@ -1340,3 +1521,324 @@ Adding new tables (`research_notes`, `alternative_names`, `wealth_indicators`) d
 
 ---
 
+## Hefesto Technical Review
+
+**Agent:** Hefesto 🔨 — Engineering
+**Focus:** Technical integration, API, cron jobs, backup, infrastructure
+
+---
+
+### A. Current Technical Stack (Verified)
+
+| Component | Current State | Location |
+|-----------|--------------|----------|
+| Web Dashboard | ✅ Running | `localhost:5002` |
+| REST API | ✅ Running | `localhost:5003` |
+| Database | ✅ SQLite | `data/rgvl.db` |
+| Backup script | ✅ Working | `data/backup.py` |
+| Launchd (API) | ✅ Active | `com.rgvl.api` |
+| Launchd (Web) | ✅ Active | `com.rgvl.web` |
+| Monitor script | ✅ Fixed | `scripts/monitor.sh` |
+
+**Critical path verified:**
+```
+Web (:5002) → API (:5003) → SQLite DB (data/rgvl.db)
+```
+
+---
+
+### B. Integration Issues Found
+
+#### B.1 Database Schema Duplication
+
+Current DB has mixed naming conventions:
+- Some tables: Portuguese (`pessoas`, `empresas_familia`, `imoveis`, `eventos`)
+- Some tables: English (`events`, `processos_judiciais`)
+- Column names: mixed
+
+**Proposed fix:** Phase 3 should include a schema normalization step:
+- Rename Portuguese tables to English (e.g., `pessoas` → `persons`)
+- Create a view layer for backward compatibility
+- Keep legacy column names if web depends on them
+
+#### B.2 Raw Intelligence DB Location
+
+MASTER_PLAN proposes `raw_intelligence.db` but also references `data/raw_intelligence.db`.
+
+**Decision needed:** Should raw DB be:
+- Option A: `data/raw_intelligence.db` (same directory as canonical DB)
+- Option B: `raw_intelligence/raw_intelligence.db` (separate directory)
+
+**Recommendation:** Option A. Keeps all data in one place, simplifies backup.
+
+#### B.3 API Port Conflict History
+
+Historical issue: services ran on ports 5003/5004/5002 simultaneously, causing confusion. Current state is clean:
+- `:5002` = Web
+- `:5003` = API
+
+**Recommendation:** Document this as a rule in the plan:
+> "Port 5002 = Web (user-facing), Port 5003 = API (internal). No other ports for RGVL services."
+
+#### B.4 Events Table Duplication
+
+`events` AND `eventos` both exist in the DB — likely the same table referenced differently. Need to verify:
+```bash
+sqlite3 data/rgvl.db "SELECT name FROM sqlite_master WHERE type='table';" | grep -i event
+```
+
+If duplicate: merge or deprecate one.
+
+---
+
+### C. Cron Jobs — Proposed Schedule
+
+Current crons:
+- `rgvl-health-check` — every 1h ✅
+- `rgvl-data-collector` — every 12h ✅
+
+Proposed additions for Phase 4:
+
+```cron
+# Court case monitoring (Escavador/TJMG/TJSP) — every 6h
+0 */6 * * * cd ~/.openclaw/workspace/projects/rgvl/data && python collectors/escavador.py >> ~/.openclaw/workspace/projects/rgvl/.logs/collector_escavador.log 2>&1
+
+# Company status check (JUCEMG/JUCESP) — weekly
+0 3 * * 1 cd ~/.openclaw/workspace/projects/rgvl/data && python collectors/jucemg_status.py >> ~/.openclaw/workspace/projects/rgvl/.logs/collector_jucemg_status.log 2>&1
+
+# Google Alerts email processing — every 12h
+0 */12 * * * cd ~/.openclaw/workspace/projects/rgvl/data && python collectors/google_alerts.py >> ~/.openclaw/workspace/projects/rgvl/.logs/collector_google_alerts.log 2>&1
+
+# Backup — daily at 2AM (already documented, confirm active)
+0 2 * * * ~/.openclaw/workspace/projects/rgvl/data/backup.sh >> ~/.openclaw/workspace/projects/rgvl/.logs/backup.log 2>&1
+
+# Monitor script — every 5 minutes (for rapid restart)
+*/5 * * * * ~/.openclaw/workspace/projects/rgvl/scripts/monitor.sh >> /tmp/rgvl-monitor.log 2>&1
+```
+
+**Important:** The monitor script (`/scripts/monitor.sh`) must check `:5002` and `:5003` — verified correct after fix.
+
+---
+
+### D. API Design for Raw Intelligence
+
+For Phase 2-3 to work well, the API needs two new endpoint groups:
+
+#### D.1 Raw Intelligence Endpoints
+
+```python
+# GET /api/raw/items
+# Returns paginated raw items with filters
+# Query params: source, topic, person, cleaned, imported
+
+# GET /api/raw/item/<id>
+# Returns single raw item metadata + file path
+
+# POST /api/raw/item
+# Register new raw item (called by collectors)
+
+# PATCH /api/raw/item/<id>
+# Update cleaned/imported status after processing
+```
+
+#### D.2 Research Notes Endpoints
+
+```python
+# GET /api/research/notes
+# Query params: topic, person, confidence, reviewed
+
+# POST /api/research/notes
+# Create new research note
+
+# GET /api/research/tasks
+# Current tasks from tarefas_pesquisa (migrate to research_notes)
+
+# PATCH /api/research/task/<id>
+# Update task status after completion
+```
+
+#### D.3 Confidence Tagging Endpoints
+
+```python
+# GET /api/intelligence/summary
+# Returns all intelligence grouped by confidence level
+
+# PATCH /api/person/<id>/confidence
+# Update person's data confidence score
+
+# PATCH /api/company/<id>/confidence
+# Update company's data confidence score
+```
+
+---
+
+### E. Backup Strategy — Refined
+
+Current: `data/backup.py` with daily cron at 2AM.
+
+**Enhancements needed for Phase 4:**
+
+1. **Raw intelligence backup** — add `raw_intelligence/` to backup include list
+2. **Backup verification** — add `--verify` flag that restores to temp and checks integrity
+3. **Offsite backup** — consider adding to iCloud Drive or external disk:
+   ```bash
+   cp data/backups/rgvl_*.db ~/Library/Mobile\ Documents/com~apple~CloudDocs/rgvl_backups/
+   ```
+4. **Backup retention** — keep last 30 backups instead of 7 (RGVL is archival project)
+
+---
+
+### F. Monitoring Improvements
+
+#### F.1 Health Check (current)
+
+Script at `scripts/monitor.sh` checks HTTP on 5002/5003 and restarts via launchd if down.
+
+**Enhancement:** Add DB integrity check to health:
+```bash
+sqlite3 data/rgvl.db "PRAGMA integrity_check;"
+```
+
+#### F.2 New Intelligence Alert
+
+Not in current monitor. For Phase 4, add a lightweight check:
+```python
+# In monitor.sh or new script
+new_items=$(sqlite3 raw_intelligence.db "SELECT COUNT(*) FROM raw_items WHERE collected_at > datetime('now', '-6 hours');")
+if [ "$new_items" -gt 0 ]; then
+    echo "$(date): NEW DATA COLLECTED: $new_items items" >> ~/.logs/rgvl-intelligence.log
+    # Future: send Discord alert via webhook
+fi
+```
+
+#### F.3 Discord Alert Integration
+
+For Phase 4, consider adding to `scripts/monitor.sh`:
+```bash
+# If service down > 5 minutes, alert
+curl -X POST "$DISCORD_WEBHOOK_URL" \
+  -H "Content-Type: application/json" \
+  -d '{"content": "⚠️ RGVL API is DOWN on Mac Mini!"}'
+```
+
+---
+
+### G. Collector Integration Pattern
+
+For new collectors (Escavador, Google Alerts, etc.), follow this pattern:
+
+**File location:** `data/collectors/<name>.py`
+
+**Structure:**
+```python
+#!/usr/bin/env python3
+"""
+Escavador collector — monitors court cases for RGVL and family.
+Run: python collectors/escavador.py
+Schedule: 0 */6 * * * (every 6h)
+"""
+
+import sys
+from pathlib import Path
+SCRIPT_DIR = Path(__file__).parent.parent
+sys.path.insert(0, str(SCRIPT_DIR))
+
+from database import SessionLocal
+from models.entity import Note  # or Company, etc.
+from raw_intelligence import RawItemCollector
+import requests
+
+def main():
+    db = SessionLocal()
+    try:
+        # 1. Collect raw data
+        raw_collector = RawItemCollector(db)
+        
+        # 2. Search Escavador for each target name
+        for name in ["Rodrigo Gorgulho de Vasconcellos Lanna", "Marcelo Gorgulho"]:
+            results = search_escavador(name)
+            for result in results:
+                raw_collector.save_raw_item(
+                    source_type="web_scrape",
+                    source_name="escavador",
+                    topic="court_case",
+                    person_mentioned=name,
+                    file_path=result["url"],
+                    content=result["summary"]
+                )
+        
+        # 3. Log search
+        raw_collector.log_search("escavador", query, len(results))
+        
+    finally:
+        db.close()
+
+if __name__ == "__main__":
+    main()
+```
+
+---
+
+### H. Git / Deployment Workflow
+
+**Current issue:** The data collectors and web app are in the same repo, but data itself (`.db`, `backups/`, `raw_intelligence/`) should NOT be committed.
+
+**Current `.gitignore`** should already cover:
+```
+*.db
+backups/
+raw_intelligence/
+logs/
+.env
+```
+
+**Verify** this is correct:
+```bash
+cat data/.gitignore  # or project root .gitignore
+```
+
+---
+
+### I. Testing Strategy
+
+For Phase 3+ (structured storage), add unit tests:
+
+```
+rgvl/
+├── tests/
+│   ├── test_collectors/
+│   │   ├── test_jucemg.py
+│   │   ├── test_escavador.py
+│   │   └── test_import_structured.py
+│   ├── test_api/
+│   │   ├── test_raw_endpoints.py
+│   │   └── test_research_endpoints.py
+│   └── test_db/
+│       └── test_schema.py
+```
+
+Use `pytest`. Run via GitHub Actions on PRs.
+
+---
+
+### J. Summary of Technical Recommendations
+
+| # | Recommendation | Phase | Priority | Effort |
+|---|---------------|-------|----------|--------|
+| 1 | Normalize DB schema (Portuguese → English) | 3 | Medium | High |
+| 2 | Add raw_intelligence API endpoints | 3 | High | Medium |
+| 3 | Add Escavador collector (6h cron) | 4 | High | Medium |
+| 4 | Fix events/eventos duplication | 3 | Medium | Low |
+| 5 | Add DB integrity check to monitor | 4 | Low | Low |
+| 6 | Add Discord alerts for service down | 4 | Low | Low |
+| 7 | Expand backup to raw_intelligence | 4 | Medium | Low |
+| 8 | Verify .gitignore excludes all data | All | Low | Low |
+| 9 | Set up pytest for collectors | 3 | Medium | Medium |
+| 10 | Document port standard (5002/5003 only) | 1 | Low | Low |
+
+**Highest value for lowest effort:** #3 (Escavador collector) and #4 (fix events table).
+
+---
+
+*Section version: 1.0 — 2026-03-23*
+*Author: Hefesto 🔨 — Engineering*

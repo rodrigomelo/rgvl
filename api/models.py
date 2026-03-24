@@ -218,7 +218,7 @@ class Imovel(Base):
 
 class ProcessoJudicial(Base):
     """Judicial process involving a family member."""
-    __tablename__ = 'processos_judiciais'
+    __tablename__ = 'legal_processes'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
@@ -335,7 +335,7 @@ class DiarioOficial(Base):
 
 class Perfil(Base):
     """Online profile found during research (LinkedIn, FamilySearch, etc.)."""
-    __tablename__ = 'perfis'
+    __tablename__ = 'profiles'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
@@ -355,8 +355,8 @@ class Perfil(Base):
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     __table_args__ = (
-        Index('idx_perfis_source', 'source'),
-        Index('idx_perfis_name', 'name'),
+        Index('idx_profiles_source', 'source'),
+        Index('idx_profiles_name', 'name'),
     )
 
 

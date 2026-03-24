@@ -147,3 +147,36 @@ def get_events():
         return jsonify(models_to_list(events))
     finally:
         db.close()
+
+
+@family_bp.route('/timeline')
+def get_timeline():
+    """List all events for the family timeline with person names."""
+    from sqlalchemy import text
+    db = get_session()
+    try:
+        # Query events table with person names
+        query = text("""
+        SELECT e.id, e.person_id, p.nome_completo as person_name, 
+               e.event_type, e.event_date, e.description
+        FROM events e
+        LEFT JOIN pessoas p ON e.person_id = p.id
+        ORDER BY e.event_date
+        """)
+        result = db.execute(query)
+        rows = result.fetchall()
+        
+        timeline = []
+        for row in rows:
+            timeline.append({
+                'id': row[0],
+                'person_id': row[1],
+                'person_name': row[2] or 'Unknown',
+                'event_type': row[3],
+                'event_date': row[4],
+                'description': row[5]
+            })
+        
+        return jsonify(timeline)
+    finally:
+        db.close()

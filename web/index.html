@@ -65,6 +65,21 @@
         .row .label { color: var(--text-muted); }
         .row .value { color: var(--text); text-align: right; font-weight: 500; }
 
+        .timeline { position: relative; padding-left: 30px; }
+        .timeline::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 3px; background: linear-gradient(to bottom, var(--primary), var(--accent)); border-radius: 2px; }
+        .timeline-event { position: relative; margin-bottom: 24px; padding: 16px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow); }
+        .timeline-event::before { content: ''; position: absolute; left: -26px; top: 20px; width: 14px; height: 14px; border-radius: 50%; border: 3px solid var(--accent); background: var(--primary); }
+        .timeline-date { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+        .timeline-person { font-weight: 700; color: var(--primary); margin-bottom: 6px; font-size: 15px; }
+        .timeline-type { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; }
+        .timeline-type.birth { background: #E8F5E9; color: #2E7D32; }
+        .timeline-type.death, .timeline-type.falecimento { background: #ECEFF1; color: #546E7A; }
+        .timeline-type.marriage { background: #FFF8E1; color: #F57C00; }
+        .timeline-type.company { background: #E3F2FD; color: #1565C0; }
+        .timeline-type.default { background: var(--bg); color: var(--text-muted); }
+        .timeline-desc { font-size: 14px; color: var(--text); line-height: 1.5; }
+        .timeline-empty { text-align: center; color: var(--text-muted); padding: 40px; }
+
         .company { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
         .company-name { font-weight: 600; font-size: 15px; color: var(--primary); margin-bottom: 8px; }
         .badge { padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
@@ -96,6 +111,7 @@
         <a class="nav-item" data-section="person">👤 Dados Pessoais</a>
         <a class="nav-item" data-section="companies">🏢 Empresas</a>
         <a class="nav-item" data-section="properties">🏠 Imóveis</a>
+        <a class="nav-item" data-section="timeline">📅 Timeline</a>
         <a class="nav-item" data-section="research">🔍 Pesquisa</a>
     </nav>
     <main class="main"><div id="app"><div class="loading"><div class="spinner"></div>Carregando...</div></div></main>
@@ -148,7 +164,7 @@
     async function load() {
         try {
             const api = await findAPI();
-            const [tree, bisavos, avos, paisTios, primos, companies, properties, summary, tasks] = await Promise.all([
+            const [tree, bisavos, avos, paisTios, primos, companies, properties, summary, tasks, timeline] = await Promise.all([
                 fetch(api+'/family/person/'+PAI_ID+'/tree').then(r=>r.json()).catch(()=>null),
                 fetch(api+'/family/generation/1').then(r=>r.json()).catch(()=>[]),
                 fetch(api+'/family/generation/2').then(r=>r.json()).catch(()=>[]),
@@ -158,8 +174,9 @@
                 fetch(api+'/assets/properties').then(r=>r.json()).catch(()=>[]),
                 fetch(api+'/family/summary').then(r=>r.json()).catch(()=>{}),
                 fetch(api+'/research/tasks?status=pendente').then(r=>r.json()).catch(()=>[]),
+                fetch(api+'/family/timeline').then(r=>r.json()).catch(()=>[]),
             ]);
-            render({tree, bisavos:bisavos||[], avos:avos||[], paisTios:paisTios||[], primos:primos||[], companies:companies||[], properties:properties||[], summary, tasks:tasks||[]});
+            render({tree, bisavos:bisavos||[], avos:avos||[], paisTios:paisTios||[], primos:primos||[], companies:companies||[], properties:properties||[], summary, tasks:tasks||[], timeline:timeline||[]});
         } catch(e) {
             document.getElementById('app').innerHTML = '<div class="section"><h2>⚠️ Erro</h2><p>'+esc(e.message)+'</p></div>';
         }
@@ -445,6 +462,14 @@
             </div>
         </div>
 
+        <!-- Timeline -->
+        <div class="section" id="timeline">
+            <div class="section-title">📅 Linha do Tempo</div>
+            <div class="timeline" id="timeline-container">
+                <div class="loading">Carregando eventos...</div>
+            </div>
+        </div>
+
         <!-- Research -->
         <div class="section" id="research">
             <div class="section-title">🔍 Tarefas de Pesquisa (${D.tasks.length} pendentes)</div>
@@ -461,6 +486,24 @@
         </div>
         `;
         initScrollSpy();
+        
+        // Render Timeline
+        const tl = document.getElementById('timeline-container');
+        if (tl && D.timeline && D.timeline.length > 0) {
+            tl.innerHTML = D.timeline.map(e => {
+                const typeClass = e.event_type || 'default';
+                const dateDisplay = e.event_date ? fmtDate(e.event_date) : 'Data不确定';
+                return `
+                <div class="timeline-event">
+                    <div class="timeline-date">${esc(dateDisplay)}</div>
+                    <div class="timeline-person">${esc(e.person_name || 'Desconhecido')}</div>
+                    <span class="timeline-type ${typeClass}">${esc(e.event_type || 'evento')}</span>
+                    <div class="timeline-desc">${esc(e.description || '')}</div>
+                </div>`;
+            }).join('');
+        } else if (tl) {
+            tl.innerHTML = '<div class="timeline-empty">Nenhum evento encontrado</div>';
+        }
     }
 
     load();

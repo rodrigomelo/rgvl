@@ -29,22 +29,25 @@ data/rgvl.db (SQLite — schema canônico único, 12 tabelas)
   └── API (Flask, porta 5003) → Web Dashboard (porta 5002)
 ```
 
-## Canonical Schema (12 tables)
+## Canonical Schema (13 tables)
 
 ```
-pessoas                  26 rows  — membros da família
-relacionamentos          30 rows  — vínculos entre pessoas
-empresas_familia         10 rows  — empresas vinculadas à família
-imoveis                   3 rows  — imóveis do pai + avô
-processos_judiciais       9 rows  — processos TRT3, TJMG, TJSP
-documentos                5 rows  — RG, CPF, certidões
-contatos                  3 rows  — advogados, cartório, familiares
-eventos                   9 rows  — nascimentos, casamentos, mortes, carreira
-diarios_oficiais          0 rows  — publicações em diário oficial
-perfis                    0 rows  — perfis online encontrados
-buscas_realizadas         0 rows  — histórico de buscas realizadas
-tarefas_pesquisa          5 rows  — tarefas de pesquisa pendentes
+pessoas                  26 rows  — family members
+relacionamentos          30 rows  — relationships between people
+empresas_familia         10 rows  — family businesses
+imoveis                  3 rows  — real estate
+legal_processes          9 rows  — court cases (renamed 2026-03-23)
+documentos               5 rows  — documents (RG, CPF, certidões)
+contatos                 3 rows  — contacts (lawyers, cartório)
+events                   9 rows  — life events (RGVL, Henrique — person_id unverified)
+eventos                  9 rows  — life events (Rodrigo Melo, Edmundo)
+diarios_oficiais          0 rows  — official gazettes
+profiles                 1 rows  — online profiles (no API endpoint yet)
+buscas_realizadas         0 rows  — search history (empty)
+tarefas_pesquisa          5 rows  — research tasks
 ```
+
+> **Schema note (2026-03-23):** `processos_judiciais` renamed → `legal_processes`. `perfis` renamed → `profiles`. `events` and `eventos` are separate tables — do not confuse them.
 
 ## Project Structure
 
