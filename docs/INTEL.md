@@ -69,6 +69,18 @@ Edmundo de Vasconcellos Lanna (1922-1992) ⚰️ — Dentista
 
 ---
 
+## ✅ DADOS CONFIRMADOS (Comprovante Oficial)
+
+**CPF: 314.516.326-49**
+- Nome: RODRIGO GORGULHO DE VASCONCELLOS LANNA
+- Data de Nascimento: 17/12/1955
+- Situação Cadastral: **REGULAR** ✅
+- Data da Inscrição: anterior a 10/11/1990
+- Comprovante: Receita Federal, emitido 24/03/2026
+- Arquivo: `documents/rgvl/CPF_RGVL_31451632649_ReceitaFederal_20260324.pdf`
+
+---
+
 ## 🏢 Empresas — Construtora Barbosa Mello S/A
 
 **CNPJ:** 17.185.786/0001-61
