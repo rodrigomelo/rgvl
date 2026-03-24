@@ -146,6 +146,49 @@ def get_events():
         db.close()
 
 
+@family_bp.route('/sources')
+def get_sources():
+    """Get data sources summary - counts records by fonte."""
+    from sqlalchemy import text
+    db = get_session()
+    try:
+        query = text("""
+            SELECT 'pessoas' as tbl, fonte, COUNT(*) as cnt FROM pessoas WHERE fonte IS NOT NULL AND fonte != '' GROUP BY fonte
+            UNION ALL
+            SELECT 'empresas_familia', fonte, COUNT(*) FROM empresas_familia WHERE fonte IS NOT NULL AND fonte != '' GROUP BY fonte
+            UNION ALL
+            SELECT 'imoveis', fonte, COUNT(*) FROM imoveis WHERE fonte IS NOT NULL AND fonte != '' GROUP BY fonte
+            UNION ALL
+            SELECT 'legal_processes', fonte, COUNT(*) FROM legal_processes WHERE fonte IS NOT NULL AND fonte != '' GROUP BY fonte
+            UNION ALL
+            SELECT 'contatos', fonte, COUNT(*) FROM contatos WHERE fonte IS NOT NULL AND fonte != '' GROUP BY fonte
+            UNION ALL
+            SELECT 'documentos', fonte, COUNT(*) FROM documentos WHERE fonte IS NOT NULL AND fonte != '' GROUP BY fonte
+            UNION ALL
+            SELECT 'relacionamentos', fonte, COUNT(*) FROM relacionamentos WHERE fonte IS NOT NULL AND fonte != '' GROUP BY fonte
+        """)
+        result = db.execute(query).fetchall()
+        
+        sources = {}
+        for row in result:
+            tbl, fonte, cnt = row[0], row[1], row[2]
+            if fonte not in sources:
+                sources[fonte] = {'count': 0, 'tables': [], 'types': []}
+            sources[fonte]['count'] += cnt
+            if tbl not in sources[fonte]['tables']:
+                sources[fonte]['tables'].append(tbl)
+            sources[fonte]['types'].append(fonte)
+        
+        sorted_sources = dict(sorted(sources.items(), key=lambda x: x[1]['count'], reverse=True))
+        
+        return jsonify({
+            'total_sources': len(sorted_sources),
+            'sources': sorted_sources
+        })
+    finally:
+        db.close()
+
+
 @family_bp.route('/timeline')
 def get_timeline():
     """List all events from both events and eventos tables with person names.

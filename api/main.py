@@ -28,11 +28,13 @@ from api.routes.family import family_bp
 from api.routes.assets import assets_bp
 from api.routes.legal import legal_bp
 from api.routes.research import research_bp
+from api.routes.sources import sources_bp
 
 app.register_blueprint(family_bp)
 app.register_blueprint(assets_bp)
 app.register_blueprint(legal_bp)
 app.register_blueprint(research_bp)
+app.register_blueprint(sources_bp)
 
 
 # ============ Root ============
@@ -69,6 +71,11 @@ def root():
                 'tasks': '/api/research/tasks',
                 'documents': '/api/research/documents',
                 'contacts': '/api/research/contacts',
+            },
+            'sources': {
+                'summary': '/api/sources/summary',
+                'person': '/api/sources/person/<id>',
+                'timeline': '/api/sources/timeline',
             },
             'system': {
                 'health': '/api/health',

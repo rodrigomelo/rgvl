@@ -498,6 +498,56 @@ Sections to build when data is ready:
 - Legal timeline (cases by year)
 - Source attribution on every data point
 
+### 6.3 Sources Section (NEW — Priority)
+
+**Goal:** Show the provenance of every piece of data. Builds trust and helps verify information.
+
+**Source Types:**
+| Source | Icon | Description |
+|--------|------|-------------|
+| Gmail | 📧 | Emails from Rodrigo's Gmail |
+| Google Drive | 📄 | Documents from Google Drive |
+| TJMG | 🏛️ | Court records from TJMG |
+| TJSP | ⚖️ | Court records from TJSP |
+| JUCEMG | 📋 | Company registration (MG) |
+| JUCEP | 📋 | Company registration (SP) |
+| Cartório | 📜 | Birth/marriage/death certificates |
+| Web Search | 🔍 | Public web searches |
+| FamilySearch | 👨‍👩‍👧 | Genealogical platform |
+| Manual | ✏️ | User-provided information |
+
+**Two views:**
+
+1. **Per-Record Source Badge:** Each fact shows its source
+   ```
+   Edmundo de Vasconcellos
+   ├── Birth: 📜 Certidão original (Cartório BH)
+   ├── Óbito: 📜 2ª Via (Cartório SP)
+   ├── Marriage: 🏛️ TJMG - 1944
+   ├── Companies: 📋 JUCEMG (3 companies)
+   └── 📎 Ver fontes completas →
+   ```
+
+2. **Sources Dashboard:** System-wide overview
+   ```
+   FONTES DO SISTEMA
+   ├── Gmail: 91 mensagens processadas
+   ├── Google Drive: 15 documentos
+   ├── TJMG: 12 processos
+   ├── TJSP: 3 processos
+   ├── JUCEMG: 8 empresas
+   ├── Cartórios: certidões
+   └── Manual: inputs diretos
+   ```
+
+**Implementation notes:**
+- Each source link opens the original document (PDF, email thread, etc.)
+- Sources stored in `sources` table with `source_type`, `url/path`, `collected_at`
+- Link sources to facts via `fact_sources` junction table
+- Show collection date for each source
+
+**Status:** Designed. Awaiting implementation.
+
 ### 6.2 What NOT to Build Yet
 
 - Charts / graphs / visualizations

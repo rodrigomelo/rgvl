@@ -102,6 +102,12 @@
         .timeline-type.research, .timeline-event.research { display: none !important; }
         .timeline-desc { font-size: 14px; color: var(--text); line-height: 1.5; }
         .timeline-empty { text-align: center; color: var(--text-muted); padding: 40px; }
+        .sources-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+        .source-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+        .source-name { font-weight: 600; font-size: 13px; color: var(--primary); margin-bottom: 6px; word-break: break-word; }
+        .source-count { font-size: 20px; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+        .source-tables { display: flex; flex-wrap: wrap; gap: 4px; }
+        .source-table { font-size: 10px; padding: 2px 6px; background: var(--bg); border-radius: 4px; color: var(--text-muted); }
 
         .company { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
         .company-name { font-weight: 600; font-size: 15px; color: var(--primary); margin-bottom: 8px; }
@@ -121,6 +127,129 @@
         .loading { text-align: center; padding: 60px; color: var(--text-muted); }
         .spinner { border: 4px solid var(--border); border-top: 4px solid var(--primary); border-radius: 50%; width: 36px; height: 36px; animation: spin 1s linear infinite; margin: 0 auto 12px; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ===== SOURCES PANEL ===== */
+
+        /* Source badge colors (inline CSS vars for dynamic use) */
+        .source-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            cursor: help;
+            transition: opacity 0.2s;
+            vertical-align: middle;
+        }
+        .source-badge:hover { opacity: 0.8; }
+        .source-badge.sm { font-size: 9px; padding: 1px 5px; }
+        .source-badge.lg { font-size: 11px; padding: 3px 9px; }
+
+        /* Source type colors */
+        .source-badge.source-gmail        { background: #FCE8E6; color: #C62828; }
+        .source-badge.source-google_drive { background: #E8F0FE; color: #1D4ED8; }
+        .source-badge.source-tjmg         { background: #FEF3C7; color: #92400E; }
+        .source-badge.source-tjsp         { background: #F3E5F5; color: #6D28D9; }
+        .source-badge.source-jucemg       { background: #DBEAFE; color: #1D4ED8; }
+        .source-badge.source-jucep        { background: #DBEAFE; color: #1D4ED8; }
+        .source-badge.source-cartorio     { background: #D1FAE5; color: #065F46; }
+        .source-badge.source-web_search   { background: #E0E7FF; color: #3730A3; }
+        .source-badge.source-familysearch { background: #FCE7F3; color: #9D174D; }
+        .source-badge.source-manual        { background: #F1F5F9; color: #475569; }
+        .source-badge.source-crea          { background: #FED7AA; color: #9A3412; }
+        .source-badge.source-linkedin      { background: #E0E7FF; color: #3730A3; }
+        .source-badge.source-escavador     { background: #EDE9FE; color: #6D28D9; }
+        .source-badge.source-inteli        { background: #ECFDF5; color: #065F46; }
+        .source-badge.source-default      { background: #F1F5F9; color: #475569; }
+
+        /* Source row */
+        .source-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.15s;
+            border-radius: 0;
+        }
+        .source-row:hover { background: var(--bg); }
+        .source-row:last-child { border-bottom: none; }
+        .source-row-label { font-size: 13px; color: var(--text); flex: 1; }
+        .source-row-detail { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+
+        /* Sources tabs */
+        .sources-tabs { display: flex; gap: 0; margin-bottom: 20px; border-bottom: 2px solid var(--border); }
+        .sources-tab { padding: 8px 16px; font-size: 13px; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; font-weight: 500; }
+        .sources-tab:hover { color: var(--primary); }
+        .sources-tab.active { color: var(--primary); border-bottom-color: var(--accent); font-weight: 600; }
+
+        /* Sources grid */
+        .sources-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+        .sources-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .sources-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+        .sources-card-emoji { font-size: 26px; margin-bottom: 8px; }
+        .sources-card-name { font-size: 13px; font-weight: 600; color: var(--primary); margin-bottom: 2px; }
+        .sources-card-count { font-size: 22px; font-weight: 800; color: var(--text); }
+        .sources-card-detail { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+        .sources-card-types { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 6px; }
+        .sources-card-type-tag { font-size: 9px; padding: 1px 5px; background: var(--card-bg); border-radius: 3px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; }
+
+        /* Confidence bar */
+        .sources-confidence { margin-bottom: 20px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+        .sources-confidence-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .sources-confidence-title { font-size: 13px; font-weight: 600; color: var(--primary); }
+        .sources-confidence-pct { font-size: 14px; font-weight: 700; }
+        .sources-confidence-pct.high { color: var(--success); }
+        .sources-confidence-pct.medium { color: var(--warning); }
+        .sources-confidence-pct.low { color: var(--danger); }
+        .sources-confidence-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+        .sources-confidence-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+        .sources-confidence-fill.high { background: var(--success); }
+        .sources-confidence-fill.medium { background: var(--warning); }
+        .sources-confidence-fill.low { background: var(--danger); }
+        .sources-confidence-label { font-size: 11px; color: var(--text-muted); margin-top: 5px; }
+
+        /* Per-record sources list */
+        .sources-list { }
+        .sources-person { margin-bottom: 20px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+        .sources-person-header { padding: 12px 16px; background: var(--primary); color: white; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .sources-person-body { padding: 4px 0; }
+        .sources-person-fact { display: flex; align-items: center; gap: 10px; padding: 8px 16px; border-bottom: 1px solid var(--border); font-size: 13px; }
+        .sources-person-fact:last-child { border-bottom: none; }
+        .sources-person-fact-label { flex: 1; color: var(--text); }
+        .sources-person-fact-date { font-size: 11px; color: var(--text-muted); min-width: 80px; }
+        .sources-person-no-source { font-size: 11px; color: var(--text-muted); padding: 8px 16px; }
+
+        /* View toggle row */
+        .sources-view-toggle { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+        .sources-view-total { font-size: 12px; color: var(--text-muted); margin-left: auto; }
+
+        /* Source detail panel */
+        .source-panel-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; display: flex; justify-content: flex-end; }
+        .source-panel { width: 400px; max-width: 95vw; background: var(--card-bg); height: 100%; overflow-y: auto; padding: 20px; box-shadow: -4px 0 20px rgba(0,0,0,0.15); }
+        .source-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid var(--accent); }
+        .source-panel-title { font-size: 16px; font-weight: 600; color: var(--primary); }
+        .source-panel-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted); padding: 0; line-height: 1; }
+        .source-panel-close:hover { color: var(--text); }
+        .source-panel-item { padding: 12px; background: var(--bg); border-radius: 8px; margin-bottom: 8px; border: 1px solid var(--border); }
+        .source-panel-item-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+        .source-panel-item-detail { font-size: 11px; color: var(--text-muted); }
+        .source-panel-empty { text-align: center; color: var(--text-muted); padding: 40px; font-size: 13px; }
     </style>
 </head>
 <body>
@@ -135,6 +264,7 @@
         <a class="nav-item" data-section="companies">🏢 Empresas</a>
         <a class="nav-item" data-section="properties">🏠 Imóveis</a>
         <a class="nav-item" data-section="timeline">📅 Timeline</a>
+        <a class="nav-item" data-section="sources">📊 Sources</a>
     </nav>
     <main class="main"><div id="app"><div class="loading"><div class="spinner"></div>Carregando...</div></div></main>
     <script>
@@ -162,6 +292,136 @@
     });
 
     // Scroll-spy: update active nav item based on scroll position
+    // ===== SOURCES HELPERS =====
+
+    const SOURCE_EMOJI = {
+        gmail:'📧', google_drive:'📄', tjmg:'🏛️', tjsp:'⚖️',
+        jucemg:'📋', jucep:'📋', cartorio:'📜', web_search:'🔍',
+        familysearch:'👨‍👩‍👧', manual:'✏️', crea:'🏗️', linkedin:'💼',
+        escavador:'🔎', inteli:'💡', default:'🔗'
+    };
+
+    const SOURCE_LABELS = {
+        gmail:'Gmail', google_drive:'Google Drive', tjmg:'TJMG', tjsp:'TJSP',
+        jucemg:'JUCEMG', jucep:'JUCEP', cartorio:'Cartório', web_search:'Web Search',
+        familysearch:'FamilySearch', manual:'Manual', crea:'CREA', linkedin:'LinkedIn',
+        escavador:'Escavador', inteli:'INTEL', default:'Outro'
+    };
+
+    function sourceBadgeHTML(type, size) {
+        const t = type || 'default';
+        const emoji = SOURCE_EMOJI[t] || '🔗';
+        const label = SOURCE_LABELS[t] || SOURCE_LABELS.default;
+        return `<span class="source-badge source-${t} ${size||''}">${emoji} ${label}</span>`;
+    }
+
+    function switchSourcesTab(tab) {
+        document.querySelectorAll('.sources-tab').forEach(t => t.classList.remove('active'));
+        document.querySelector(`.sources-tab[data-tab="${tab}"]`).classList.add('active');
+        document.getElementById('sources-dashboard').style.display = tab === 'dashboard' ? '' : 'none';
+        document.getElementById('sources-records').style.display = tab === 'records' ? '' : 'none';
+    }
+
+    function openSourcePanel(source) {
+        // Remove existing
+        const existing = document.querySelector('.source-panel-overlay');
+        if (existing) existing.remove();
+
+        const overlay = document.createElement('div');
+        overlay.className = 'source-panel-overlay';
+        overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+
+        const info = SOURCE_LABELS[source.type] || source.type;
+        const emoji = SOURCE_EMOJI[source.type] || '🔗';
+        const recordsList = (source.records || []).map(r => {
+            return `<div class="source-panel-item">
+                <div class="source-panel-item-title">${esc(r.label || r.nome_fantasia || r.descricao || r.nome_completo || '—')}</div>
+                <div class="source-panel-item-detail">${esc(r.detail || '')}</div>
+            </div>`;
+        }).join('');
+
+        overlay.innerHTML = `
+        <div class="source-panel">
+            <div class="source-panel-header">
+                <span class="source-panel-title">${emoji} ${esc(info)}</span>
+                <button class="source-panel-close" onclick="this.closest('.source-panel-overlay').remove()">×</button>
+            </div>
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px">
+                <strong>${source.count || 0}</strong> registros · Última coleta: ${source.last_collected || '—'}
+            </div>
+            ${recordsList || '<div class="source-panel-empty">Nenhum registro detalhado disponível</div>'}
+        </div>`;
+        document.body.appendChild(overlay);
+
+        // ESC to close
+        const escHandler = function(e) { if (e.key === 'Escape') { overlay.remove(); document.removeEventListener('keydown', escHandler); } };
+        document.addEventListener('keydown', escHandler);
+    }
+
+    function renderSources(data) {
+        const container = document.getElementById('sources-grid');
+        if (!container) return;
+
+        // Confidence bar
+        const confEl = document.getElementById('sources-confidence');
+        const confPct = document.getElementById('sources-confidence-pct');
+        const confFill = document.getElementById('sources-confidence-fill');
+        const confLabel = document.getElementById('sources-confidence-label');
+        if (data.total_records !== undefined) {
+            const pct = data.confidence_percent || 0;
+            const cls = pct >= 80 ? 'high' : pct >= 50 ? 'medium' : 'low';
+            confEl.style.display = '';
+            confPct.textContent = pct + '%';
+            confPct.className = 'sources-confidence-pct ' + cls;
+            confFill.style.width = pct + '%';
+            confFill.className = 'sources-confidence-fill ' + cls;
+            confLabel.textContent = `${data.total_records} registros com fonte identificada de ~${data.total_estimated} total`;
+        } else {
+            confEl.style.display = 'none';
+        }
+
+        // Dashboard grid
+        const sources = (data.sources || []).filter(s => s.count > 0);
+        if (sources.length === 0) {
+            container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:40px;font-size:13px">Nenhuma fonte com dados ainda</div>';
+            return;
+        }
+        container.innerHTML = sources.map(s => {
+            const emoji = SOURCE_EMOJI[s.type] || '🔗';
+            const types = (s.records || []).join(', ');
+            return `
+            <div class="sources-card" onclick="openSourcePanel(${esc(JSON.stringify(s))})">
+                <div class="sources-card-emoji">${emoji}</div>
+                <div class="sources-card-name">${esc(SOURCE_LABELS[s.type] || s.type)}</div>
+                <div class="sources-card-count">${s.count}</div>
+                <div class="sources-card-detail">${esc(types)}</div>
+                <div class="sources-card-types">
+                    ${(s.records || []).map(r => `<span class="sources-card-type-tag">${esc(r)}</span>`).join('')}
+                </div>
+            </div>`;
+        }).join('');
+
+        // Per-record list — group by person (from PAI_ID tree)
+        renderSourcesRecords(data);
+    }
+
+    function renderSourcesRecords(data) {
+        const container = document.getElementById('sources-list');
+        const totalEl = document.getElementById('sources-view-total');
+        if (!container) return;
+
+        const sources = (data.sources || []).filter(s => s.count > 0);
+        const total = sources.reduce((s, x) => s + x.count, 0);
+        totalEl.textContent = `${sources.length} fontes · ${total} registros`;
+
+        // Build facts per person from the main person + relatives
+        // We'll fetch person sources lazily per person
+        container.innerHTML = `
+        <div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px">
+            📋 Navegue pelo Dashboard acima para ver cada fonte. Clique em um card para ver os detalhes.
+        </div>`;
+    }
+
     function initScrollSpy() {
         const sections = document.querySelectorAll('.section[id]');
         if (!sections.length) return;
@@ -186,7 +446,7 @@
     async function load() {
         try {
             const api = await findAPI();
-            const [tree, bisavos, avos, paisTios, primos, companies, properties, summary, tasks, timeline] = await Promise.all([
+            const [tree, bisavos, avos, paisTios, primos, companies, properties, summary, tasks, timeline, sources] = await Promise.all([
                 fetch(api+'/family/person/'+PAI_ID+'/tree').then(r=>r.json()).catch(()=>null),
                 fetch(api+'/family/generation/1').then(r=>r.json()).catch(()=>[]),
                 fetch(api+'/family/generation/2').then(r=>r.json()).catch(()=>[]),
@@ -197,8 +457,9 @@
                 fetch(api+'/family/summary').then(r=>r.json()).catch(()=>{}),
                 fetch(api+'/research/tasks?status=pendente').then(r=>r.json()).catch(()=>[]),
                 fetch(api+'/family/timeline').then(r=>r.json()).catch(()=>[]),
+                fetch(api+'/sources/summary').then(r=>r.json()).catch(()=>({total_records:0,sources:[]})),
             ]);
-            render({tree, bisavos:bisavos||[], avos:avos||[], paisTios:paisTios||[], primos:primos||[], companies:companies||[], properties:properties||[], summary, tasks:tasks||[], timeline:timeline||[]});
+            render({tree, bisavos:bisavos||[], avos:avos||[], paisTios:paisTios||[], primos:primos||[], companies:companies||[], properties:properties||[], summary, tasks:tasks||[], timeline:timeline||[], sources:sources||{}});
         } catch(e) {
             document.getElementById('app').innerHTML = '<div class="section"><h2>⚠️ Erro</h2><p>'+esc(e.message)+'</p></div>';
         }
@@ -491,6 +752,42 @@
                 <div class="loading">Carregando eventos...</div>
             </div>
         </div>
+
+        <!-- Sources -->
+        <div class="section" id="sources">
+            <div class="section-title">📜 Fontes dos Dados</div>
+
+            <!-- Confidence bar -->
+            <div class="sources-confidence" id="sources-confidence" style="display:none">
+                <div class="sources-confidence-header">
+                    <span class="sources-confidence-title">📎 Confiança dos Dados</span>
+                    <span class="sources-confidence-pct" id="sources-confidence-pct">—</span>
+                </div>
+                <div class="sources-confidence-bar">
+                    <div class="sources-confidence-fill" id="sources-confidence-fill" style="width:0%"></div>
+                </div>
+                <div class="sources-confidence-label" id="sources-confidence-label"></div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="sources-tabs">
+                <div class="sources-tab active" data-tab="dashboard" onclick="switchSourcesTab('dashboard')">📊 Dashboard</div>
+                <div class="sources-tab" data-tab="records" onclick="switchSourcesTab('records')">📜 Por Registro</div>
+            </div>
+
+            <!-- Dashboard view -->
+            <div id="sources-dashboard">
+                <div class="sources-grid" id="sources-grid"></div>
+            </div>
+
+            <!-- Per-record view -->
+            <div id="sources-records" style="display:none">
+                <div class="sources-view-toggle">
+                    <div class="sources-view-total" id="sources-view-total"></div>
+                </div>
+                <div id="sources-list"></div>
+            </div>
+        </div>
         `;
         initScrollSpy();
         
@@ -529,6 +826,18 @@
             }).join('');
         } else if (tl) {
             tl.innerHTML = '<div class="timeline-empty">Nenhum evento encontrado</div>';
+        }
+        
+        // Render Sources
+        const sc = document.getElementById('sources-container');
+        if (sc && D.sources && D.sources.sources) {
+            const srcList = Object.entries(D.sources.sources).sort((a,b) => b[1].count - a[1].count);
+            sc.innerHTML = '<div class="sources-grid">' + srcList.map(([name, data]) => `
+                <div class="source-card">
+                    <div class="source-name">${esc(name)}</div>
+                    <div class="source-count">${data.count}</div>
+                    <div class="source-tables">${data.tables.map(t => '<span class="source-table">'+esc(t)+'</span>').join(' ')}</div>
+                </div>`).join('') + '</div>';
         }
     }
 
