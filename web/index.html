@@ -72,40 +72,33 @@
         .timeline-date { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
         .timeline-person { font-weight: 700; color: var(--primary); margin-bottom: 6px; font-size: 15px; }
         /* ============================================
-           TIMELINE BADGES - COMPREHENSIVE RESET
+           TIMELINE BADGES - Uniform size, color only varies
            ============================================ */
-        .timeline-type,
-        [class*="timeline-type"] {
-            display: inline-block !important;
-            padding: 2px 8px !important;
-            margin: 0 !important;
+        .timeline-type {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0 6px !important;
             border-radius: 4px !important;
             font-size: 10px !important;
             font-weight: 600 !important;
             text-transform: uppercase !important;
             letter-spacing: 0.5px !important;
             min-width: 70px !important;
-            max-width: 90px !important;
             height: 20px !important;
-            line-height: 16px !important;
-            text-align: center !important;
             white-space: nowrap !important;
             box-sizing: border-box !important;
-            vertical-align: middle !important;
         }
-        .timeline-type::before, .timeline-type::after,
-        [class*="timeline-type"]::before,
-        [class*="timeline-type"]::after { content: none !important; }
-        /* Colors */
-        .timeline-type.birth { background: #D1FAE5 !important; color: #065F46 !important; }
-        .timeline-type.death, .timeline-type.falecimento { background: #E5E7EB !important; color: #374151 !important; }
-        .timeline-type.marriage { background: #FEF3C7 !important; color: #92400E !important; }
-        .timeline-type.company { background: #DBEAFE !important; color: #1D4ED8 !important; }
-        .timeline-type.name_change { background: #EDE9FE !important; color: #6D28D9 !important; }
-        .timeline-type.legal { background: #FEF3C7 !important; color: #92400E !important; }
-        .timeline-type.paternity { background: #FCE7F3 !important; color: #9D174D !important; }
-        .timeline-type.family_contact { background: #E0E7FF !important; color: #3730A3 !important; }
-        .timeline-type.default { background: var(--bg) !important; color: var(--text-muted) !important; }
+        .timeline-type::before, .timeline-type::after { content: none !important; }
+        /* Colors only */
+        .timeline-type.birth { background: #D1FAE5; color: #065F46; }
+        .timeline-type.death, .timeline-type.falecimento { background: #E5E7EB; color: #374151; }
+        .timeline-type.marriage { background: #FEF3C7; color: #92400E; }
+        .timeline-type.company { background: #DBEAFE; color: #1D4ED8; }
+        .timeline-type.name_change { background: #EDE9FE; color: #6D28D9; }
+        .timeline-type.legal { background: #FEF3C7; color: #92400E; }
+        .timeline-type.paternity { background: #FCE7F3; color: #9D174D; }
+        .timeline-type.family_contact { background: #E0E7FF; color: #3730A3; }
         .timeline-type.research, .timeline-event.research { display: none !important; }
         .timeline-desc { font-size: 14px; color: var(--text); line-height: 1.5; }
         .timeline-empty { text-align: center; color: var(--text-muted); padding: 40px; }
