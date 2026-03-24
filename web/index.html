@@ -327,6 +327,9 @@
         document.querySelector(`.sources-tab[data-tab="${tab}"]`).classList.add('active');
         document.getElementById('sources-dashboard').style.display = tab === 'dashboard' ? '' : 'none';
         document.getElementById('sources-records').style.display = tab === 'records' ? '' : 'none';
+        if (tab === 'records' && window.__rgvl_records) {
+            renderSourcesRecords(window.__rgvl_records, window.__rgvl_api || 'http://localhost:5003');
+        }
     }
 
     function openSourcePanel(source) {
@@ -450,7 +453,6 @@
                         </div>
                     </div>
                 `).join('');
-if (records.length === 0) { container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px">Nenhum registro</div>'; return; }
     }
 
     function initScrollSpy() {
