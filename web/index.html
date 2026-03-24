@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RGVL - Dados Pessoais</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <script src="auth.js"></script>
     <style>
         :root {
             --primary: #1E3A5F;
@@ -26,6 +27,12 @@
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #FFFFFF; color: var(--text); }
 
         .header { background: var(--primary); color: white; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; left: 0; right: 0; z-index: 100; box-shadow: var(--shadow); }
+        .user-menu { display: flex; align-items: center; gap: 12px; }
+        .user-name { font-size: 13px; color: rgba(255,255,255,0.9); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .btn-login { background: var(--accent); color: var(--primary); border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .btn-login:hover { background: #f0c030; }
+        .btn-logout { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; }
+        .btn-logout:hover { background: rgba(255,255,255,0.25); }
         .header h1 { font-size: 18px; }
         .menu-toggle { background: none; border: none; color: white; font-size: 24px; cursor: pointer; display: none; }
 
@@ -67,24 +74,8 @@
 
         .timeline { position: relative; padding-left: 30px; }
         .timeline::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 3px; background: linear-gradient(to bottom, var(--primary), var(--accent)); border-radius: 2px; }
-        .timeline-section {
-            max-height: 400px;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: #CBD5E1 #F1F5F9;
-        }
-        .timeline-section::-webkit-scrollbar { width: 6px; }
-        .timeline-section::-webkit-scrollbar-track { background: #F1F5F9; border-radius: 3px; }
-        .timeline-section::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
-        .timeline-section::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
-        .timeline-section .section-title,
         .timeline-section h2 {
-            position: sticky;
-            top: 0;
-            background: #FFFFFF !important;
-            z-index: 10;
-            padding: 10px 0;
-            margin: 0;
+            margin-bottom: 16px;
         }
         .timeline-event { position: relative; margin-bottom: 24px; padding: 16px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow); }
         .timeline-event::before { content: ''; position: absolute; left: -26px; top: 20px; width: 14px; height: 14px; border-radius: 50%; border: 3px solid var(--accent); background: var(--primary); }
@@ -281,7 +272,10 @@
 <body>
     <header class="header">
         <h1>🌳 RGVL</h1>
-        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+        <div style="display:flex;align-items:center;gap:12px">
+            <div id="user-menu"></div>
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+        </div>
     </header>
     <nav class="sidebar" id="sidebar">
         <a class="nav-item active" data-section="overview">📊 Visão Geral</a>
@@ -292,7 +286,20 @@
         <a class="nav-item" data-section="timeline">📅 Timeline</a>
         <a class="nav-item" data-section="sources">📊 Sources</a>
     </nav>
-    <main class="main"><div id="app"><div class="loading"><div class="spinner"></div>Carregando...</div></div></main>
+    <!-- Login Screen -->
+    <div id="login-screen" style="display:none;position:fixed;inset:0;background:var(--bg);justify-content:center;align-items:center;z-index:1000">
+        <div style="text-align:center;background:white;padding:48px;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.15);max-width:400px;width:90%">
+            <div style="font-size:48px;margin-bottom:16px">🔐</div>
+            <h2 style="color:var(--primary);margin-bottom:8px">Acesso Restrito</h2>
+            <p style="color:var(--text-muted);margin-bottom:24px;font-size:14px">Entre com sua conta para acessar os dados genealógicos da família Lanna.</p>
+            <button onclick="login()" style="background:var(--primary);color:white;border:none;padding:14px 28px;border-radius:8px;font-size:16px;cursor:pointer;width:100%">🔐 Entrar com Auth0</button>
+            <p style="color:var(--text-muted);margin-top:16px;font-size:12px">Plataforma segura de autenticação</p>
+        </div>
+    </div>
+
+    <main class="main">
+        <div id="app"><div class="loading"><div class="spinner"></div>Carregando...</div></div>
+    </main>
     <script>
     async function findAPI() {
         const o = window.location.origin;
@@ -499,19 +506,23 @@
         try {
             const api = await findAPI();
             window.__rgvl_api = api;
-            const [tree, bisavos, avos, paisTios, primos, companies, properties, summary, timeline, sources, records] = await Promise.all([
-                fetch(api+'/family/person/'+PAI_ID+'/tree').then(r=>r.json()).catch(()=>null),
-                fetch(api+'/family/generation/1').then(r=>r.json()).catch(()=>[]),
-                fetch(api+'/family/generation/2').then(r=>r.json()).catch(()=>[]),
-                fetch(api+'/family/generation/3').then(r=>r.json()).catch(()=>[]),
-                fetch(api+'/family/generation/4').then(r=>r.json()).catch(()=>[]),
-                fetch(api+'/assets/companies').then(r=>r.json()).catch(()=>[]),
-                fetch(api+'/assets/properties').then(r=>r.json()).catch(()=>[]),
-                fetch(api+'/family/summary').then(r=>r.json()).catch(()=>{}),
 
-                fetch(api+'/family/timeline').then(r=>r.json()).catch(()=>[]),
-                fetch(api+'/sources/summary').then(r=>r.json()).catch(()=>({total_records:0,sources:[]})),
-                fetch(api+'/sources/records').then(r=>r.json()).catch(()=>({total:0,records:[]})),
+            // Get auth token
+            const token = localStorage.getItem('access_token');
+            const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+
+            const [tree, bisavos, avos, paisTios, primos, companies, properties, summary, timeline, sources, records] = await Promise.all([
+                fetch(api+'/family/person/'+PAI_ID+'/tree', { headers }).then(r=>r.json()).catch(()=>null),
+                fetch(api+'/family/generation/1', { headers }).then(r=>r.json()).catch(()=>[]),
+                fetch(api+'/family/generation/2', { headers }).then(r=>r.json()).catch(()=>[]),
+                fetch(api+'/family/generation/3', { headers }).then(r=>r.json()).catch(()=>[]),
+                fetch(api+'/family/generation/4', { headers }).then(r=>r.json()).catch(()=>[]),
+                fetch(api+'/assets/companies', { headers }).then(r=>r.json()).catch(()=>[]),
+                fetch(api+'/assets/properties', { headers }).then(r=>r.json()).catch(()=>[]),
+                fetch(api+'/family/summary', { headers }).then(r=>r.json()).catch(()=>{}),
+                fetch(api+'/family/timeline', { headers }).then(r=>r.json()).catch(()=>[]),
+                fetch(api+'/sources/summary', { headers }).then(r=>r.json()).catch(()=>({total_records:0,sources:[]})),
+                fetch(api+'/sources/records', { headers }).then(r=>r.json()).catch(()=>({total:0,records:[]})),
             ]);
             window.__rgvl_records = records;
             render({tree, bisavos:bisavos||[], avos:avos||[], paisTios:paisTios||[], primos:primos||[], companies:companies||[], properties:properties||[], summary, timeline:timeline||[], sources:sources||{}, records:records||[]});
@@ -903,7 +914,26 @@
         }
         }
 
-    load();
+        // Show main content after auth check
+        function showMainContent() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            renderUserMenu();
+        }
+
+        // Check auth and load data
+        async function init() {
+            if (!isAuthenticated()) {
+                document.getElementById('login-screen').style.display = 'flex';
+                document.getElementById('main-content').style.display = 'none';
+                renderUserMenu();
+                return;
+            }
+            showMainContent();
+            load();
+        }
+
+        init();
     </script>
 </body>
 </html>

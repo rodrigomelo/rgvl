@@ -15,6 +15,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from api.db import engine, DB_PATH
 from api.models import Base
+from api.auth import require_auth, get_token_from_header, verify_token
 
 # Create all tables
 Base.metadata.create_all(bind=engine)
@@ -22,6 +23,36 @@ Base.metadata.create_all(bind=engine)
 # App
 app = Flask(__name__)
 CORS(app)
+
+# Public routes that don't require auth
+PUBLIC_ROUTES = ['/', '/api/health', '/api/stats', '/api/search']
+
+@app.before_request
+def check_auth():
+    """Check if route requires authentication"""
+    from flask import request, jsonify, g
+    
+    # Skip auth for public routes
+    if request.path in PUBLIC_ROUTES:
+        return None
+    
+    # Skip if it's not an API route
+    if not request.path.startswith('/api/'):
+        return None
+    
+    # Check for token
+    token = get_token_from_header()
+    if not token:
+        return jsonify({'error': 'Authentication required'}), 401
+    
+    # Verify token
+    payload = verify_token(token)
+    if not payload:
+        return jsonify({'error': 'Invalid or expired token'}), 401
+    
+    # Store user in request context
+    g.user = payload
+    return None
 
 # Register blueprints
 from api.routes.family import family_bp
