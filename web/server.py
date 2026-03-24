@@ -12,6 +12,16 @@ def index():
     return send_from_directory('.', 'index.html')
 
 
+@app.route('/auth.js')
+def auth_js():
+    return send_from_directory('.', 'auth.js')
+
+
+@app.route('/callback.html')
+def callback_html():
+    return send_from_directory('.', 'callback.html')
+
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory('.', 'favicon.ico')
