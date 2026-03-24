@@ -388,7 +388,7 @@
         }
 
         // Dashboard grid
-        const sources = (data.sources || []).filter(s => s.count > 0);
+        const sources = (data.sources || []).filter(s => s && s.count > 0);
         if (sources.length === 0) {
             container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:40px;font-size:13px">Nenhuma fonte com dados ainda</div>';
             return;
@@ -408,8 +408,8 @@
             </div>`;
         }).join('');
 
-        // Per-record list — group by person (from PAI_ID tree)
-        renderSourcesRecords(data, api);
+        // Per-record list — fetch from API
+        renderSourcesRecords(data, window.__rgvl_api || 'http://localhost:5003');
     }
 
     function renderSourcesRecords(recordsData, apiCtx) {
@@ -419,12 +419,8 @@
 
         // recordsData is the D.sources object which has summary data
         // We need to fetch the /api/sources/records endpoint
-        const apiUrl = apiCtx || window.__rgvl_api || 'http://localhost:5003';
-        fetch(apiUrl+'/sources/records')
-            .then(r => r.json())
-            .then(data => {
-                const records = data.records || [];
-                totalEl.textContent = `${data.total} registros por pessoa`;
+        const records = (recordsData || []);
+                totalEl.textContent = `${records.length} registros`;
 
                 if (records.length === 0) {
                     container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px">Nenhum registro encontrado</div>';
@@ -454,10 +450,7 @@
                         </div>
                     </div>
                 `).join('');
-            })
-            .catch(() => {
-                container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px">Erro ao carregar registros</div>';
-            });
+if (records.length === 0) { container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px">Nenhum registro</div>'; return; }
     }
 
     function initScrollSpy() {
@@ -485,7 +478,7 @@
         try {
             const api = await findAPI();
             window.__rgvl_api = api; // global for sub-functions
-            const [tree, bisavos, avos, paisTios, primos, companies, properties, summary, tasks, timeline, sources] = await Promise.all([
+            const [tree, bisavos, avos, paisTios, primos, companies, properties, summary, timeline, sources] = await Promise.all([
                 fetch(api+'/family/person/'+PAI_ID+'/tree').then(r=>r.json()).catch(()=>null),
                 fetch(api+'/family/generation/1').then(r=>r.json()).catch(()=>[]),
                 fetch(api+'/family/generation/2').then(r=>r.json()).catch(()=>[]),
@@ -494,11 +487,12 @@
                 fetch(api+'/assets/companies').then(r=>r.json()).catch(()=>[]),
                 fetch(api+'/assets/properties').then(r=>r.json()).catch(()=>[]),
                 fetch(api+'/family/summary').then(r=>r.json()).catch(()=>{}),
-                fetch(api+'/research/tasks?status=pendente').then(r=>r.json()).catch(()=>[]),
+
                 fetch(api+'/family/timeline').then(r=>r.json()).catch(()=>[]),
                 fetch(api+'/sources/summary').then(r=>r.json()).catch(()=>({total_records:0,sources:[]})),
+                fetch(api+'/sources/records').then(r=>r.json()).catch(()=>({total:0,records:[]})),
             ]);
-            render({tree, bisavos:bisavos||[], avos:avos||[], paisTios:paisTios||[], primos:primos||[], companies:companies||[], properties:properties||[], summary, tasks:tasks||[], timeline:timeline||[], sources:sources||{}});
+            render({tree, bisavos:bisavos||[], avos:avos||[], paisTios:paisTios||[], primos:primos||[], companies:companies||[], properties:properties||[], summary, timeline:timeline||[], sources:sources||{}, records:records||[]});
         } catch(e) {
             document.getElementById('app').innerHTML = '<div class="section"><h2>⚠️ Erro</h2><p>'+esc(e.message)+'</p></div>';
         }
@@ -535,7 +529,6 @@
                 <div class="stat"><div class="stat-value">${D.companies.length}</div><div class="stat-label">Empresas</div></div>
                 <div class="stat"><div class="stat-value">${D.properties.length}</div><div class="stat-label">Imóveis</div></div>
                 <div class="stat"><div class="stat-value">${D.summary.relacionamentos_confirmados || 0}</div><div class="stat-label">Vínculos Confirmados</div></div>
-                <div class="stat"><div class="stat-value">${D.tasks.length}</div><div class="stat-label">Tarefas Pendentes</div></div>
             </div>
         </div>
 
