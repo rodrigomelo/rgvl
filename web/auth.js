@@ -71,15 +71,24 @@ function handleCallback() {
     
     if (idToken) {
         localStorage.setItem('id_token', idToken);
+    }
+    
+    // Fetch user info from Auth0 /userinfo endpoint
+    if (accessToken) {
         try {
-            const payload = JSON.parse(atob(idToken.split('.')[1]));
-            localStorage.setItem('user', JSON.stringify({
-                name: payload.name || payload.email,
-                email: payload.email,
-                picture: payload.picture || null
-            }));
+            const resp = await fetch('https://' + AUTH0_DOMAIN + '/userinfo', {
+                headers: { 'Authorization': 'Bearer ' + accessToken }
+            });
+            if (resp.ok) {
+                const userInfo = await resp.json();
+                localStorage.setItem('user', JSON.stringify({
+                    name: userInfo.name || userInfo.email,
+                    email: userInfo.email,
+                    picture: userInfo.picture || null
+                }));
+            }
         } catch(e) {
-            console.error('Failed to decode user:', e);
+            console.error('Failed to fetch user info:', e);
         }
     }
     

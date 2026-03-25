@@ -44,13 +44,13 @@
         <p>Aguarde enquanto redirecionamos você.</p>
     </div>
 
-    <script src="auth.js"></script>
     <script>
-        function init() {
+        const AUTH0_DOMAIN = 'dev-4mhbzq6x4yvyckmt.us.auth0.com';
+        
+        async function init() {
             const hash = window.location.hash;
             const params = new URLSearchParams(hash.substring(1));
             
-            // Check for error
             const error = params.get('error');
             if (error) {
                 document.getElementById('content').innerHTML = 
@@ -65,24 +65,28 @@
                 return;
             }
             
-            // Store token
-            localStorage.setItem('access_token', accessToken);
-            
-            // Store id_token if present
             const idToken = params.get('id_token');
-            if (idToken) {
-                localStorage.setItem('id_token', idToken);
-                try {
-                    const payload = JSON.parse(atob(idToken.split('.')[1]));
+            localStorage.setItem('access_token', accessToken);
+            if (idToken) localStorage.setItem('id_token', idToken);
+            
+            // Fetch user info from Auth0 /userinfo
+            try {
+                const resp = await fetch('https://' + AUTH0_DOMAIN + '/userinfo', {
+                    headers: { 'Authorization': 'Bearer ' + accessToken }
+                });
+                if (resp.ok) {
+                    const userInfo = await resp.json();
                     localStorage.setItem('user', JSON.stringify({
-                        name: payload.name || payload.email,
-                        email: payload.email,
-                        picture: payload.picture || null
+                        name: userInfo.name || userInfo.email,
+                        email: userInfo.email,
+                        picture: userInfo.picture || null
                     }));
-                } catch(e) {}
+                }
+            } catch(e) {
+                console.error('Failed to fetch user info:', e);
             }
             
-            // Clean URL and redirect to home
+            // Clean URL and redirect
             window.location.href = '/';
         }
         
