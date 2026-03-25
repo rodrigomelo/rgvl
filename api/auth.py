@@ -20,6 +20,31 @@ def get_token_from_header():
 _token_cache = {}
 _cache_times = {}
 
+# Allowed emails/domains for access (comma-separated in AUTH_ALLOWED_USERS env var)
+def is_user_allowed(payload):
+    import os
+    email = payload.get('email', '')
+    if not email:
+        sub = payload.get('sub', '')
+        if sub and '|' in sub:
+            email = sub.split('|')[-1] + '@placeholder.com'
+    
+    allowlist = os.getenv('AUTH_ALLOWED_USERS', '')
+    if not allowlist:
+        return True
+    
+    for allowed in allowlist.split(','):
+        allowed = allowed.strip()
+        if not allowed:
+            continue
+        if '@' in allowed:
+            if email.lower() == allowed.lower():
+                return True
+        else:
+            if email.lower().endswith('@' + allowed.lower()):
+                return True
+    return False
+
 def verify_token(token):
     """Verify JWT token by calling Auth0's userinfo endpoint (with caching)."""
     import time

@@ -67,10 +67,12 @@ def check_auth():
     # Verify token using Auth0 userinfo endpoint
     payload = verify_token(token)
     if not payload:
-        pass  # Token failed
         return jsonify({'error': 'Invalid or expired token'}), 401
     
-    pass  # Token OK
+    # Check if user is allowed
+    from api.auth import is_user_allowed
+    if not is_user_allowed(payload):
+        return jsonify({'error': 'Access denied'}), 403
     
     # Store user in request context
     g.user = payload
