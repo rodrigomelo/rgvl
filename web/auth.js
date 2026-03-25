@@ -28,42 +28,56 @@ function login() {
 }
 
 // Logout - clear local storage and redirect
-function logout() {
+function logout(reason) {
+    // Clear all auth data
     localStorage.removeItem('access_token');
     localStorage.removeItem('user');
     localStorage.removeItem('id_token');
     
-    const logoutUrl = `https://${AUTH0_DOMAIN}/v2/logout?` +
-        `client_id=${AUTH0_CLIENT_ID}&` +
-        `returnTo=${encodeURIComponent(window.location.origin)}`;
-    window.location.href = logoutUrl;
+    // Redirect to home with message
+    if (reason) {
+        window.location.href = '/?logout=' + encodeURIComponent(reason);
+    } else {
+        window.location.href = '/';
+    }
 }
 
 // Handle callback - extract token from URL hash
 function handleCallback() {
     const hash = window.location.hash;
-    if (!hash || hash.indexOf('access_token=') === -1) {
+    if (!hash) return null;
+    
+    const params = new URLSearchParams(hash.substring(1));
+    
+    // Check for Auth0 error
+    const error = params.get('error');
+    const errorDesc = params.get('error_description');
+    if (error) {
+        console.error('Auth0 error:', error, errorDesc);
+        alert('Erro no login: ' + (errorDesc || error));
+        window.location.href = '/';
         return null;
     }
     
-    const params = new URLSearchParams(hash.substring(1));
     const accessToken = params.get('access_token');
     const idToken = params.get('id_token');
     
-    if (accessToken) {
-        localStorage.setItem('access_token', accessToken);
+    if (!accessToken) {
+        console.error('No access token in callback');
+        return null;
     }
+    
+    localStorage.setItem('access_token', accessToken);
+    
     if (idToken) {
         localStorage.setItem('id_token', idToken);
-        // Decode user info from JWT payload
         try {
             const payload = JSON.parse(atob(idToken.split('.')[1]));
-            const user = {
+            localStorage.setItem('user', JSON.stringify({
                 name: payload.name || payload.email,
                 email: payload.email,
                 picture: payload.picture || null
-            };
-            localStorage.setItem('user', JSON.stringify(user));
+            }));
         } catch(e) {
             console.error('Failed to decode user:', e);
         }
@@ -74,43 +88,7 @@ function handleCallback() {
     return accessToken;
 }
 
-// API request with Bearer token
-async function apiRequest(endpoint, options = {}) {
-    const token = localStorage.getItem('access_token');
-    
-    if (!token) {
-        login();
-        return null;
-    }
-    
-    const headers = {
-        'Content-Type': 'application/json',
-        ...options.headers
-    };
-    
-    // Add Authorization header if we have a token
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
-    
-    try {
-        const resp = await fetch(endpoint, {
-            ...options,
-            headers
-        });
-        
-        if (resp.status === 401) {
-            // Token expired or invalid
-            logout();
-            return null;
-        }
-        
-        return resp;
-    } catch(e) {
-        console.error('API request failed:', e);
-        return null;
-    }
-}
+// Note: apiRequest is deprecated - use fetch with Authorization header directly
 
 // Render user menu in header
 function renderUserMenu() {

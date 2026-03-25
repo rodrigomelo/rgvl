@@ -55,17 +55,23 @@ def check_auth():
     
     # Skip auth if AUTH_DISABLED is set (for development/testing)
     if os.getenv('AUTH_DISABLED', 'false').lower() == 'true':
+        import warnings
+        warnings.warn('AUTH DISABLED - DO NOT USE IN PRODUCTION')
         return None
     
     # Check for token
     token = get_token_from_header()
+    
     if not token:
         return jsonify({'error': 'Authorization required'}), 401
     
     # Verify token using Auth0 userinfo endpoint
     payload = verify_token(token)
     if not payload:
+        pass  # Token failed
         return jsonify({'error': 'Invalid or expired token'}), 401
+    
+    pass  # Token OK
     
     # Store user in request context
     g.user = payload

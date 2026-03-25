@@ -508,15 +508,15 @@
         try {
             const api = await findAPI();
             window.__rgvl_api = api;
-            console.log('[RGVL] API found:', api);
+            // API found
 
             // Get auth token
             const token = localStorage.getItem('access_token');
-            console.log('[RGVL] Token:', token ? 'present' : 'missing');
+            // Token present
             const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
             const [tree, bisavos, avos, paisTios, primos, companies, properties, summary, timeline, sources, records] = await Promise.all([
-                fetch(api+'/family/person/'+PAI_ID+'/tree', { headers }).then(r=>{ console.log('[RGVL] /tree status:', r.status); return r.json(); }).catch(e=>{ console.error('[RGVL] /tree error:', e); return null; }),
+                fetch(api+'/family/person/'+PAI_ID+'/tree', { headers }).then(r=>{  return r.json(); }).catch(e=>{  return null; }),
                 fetch(api+'/family/generation/1', { headers }).then(r=>r.json()).catch(()=>[]),
                 fetch(api+'/family/generation/2', { headers }).then(r=>r.json()).catch(()=>[]),
                 fetch(api+'/family/generation/3', { headers }).then(r=>r.json()).catch(()=>[]),
@@ -531,7 +531,7 @@
             window.__rgvl_records = records;
             render({tree, bisavos:bisavos||[], avos:avos||[], paisTios:paisTios||[], primos:primos||[], companies:companies||[], properties:properties||[], summary, timeline:timeline||[], sources:sources||{}, records:records||[]});
         } catch(e) {
-            console.error('[RGVL] Load error:', e);
+            
             document.getElementById('app').innerHTML = '<div class="section"><h2>⚠️ Erro</h2><p>'+esc(e.message)+'</p><pre>'+esc(e.stack||'')+'</pre></div>';
         }
     }

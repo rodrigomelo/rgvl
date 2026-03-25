@@ -28,14 +28,14 @@ def verify_token(token):
     if token in _token_cache:
         cache_time = _cache_times.get(token, 0)
         if time.time() - cache_time < 300:
-            print(f'[AUTH] Token verified from cache')
+            pass  # cached
             return _token_cache[token]
         else:
             # Expired
             del _token_cache[token]
             del _cache_times[token]
     
-    print(f'[AUTH] Verifying token: {token[:30]}...')
+    pass  # verifying
     
     try:
         resp = requests.get(
@@ -49,13 +49,13 @@ def verify_token(token):
             # Cache the result
             _token_cache[token] = payload
             _cache_times[token] = time.time()
-            print(f'[AUTH] Token valid, user: {payload.get("sub")}')
+            pass  # valid
             return payload
         else:
-            print(f'[AUTH] Token invalid: {resp.status_code}')
+            pass  # invalid
             return None
     except Exception as e:
-        print(f'[AUTH] Verification error: {e}')
+        pass  # error
         return None
 
 def require_auth(f):
