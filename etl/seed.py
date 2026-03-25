@@ -140,38 +140,80 @@ class IntelParser:
         return {}
     
     def extract_insights(self) -> list:
-        """Extract insights/facts from INTEL content"""
+        """Extract insights/facts from INTEL content - parses markdown structure"""
         insights = []
+        lines = self.content.split('\n')
         
-        # Genealogy insights
-        if 'Gorgulho' in self.content or 'origem' in self.content.lower():
-            insights.append({
-                'category': 'genealogy',
-                'title': 'Sobrenome Gorgulho - Origem Portuguesa',
-                'description': 'Família Gorgulho tem origem portuguesa no Brasil, com 479 pessoas em SP e 443 em MG',
-                'source': 'forebears.io',
-                'discovered_at': datetime.now().strftime('%Y-%m-%d')
-            })
-        
-        # Business insights
-        if 'Construtora Barbosa Mello' in self.content or 'CBM' in self.content:
-            insights.append({
-                'category': 'business',
-                'title': 'RGVL - Diretor da CBM há ~30 anos',
-                'description': 'Rodrigo Gorgulho é Diretor de Engenharia da Construtora Barbosa Mello desde 1992',
-                'source': 'bmpi.com.br',
-                'discovered_at': datetime.now().strftime('%Y-%m-%d')
-            })
-        
-        # ERH Lanna
-        if 'ERH Lanna' in self.content:
-            insights.append({
-                'category': 'business',
-                'title': 'ERH Lanna Engenharia - Ativa por 26 anos',
-                'description': 'Empresa fundada em 1998 por Henrique Gorgulho, encerrada em junho 2024',
-                'source': 'intel/companies.md',
-                'discovered_at': datetime.now().strftime('%Y-%m-%d')
-            })
+        current_section = 'other'
+        i = 0
+        while i < len(lines):
+            line = lines[i]
+            
+            # Track current section
+            if line.startswith('## '):
+                section_lower = line.lower()
+                if 'genealogy' in section_lower or 'origem' in section_lower:
+                    current_section = 'genealogy'
+                elif 'business' in section_lower or 'empresa' in section_lower:
+                    current_section = 'business'
+                elif 'timeline' in section_lower:
+                    current_section = 'timeline'
+                elif 'legal' in section_lower:
+                    current_section = 'legal'
+                elif 'patrimônio' in section_lower or 'wealth' in section_lower:
+                    current_section = 'wealth'
+            
+            # Parse insight entries (### Title)
+            if line.startswith('### '):
+                title = line[4:].strip()
+                description = ''
+                source = ''
+                tags = ''
+                
+                # Collect details from following lines
+                j = i + 1
+                while j < len(lines) and not lines[j].startswith('### ') and not lines[j].startswith('## '):
+                    detail_line = lines[j].strip()
+                    
+                    # Extract Fact
+                    if detail_line.startswith('**Fact:**') or detail_line.startswith('- **Fact:**'):
+                        desc = detail_line.replace('**Fact:**', '').replace('- **Fact:**', '').strip()
+                        if desc:
+                            description = desc
+                    
+                    # Extract Source
+                    if '**Source:**' in detail_line or '- **Source:**' in detail_line:
+                        src = detail_line.replace('**Source:**', '').replace('- **Source:**', '').strip()
+                        if src:
+                            source = src
+                    
+                    # Extract Tags
+                    if '**Tags:**' in detail_line or '- **Tags:**' in detail_line:
+                        tg = detail_line.replace('**Tags:**', '').replace('- **Tags:**', '').strip()
+                        if tg:
+                            tags = tg
+                    
+                    # Extract CNPJ/Location if present
+                    if '**CNPJ:**' in detail_line:
+                        cnpj = detail_line.replace('**CNPJ:**', '').strip()
+                        if description and cnpj:
+                            description += f' (CNPJ: {cnpj})'
+                    
+                    j += 1
+                
+                # Only add if we have at least a title and description
+                if title and description:
+                    insights.append({
+                        'category': current_section,
+                        'title': title,
+                        'description': description,
+                        'source': source if source else 'INTEL',
+                        'tags': tags,
+                        'discovered_at': datetime.now().strftime('%Y-%m-%d')
+                    })
+                    i = j - 1  # Reset i to last processed line
+            
+            i += 1
         
         return insights
 
