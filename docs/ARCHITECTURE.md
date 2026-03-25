@@ -120,6 +120,15 @@ rgvl/
 
 ## 📋 DECISIONS LOG (Last updated: 2026-03-24)
 
+### Data Architecture (SSOT - Single Source of Truth)
+| Decision | Date | Notes |
+|----------|------|-------|
+| INTEL.md = ONLY non-structured source | 2026-03-24 | Golden source, git-versioned |
+| DB = presentation cache only | 2026-03-24 | NOT a repository |
+| Manual research → INTEL only | 2026-03-24 | NEVER directly to DB |
+| ETL: etl/intel_parser.py | 2026-03-24 | INTEL → structured data |
+| No reverse sync (DB → INTEL) | 2026-03-24 | REMOVED |
+
 ### Database Rules
 | Decision | Date | Notes |
 |----------|------|-------|
