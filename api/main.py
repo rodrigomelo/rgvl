@@ -53,6 +53,10 @@ def check_auth():
     if not request.path.startswith('/api/'):
         return None
     
+    # Skip auth if AUTH_DISABLED is set (for development/testing)
+    if os.getenv('AUTH_DISABLED', 'false').lower() == 'true':
+        return None
+    
     # Check for token
     token = get_token_from_header()
     if not token:
