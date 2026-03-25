@@ -77,6 +77,12 @@ def check_auth():
 from api.routes.family import family_bp
 from api.routes.assets import assets_bp
 from api.routes.legal import legal_bp
+from api.routes.contacts import contacts_bp
+from api.routes.documents import documents_bp
+from api.routes.gazettes import gazettes_bp
+from api.routes.tasks import tasks_bp
+from api.routes.searches import searches_bp
+from api.routes.relationships import relationships_bp
 from api.routes.research import research_bp
 from api.routes.sources import sources_bp
 from api.routes.insights import insights_bp
@@ -89,6 +95,12 @@ app.register_blueprint(research_bp)
 app.register_blueprint(sources_bp)
 app.register_blueprint(insights_bp, url_prefix='/api')
 app.register_blueprint(properties_bp, url_prefix='/api')
+app.register_blueprint(contacts_bp, url_prefix='/api')
+app.register_blueprint(documents_bp, url_prefix='/api')
+app.register_blueprint(gazettes_bp, url_prefix='/api')
+app.register_blueprint(tasks_bp, url_prefix='/api')
+app.register_blueprint(searches_bp, url_prefix='/api')
+app.register_blueprint(relationships_bp, url_prefix='/api')
 
 
 # ============ Root ============
