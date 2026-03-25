@@ -263,15 +263,9 @@ def get_timeline():
         SELECT e.id, e.person_id, p.nome_completo, e.event_type, e.event_date, e.description
         FROM events e LEFT JOIN pessoas p ON e.person_id = p.id
         """)
-        eventos_q = text("""
-        SELECT e.id, e.person_id, p.nome_completo, e.event_type, e.event_date, e.description
-        FROM eventos e LEFT JOIN pessoas p ON e.person_id = p.id
-        """)
-
         rows_e = db.execute(events_q).fetchall()
-        rows_ev = db.execute(eventos_q).fetchall()
 
-        timeline = process_rows(rows_e, 'events') + process_rows(rows_ev, 'eventos')
+        timeline = process_rows(rows_e, 'events')
         timeline.sort(key=lambda x: x['norm_date'])
 
         return jsonify(timeline)

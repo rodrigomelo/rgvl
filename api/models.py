@@ -366,7 +366,7 @@ class Perfil(Base):
 
 class Evento(Base):
     """Life event (birth, death, marriage, career milestone)."""
-    __tablename__ = 'eventos'
+    __tablename__ = 'events'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 

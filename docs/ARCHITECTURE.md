@@ -115,3 +115,37 @@ rgvl/
     ├── FAMILY_TREE.md   # Tree visualization
     └── BUSCAS.md        # Research log
 ```
+
+---
+
+## 📋 DECISIONS LOG (Last updated: 2026-03-24)
+
+### Database Rules
+| Decision | Date | Notes |
+|----------|------|-------|
+| Single DB: `data/rgvl.db` | 2026-03-24 | ONLY this path exists. Never create another DB. |
+| Table names: English only | 2026-03-24 | English: persons, children, companies, etc. Portuguese tables (eventos, etc.) do NOT exist. |
+| DB Schema | 2026-03-24 | 11 tables: persons, children, siblings, nephews, companies, properties, contacts, documents, legal_processes, official_gazettes, research_tasks |
+
+### Project Conventions
+| Decision | Date | Notes |
+|----------|------|-------|
+| Auth: Auth0 SPA | 2026-03-24 | Domain: dev-4mhbzq6x4yvyckmt.us.auth0.com |
+| Portal: port 5002 | 2026-03-24 | Web dashboard |
+| API: port 5003 | 2026-03-24 | REST API |
+| Language: PT for labels, EN for code | 2026-03-24 | User-facing labels in Portuguese, code/docs in English |
+| No commits without approval | 2026-03-23 | Two-layer: Rodrigo → Hermes → Agent |
+
+### Agents
+| Agent | Role |
+|-------|------|
+| Hermes | Orchestrator (you) |
+| Hefesto | Engineering |
+| Athena | UX/UI Design |
+| Apollo | QA/Testing |
+| Artemis | Research |
+| Poseidon | Data Architecture |
+
+---
+
+_This log is updated whenever a significant architectural decision is made._
