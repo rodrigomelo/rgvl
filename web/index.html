@@ -321,6 +321,12 @@
         <a class="nav-item" data-section="companies">🏢 Empresas</a>
         <a class="nav-item" data-section="properties">🏠 Imóveis</a>
             <a class="nav-item" data-section="legal">⚖️ Legal</a>
+            <a class="nav-item" data-section="contacts">📞 Contacts</a>
+            <a class="nav-item" data-section="relationships">👨‍👩‍👧 Relations</a>
+            <a class="nav-item" data-section="tasks">📋 Tasks</a>
+            <a class="nav-item" data-section="documents">📄 Docs</a>
+            <a class="nav-item" data-section="gazettes">📰 Gazettes</a>
+            <a class="nav-item" data-section="searches">🔍 Searches</a>
         <a class="nav-item" data-section="timeline">📅 Timeline</a>
         <a class="nav-item" data-section="sources">📊 Sources</a>
     </nav>
@@ -580,12 +586,18 @@
             const companies = await fetchWithRetry(api+'/assets/companies', [], 2);
             const properties = await fetchWithRetry(api+'/assets/properties', [], 2);
             const legal = await fetchWithRetry(api+'/legal/processes', [], 2);
+            const contacts = await fetchWithRetry(api+'/contacts', [], 2);
+            const relationships = await fetchWithRetry(api+'/relationships', [], 2);
+            const tasks = await fetchWithRetry(api+'/tasks', [], 2);
+            const documents = await fetchWithRetry(api+'/documents', [], 2);
+            const gazettes = await fetchWithRetry(api+'/gazettes', [], 2);
+            const searches = await fetchWithRetry(api+'/searches', [], 2);
             const summary = await fetchWithRetry(api+'/family/summary', {}, 2);
             const timeline = await fetchWithRetry(api+'/family/timeline', [], 2);
             const sources = await fetchWithRetry(api+'/sources/summary', {total_records:0,sources:[]}, 2);
             const records = await fetchWithRetry(api+'/sources/records', {total:0,records:[]}, 2);
             window.__rgvl_records = records;
-            render({tree, bisavos:bisavos||[], avos:avos||[], paisTios:paisTios||[], primos:primos||[], companies:companies||[], properties:properties||[], summary, timeline:timeline||[], sources:sources||{}, records:records||[], legal:legal||[]});
+            render({tree, bisavos:bisavos||[], avos:avos||[], paisTios:paisTios||[], primos:primos||[], companies:companies||[], properties:properties||[], summary, timeline:timeline||[], sources:sources||{}, records:records||[], legal:legal||[], contacts:contacts||[], relationships:relationships||[], tasks:tasks||[], documents:documents||[], gazettes:gazettes||[], searches:searches||[]});
         } catch(e) {
             
             document.getElementById('app').innerHTML = '<div class="section"><h2>⚠️ Erro</h2><p>'+esc(e.message)+'</p><pre>'+esc(e.stack||'')+'</pre></div>';
@@ -889,6 +901,95 @@
                     </div>`).join('')}
             </div>
         </div>
+
+
+        <!-- Contacts -->
+        <div class="section" id="contacts">
+            <div class="section-title">📞 Contacts (${D.contacts.length})</div>
+            <div class="info-grid">
+                ${D.contacts.length === 0 ? '<div class="empty-state">No contacts found</div>' : D.contacts.map(c => `
+                    <div class="company">
+                        <div class="company-name">${esc(c.nome || '-')}</div>
+                        <div class="row"><span class="label">Role</span><span class="value">${esc(c.role || '-')}</span></div>
+                        <div class="row"><span class="label">Company</span><span class="value">${esc(c.empresa || '-')}</span></div>
+                        <div class="row"><span class="label">Phone</span><span class="value">${esc(c.telefone || '-')}</span></div>
+                        <div class="row"><span class="label">Email</span><span class="value">${esc(c.email || '-')}</span></div>
+                        ${c.is_primary ? '<div class="row"><span class="badge badge-ativa">Primary</span></div>' : ''}
+                    </div>`).join('')}
+            </div>
+        </div>
+
+        <!-- Relationships -->
+        <div class="section" id="relationships">
+            <div class="section-title">👨‍👩‍👧 Relationships (${D.relationships.length})</div>
+            <div class="info-grid">
+                ${D.relationships.length === 0 ? '<div class="empty-state">No relationships found</div>' : D.relationships.map(r => `
+                    <div class="company">
+                        <div class="company-name">${r.pessoa_de} → ${r.pessoa_para}</div>
+                        <div class="row"><span class="label">Type</span><span class="value">${esc(r.tipo || '-')}</span></div>
+                        <div class="row"><span class="label">Confirmed</span><span class="value">${r.confirmado ? '✅' : '❓'}</span></div>
+                        ${r.observacao ? `<div class="row"><span class="label">Note</span><span class="value">${esc(r.observacao)}</span></div>` : ''}
+                    </div>`).join('')}
+            </div>
+        </div>
+
+        <!-- Tasks -->
+        <div class="section" id="tasks">
+            <div class="section-title">📋 Tasks (${D.tasks.length})</div>
+            <div class="info-grid">
+                ${D.tasks.length === 0 ? '<div class="empty-state">No tasks found</div>' : D.tasks.map(t => `
+                    <div class="company">
+                        <div class="company-name">${esc(t.tarefa || '-')}</div>
+                        <div class="row"><span class="label">Priority</span><span class="value"><span class="badge ${t.prioridade==='high'?'badge-ativa':'badge-baixada'}">${esc(t.prioridade || '-')}</span></span></div>
+                        <div class="row"><span class="label">Status</span><span class="value">${esc(t.status || '-')}</span></div>
+                        ${t.pessoa_alvo ? `<div class="row"><span class="label">Target</span><span class="value">${esc(t.pessoa_alvo)}</span></div>` : ''}
+                        ${t.resultado ? `<div class="row"><span class="label">Result</span><span class="value">${esc(t.resultado)}</span></div>` : ''}
+                    </div>`).join('')}
+            </div>
+        </div>
+
+        <!-- Documents -->
+        <div class="section" id="documents">
+            <div class="section-title">📄 Documents (${D.documents.length})</div>
+            <div class="info-grid">
+                ${D.documents.length === 0 ? '<div class="empty-state">No documents found</div>' : D.documents.map(d => `
+                    <div class="company">
+                        <div class="company-name">${esc(d.title || '-')}</div>
+                        <div class="row"><span class="label">Type</span><span class="value">${esc(d.doc_type || '-')}</span></div>
+                        ${d.description ? `<div class="row"><span class="label">Description</span><span class="value">${esc(d.description)}</span></div>` : ''}
+                        ${d.issue_date ? `<div class="row"><span class="label">Issue Date</span><span class="value">${fmtDate(d.issue_date)}</span></div>` : ''}
+                    </div>`).join('')}
+            </div>
+        </div>
+
+        <!-- Gazettes -->
+        <div class="section" id="gazettes">
+            <div class="section-title">📰 Official Gazettes (${D.gazettes.length})</div>
+            <div class="info-grid">
+                ${D.gazettes.length === 0 ? '<div class="empty-state">No gazettes found</div>' : D.gazettes.map(g => `
+                    <div class="company">
+                        <div class="company-name">${esc(g.title || '-')}</div>
+                        <div class="row"><span class="label">Source</span><span class="value">${esc(g.source || '-')}</span></div>
+                        <div class="row"><span class="label">Date</span><span class="value">${g.publication_date ? fmtDate(g.publication_date) : '-'}</span></div>
+                        ${g.edition ? `<div class="row"><span class="label">Edition</span><span class="value">${esc(g.edition)}</span></div>` : ''}
+                    </div>`).join('')}
+            </div>
+        </div>
+
+        <!-- Searches -->
+        <div class="section" id="searches">
+            <div class="section-title">🔍 Searches (${D.searches.length})</div>
+            <div class="info-grid">
+                ${D.searches.length === 0 ? '<div class="empty-state">No searches found</div>' : D.searches.map(s => `
+                    <div class="company">
+                        <div class="company-name">${esc(s.query_usada || '-')}</div>
+                        <div class="row"><span class="label">Source</span><span class="value">${esc(s.fonte || '-')}</span></div>
+                        <div class="row"><span class="label">Status</span><span class="value">${esc(s.status || '-')}</span></div>
+                        <div class="row"><span class="label">Date</span><span class="value">${s.data_busca ? fmtDate(s.data_busca) : '-'}</span></div>
+                    </div>`).join('')}
+            </div>
+        </div>
+
 
         <!-- Timeline -->
         <div class="section timeline-section" id="timeline">
