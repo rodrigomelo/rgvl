@@ -77,13 +77,7 @@
         .timeline-section h2 {
             margin-bottom: 16px;
         }
-        .timeline-controls { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
-.timeline-controls select, .timeline-controls label { font-size: 13px; }
-.timeline-year-group { margin-bottom: 16px; }
-.timeline-year-header { font-size: 14px; font-weight: 700; color: var(--primary); padding: 4px 0; border-bottom: 2px solid var(--accent); margin-bottom: 8px; cursor: pointer; }
-.timeline-year-header:hover { color: var(--accent); }
-.timeline-year-header.collapsed + .timeline-year-events { display: none; }
-.timeline-year-header.collapsed::before { content: '▸ '; }
+        
 .timeline-event { position: relative; margin-bottom: 24px; padding: 16px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow); }
         .timeline-event::before { content: ''; position: absolute; left: -26px; top: 20px; width: 14px; height: 14px; border-radius: 50%; border: 3px solid var(--accent); background: var(--primary); }
         .timeline-date { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
@@ -1001,11 +995,6 @@
         <!-- Timeline -->
         <div class="section timeline-section" id="timeline">
             <div class="section-title">📅 Linha do Tempo</div>
-            <div class="timeline-controls">
-                <select id="tl-filter-person"><option value="">All People</option></select>
-                <select id="tl-filter-type"><option value="">All Types</option></select>
-                <label><input type="checkbox" id="tl-filter-approx" checked> Show ~ dates</label>
-            </div>
             <div class="timeline" id="timeline-container">
                 <div class="loading">Carregando eventos...</div>
             </div>
@@ -1049,96 +1038,47 @@
         `;
         initScrollSpy();
         
-        // Render Timeline with filters and grouping
-        function renderTimelineEnhanced(events) {
-            const tl = document.getElementById('timeline-container');
-            if (!tl) return;
-            
-            const personFilter = document.getElementById('tl-filter-person')?.value || '';
-            const typeFilter = document.getElementById('tl-filter-type')?.value || '';
-            const showApprox = document.getElementById('tl-filter-approx')?.checked ?? true;
-            
-            let filtered = events.filter(e => {
-                if (personFilter && (e.person_name || '') !== personFilter) return false;
-                if (typeFilter && (e.event_type || 'default') !== typeFilter) return false;
-                if (!showApprox && e.event_date && String(e.event_date).startsWith('~')) return false;
-                return true;
-            });
-            
-            const byYear = {};
-            filtered.forEach(e => {
-                let year = 'Unknown';
-                if (e.event_date) {
-                    const raw = String(e.event_date).replace('~', '');
-                    const match = raw.match(/\d{4}/);
-                    if (match) year = match[0];
-                }
-                if (!byYear[year]) byYear[year] = [];
-                byYear[year].push(e);
-            });
-            
-            const years = Object.keys(byYear).sort((a, b) => b === 'Unknown' ? 1 : parseInt(b) - parseInt(a));
-            
-            if (years.length === 0) {
-                tl.innerHTML = '<div class="timeline-empty">Nenhum evento encontrado</div>';
-                return;
-            }
-            
-            const typeClasses = {
-                'birth': 'birth', 'death': 'death', 'marriage': 'marriage',
-                'company': 'company', 'legal': 'legal', 'research': 'research',
-                'family_contact': 'family_contact', 'paternity': 'paternity',
-                'name_change': 'name_change', 'default': 'default'
-            };
-            const TL_EMOJI = {'birth':'👶','death':'⚰️','marriage':'💍','company':'🏢','name_change':'✏️','legal':'⚖️','paternity':'🤝','family_contact':'📞','default':'📋'};
-            
-            tl.innerHTML = years.map(year => `
-                <div class="timeline-year-group">
-                    <div class="timeline-year-header" onclick="this.classList.toggle('collapsed')">▸ ${year} (${byYear[year].length})</div>
-                    <div class="timeline-year-events">
-                        ${byYear[year].map(e => {
-                            const isApprox = e.event_date && String(e.event_date).startsWith('~');
-                            const dateDisplay = isApprox 
-                                ? fmtDate(String(e.event_date).substring(1)) + ' <span style="color:#F59E0B;font-size:11px">[~]</span>'
-                                : fmtDate(e.event_date || '-');
-                            const typeKey = e.event_type || 'default';
-                            const cssClass = typeClasses[typeKey] || 'default';
-                            const tlEmoji = TL_EMOJI[typeKey] || '';
-                            const srcType = e.source_type || e.fonte || '';
-                            const sourceBadge = srcType && srcType !== 'eventos' ? ' ' + sourceBadgeHTML(srcType, 'sm') : '';
-                            return `<div class="timeline-event">
-                                <div class="timeline-date">${dateDisplay}</div>
-                                <div class="timeline-person">${esc(e.person_name || 'Unknown')}</div>
-                                <span class="timeline-type ${cssClass}">${tlEmoji} ${esc(typeKey)}</span>${sourceBadge}
-                                <div class="timeline-desc">${esc(e.description || '')}</div>
-                            </div>`;
-                        }).join('')}
-                    </div>
-                </div>
-            `).join('');
-        }
-        
-        function initTimelineFilters(events) {
-            const personSel = document.getElementById('tl-filter-person');
-            const typeSel = document.getElementById('tl-filter-type');
-            if (!personSel || !typeSel) return;
-            
-            const persons = [...new Set(events.map(e => e.person_name).filter(Boolean))].sort();
-            const types = [...new Set(events.map(e => e.event_type).filter(Boolean))].sort();
-            
-            persons.forEach(p => { personSel.innerHTML += `<option value="${esc(p)}">${esc(p)}</option>`; });
-            types.forEach(t => { typeSel.innerHTML += `<option value="${esc(t)}">${esc(t)}</option>`; });
-            
-            personSel.onchange = () => renderTimelineEnhanced(events);
-            typeSel.onchange = () => renderTimelineEnhanced(events);
-            const approxCheck = document.getElementById('tl-filter-approx');
-            if (approxCheck) approxCheck.onchange = () => renderTimelineEnhanced(events);
-        }
-        
+        // Render Timeline
         const tl = document.getElementById('timeline-container');
         if (tl && D.timeline && D.timeline.length > 0) {
-            initTimelineFilters(D.timeline);
-            renderTimelineEnhanced(D.timeline);
+            tl.innerHTML = D.timeline.map(e => {
+                const typeClasses = {
+                    'birth': 'birth', 'death': 'death', 'marriage': 'marriage',
+                    'company': 'company', 'legal': 'legal', 'research': 'research',
+                    'family_contact': 'family_contact', 'paternity': 'paternity',
+                    'name_change': 'name_change', 'default': 'default'
+                };
+                let dateDisplay = '-';
+                if (e.event_date) {
+                    const raw = String(e.event_date);
+                    if (raw.startsWith('~')) {
+                        dateDisplay = fmtDate(raw.substring(1)) + ' <span style="color:var(--text-muted);font-size:11px">(aproximado)</span>';
+                    } else {
+                        dateDisplay = fmtDate(raw);
+                    }
+                }
+                const typeKey = e.event_type || 'default';
+                const cssClass = typeClasses[typeKey] || 'default';
+                const TL_EMOJI = {'birth':'👶','death':'⚰️','marriage':'💍','company':'🏢','name_change':'✏️','legal':'⚖️','paternity':'🤝','family_contact':'📞','default':'📋'};
+                const tlEmoji = TL_EMOJI[typeKey] || '';
+                let sourceBadge = '';
+                const srcType = e.source_type || e.fonte || 'default';
+                if (srcType && srcType !== 'eventos') {
+                    sourceBadge = ' ' + sourceBadgeHTML(srcType, 'sm');
+                }
+                return `<div class="timeline-event">
+                    <div class="timeline-date">${dateDisplay}</div>
+                    <div class="timeline-person">${esc(e.person_name || 'Unknown')}</div>
+                    <span class="timeline-type ${cssClass}">${tlEmoji} ${esc(typeKey)}</span>${sourceBadge}
+                    <div class="timeline-desc">${esc(e.description || '')}</div>
+                </div>`;
+            }).join('');
+        } else if (tl) {
+            tl.innerHTML = '<div class="timeline-empty">Nenhum evento encontrado</div>';
+        }
+
+
+                    renderTimelineEnhanced(D.timeline);
         } else if (tl) {
             tl.innerHTML = '<div class="timeline-empty">Nenhum evento encontrado</div>';
         }
