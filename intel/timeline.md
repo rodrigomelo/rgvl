@@ -5,9 +5,11 @@
 | Evento | Data | Detalhes | Status |
 |--------|------|----------|--------|
 | Nascimento | 1955-12-17 | Belo Horizonte, MG | ✅ Confirmado |
-| Casamento com Rosália | 1992 | Registro Civil | ✅ Confirmado |
 | Diretor Eng. CBM | ~1992 | Construtora Barbosa Mello (CREA/MG 24920/D) | ✅ Confirmado |
+| Casamento com Rosália | 1992 | Registro Civil | ✅ Confirmado |
 | Filho reconhecido | 2017 | Escritura pública | ✅ Confirmado |
+
+**CBM:** Fundada em 11/08/1966 | Fonte: econodata.com.br
 
 ## Rodrigo Melo Lanna (Filho)
 
@@ -38,13 +40,6 @@
 | Nascimento | ~1966 | | ✅ Confirmado |
 
 
-
-## Marcos da Pesquisa (Artemis)
-
-| Evento | Data | Detalhes | Status |
-|--------|------|----------|--------|
-| CPF Regularizado | 2026-03 | Receita Federal | ✅ Confirmado |
-| Ação Azul | 2026-03 | Com Rosália | ✅ Confirmado |
 
 ## Notas
 

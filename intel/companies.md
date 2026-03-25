@@ -4,11 +4,13 @@
 
 ### Construtora Barbosa Mello S.A.
 - **CNPJ:** 17.185.786/0001-61
+- **Data de abertura:** 11/08/1966
 - **Status:** Ativa
 - **Site:** cbmsa.com.br
 - **Perfil:** bnamericas.com (dados da empresa)
 - **Sócios:** Rodrigo Gorgulho de Vasconcellos Lanna (Diretor Eng.)
-- **Capital:** R$ 229.489.195,82 (a confirmar)
+- **Capital:** R$ 229.489.195,82
+- **Fonte:** econodata.com.br
 
 ### ERH Lanna Engenharia Ltda.
 - **CNPJ:** 02.835.659/0001-93
