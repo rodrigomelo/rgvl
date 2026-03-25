@@ -16,14 +16,28 @@ def get_token_from_header():
         return auth_header[7:]
     return None
 
+# Cache for verified tokens (token -> payload, expires in 5 min)
+_token_cache = {}
+_cache_times = {}
+
 def verify_token(token):
-    """Verify JWT token by calling Auth0's userinfo endpoint."""
+    """Verify JWT token by calling Auth0's userinfo endpoint (with caching)."""
+    import time
+    
+    # Check cache first (valid for 5 minutes)
+    if token in _token_cache:
+        cache_time = _cache_times.get(token, 0)
+        if time.time() - cache_time < 300:
+            print(f'[AUTH] Token verified from cache')
+            return _token_cache[token]
+        else:
+            # Expired
+            del _token_cache[token]
+            del _cache_times[token]
+    
     print(f'[AUTH] Verifying token: {token[:30]}...')
     
     try:
-        # Auth0's userinfo endpoint validates the token
-        # If token is valid, returns user info
-        # If invalid, returns 401
         resp = requests.get(
             f'https://{AUTH0_DOMAIN}/userinfo',
             headers={'Authorization': f'Bearer {token}'},
@@ -32,6 +46,9 @@ def verify_token(token):
         
         if resp.status_code == 200:
             payload = resp.json()
+            # Cache the result
+            _token_cache[token] = payload
+            _cache_times[token] = time.time()
             print(f'[AUTH] Token valid, user: {payload.get("sub")}')
             return payload
         else:

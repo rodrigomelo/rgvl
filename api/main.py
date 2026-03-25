@@ -56,9 +56,9 @@ def check_auth():
     # Check for token
     token = get_token_from_header()
     if not token:
-        return jsonify({'error': 'Authentication required'}), 401
+        return jsonify({'error': 'Authorization required'}), 401
     
-    # Verify token
+    # Verify token using Auth0 userinfo endpoint
     payload = verify_token(token)
     if not payload:
         return jsonify({'error': 'Invalid or expired token'}), 401
