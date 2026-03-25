@@ -105,9 +105,9 @@ class TestDBSeeder:
         assert person_id is not None
         
         # Verify update
-        seeder.conn.execute("SELECT cpf FROM pessoas WHERE id = ?", (person_id,))
-        result = seeder.conn.fetchone()
-        assert result['cpf'] == '123.456.789-00'
+        cursor = seeder.conn.execute("SELECT cpf FROM pessoas WHERE id = ?", (person_id,))
+        result = cursor.fetchone()
+        assert result[0] == '123.456.789-00'
         
         seeder.close()
 

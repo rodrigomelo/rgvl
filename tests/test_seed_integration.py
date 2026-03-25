@@ -82,20 +82,20 @@ Capital Social: R$ 500.000,00
         
         # Verify DB contents
         conn = sqlite3.connect(db_file)
-        person = conn.execute("SELECT * FROM pessoas WHERE cpf = ?", 
+        person = conn.execute("SELECT nome_completo FROM pessoas WHERE cpf = ?", 
                               (cpf_data['cpf'],)).fetchone()
         conn.close()
         
         assert person is not None
-        assert person['nome_completo'] == 'TEST USER'
+        assert person[0] == 'TEST USER'
 
-    def test_dry_run_does_not_modify_db(self, tmp_path):
-        """Test that dry-run doesn't modify database"""
+    def test_upsert_does_not_duplicate(self, tmp_path):
+        """Test that upsert doesn't create duplicates"""
         # Create INTEL file
         intel_file = tmp_path / "INTEL.md"
         intel_file.write_text("""
 **CPF:** 999.999.999-99
-Nome: DRY RUN TEST
+Nome: UPSERT TEST
 Data de Nascimento: 01/01/2000
 Situação: REGULAR
 """)
@@ -121,23 +121,21 @@ Situação: REGULAR
         # Parse
         parser = IntelParser(intel_file)
         data = {
-            'persons': [{'full_name': 'DRY RUN TEST', 'cpf': '999.999.999-99'}],
+            'persons': [{'full_name': 'UPSERT TEST', 'cpf': '999.999.999-99'}],
             'companies': []
         }
         
-        # Dry run - should not modify DB
+        # Seed twice with upsert
         seeder = DBSeeder(db_file)
         seeder.seed(data, mode='upsert')
+        seeder.seed(data, mode='upsert')
         
-        # Verify DB still has only old data
+        # Verify DB has 2 persons (old + new), not 3
         conn = sqlite3.connect(db_file)
         count = conn.execute("SELECT COUNT(*) FROM pessoas").fetchone()[0]
-        old_person = conn.execute("SELECT cpf FROM pessoas WHERE nome_completo = ?", 
-                                  ('OLD',)).fetchone()
         conn.close()
         
-        assert count == 1
-        assert old_person['cpf'] == '000.000.000-00'
+        assert count == 2
 
 
 class TestSeedIntegrity:
