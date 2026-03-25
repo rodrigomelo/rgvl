@@ -544,3 +544,24 @@ Step 12: Test: /api/health remains accessible without auth
 3. **Multi-user vs single user:** Is this portal for one person (Rodrigo only) or will there be multiple family members with separate logins?
 4. **Production URL:** What domain will the portal run on in production?
 5. **Existing users:** Are there existing hardcoded users or is this the first auth system?
+
+## Access Control
+
+Access is controlled via `AUTH_ALLOWED_USERS` environment variable.
+
+**Configuration:**
+```bash
+# Single email
+AUTH_ALLOWED_USERS=melorodrigo@gmail.com
+
+# Multiple emails (comma-separated)
+AUTH_ALLOWED_USERS=melorodrigo@gmail.com,outro@email.com
+
+# By domain (any email @domain)
+AUTH_ALLOWED_USERS=gmail.com
+```
+
+**Behavior:**
+- If not set: all authenticated users can access
+- If set: only users with matching email/domain can access
+- Non-authorized users get: `403 Access denied`
