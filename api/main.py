@@ -25,12 +25,11 @@ app = Flask(__name__)
 # CORS is handled manually
 @app.after_request
 def add_cors_headers(response):
-    origin = request.headers.get('Origin', '')
-    if origin in ['http://localhost:5002', 'http://localhost:5003'] or origin.endswith('.vercel.app'):
-        response.headers['Access-Control-Allow-Origin'] = origin
-        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-        response.headers['Access-Control-Max-Age'] = '3600'
+    # Allow any origin for development (restrict in production)
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    response.headers['Access-Control-Max-Age'] = '3600'
     return response
 
 # Public routes that don't require auth
