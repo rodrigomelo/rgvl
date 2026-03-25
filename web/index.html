@@ -320,6 +320,7 @@
         <a class="nav-item" data-section="person">👤 Dados Pessoais</a>
         <a class="nav-item" data-section="companies">🏢 Empresas</a>
         <a class="nav-item" data-section="properties">🏠 Imóveis</a>
+            <a class="nav-item" data-section="legal">⚖️ Legal</a>
         <a class="nav-item" data-section="timeline">📅 Timeline</a>
         <a class="nav-item" data-section="sources">📊 Sources</a>
     </nav>
@@ -578,12 +579,13 @@
             const primos = await fetchWithRetry(api+'/family/generation/4', [], 2);
             const companies = await fetchWithRetry(api+'/assets/companies', [], 2);
             const properties = await fetchWithRetry(api+'/assets/properties', [], 2);
+            const legal = await fetchWithRetry(api+'/legal/processes', [], 2);
             const summary = await fetchWithRetry(api+'/family/summary', {}, 2);
             const timeline = await fetchWithRetry(api+'/family/timeline', [], 2);
             const sources = await fetchWithRetry(api+'/sources/summary', {total_records:0,sources:[]}, 2);
             const records = await fetchWithRetry(api+'/sources/records', {total:0,records:[]}, 2);
             window.__rgvl_records = records;
-            render({tree, bisavos:bisavos||[], avos:avos||[], paisTios:paisTios||[], primos:primos||[], companies:companies||[], properties:properties||[], summary, timeline:timeline||[], sources:sources||{}, records:records||[]});
+            render({tree, bisavos:bisavos||[], avos:avos||[], paisTios:paisTios||[], primos:primos||[], companies:companies||[], properties:properties||[], summary, timeline:timeline||[], sources:sources||{}, records:records||[], legal:legal||[]});
         } catch(e) {
             
             document.getElementById('app').innerHTML = '<div class="section"><h2>⚠️ Erro</h2><p>'+esc(e.message)+'</p><pre>'+esc(e.stack||'')+'</pre></div>';
@@ -867,6 +869,24 @@
                         ${p.cartorio ? `<div class="row"><span class="label">Cartório</span><span class="value">${esc(p.cartorio)}</span></div>` : ''}
                     </div>`;
                 }).join('')}
+            </div>
+        </div>
+
+
+        <!-- Legal -->
+        <div class="section" id="legal">
+            <div class="section-title">⚖️ Processos Judiciais (${D.legal.length})</div>
+            <div class="info-grid">
+                ${D.legal.length === 0 ? '<div class="empty-state">Nenhum processo encontrado</div>' : D.legal.map(p => `
+                    <div class="company">
+                        <div class="company-name">${esc(p.process_number || '-')}</div>
+                        <div class="row"><span class="label">Tribunal</span><span class="value">${esc(p.court || '-')}</span></div>
+                        <div class="row"><span class="label">Assunto</span><span class="value">${esc(p.subject || '-')}</span></div>
+                        <div class="row"><span class="label">Partes</span><span class="value">${esc(p.parties || '-')}</span></div>
+                        <div class="row"><span class="label">Status</span><span class="value"><span class="badge ${p.status==='active'?'badge-ativa':'badge-baixada'}">${esc(p.status || '-')}</span></span></div>
+                        ${p.value ? `<div class="row"><span class="label">Valor</span><span class="value">${fmtMoney(p.value)}</span></div>` : ''}
+                        ${p.fonte ? `<div class="row"><span class="label">Fonte</span><span class="value">${esc(p.fonte)}</span></div>` : ''}
+                    </div>`).join('')}
             </div>
         </div>
 
