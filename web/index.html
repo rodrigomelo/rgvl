@@ -522,14 +522,17 @@
                         const r = await fetch(url, { headers });
                         if (r.ok) return await r.json();
                         if (r.status !== 401 || i === retries) return fallback;
-                        // Wait a bit before retry (token verification in progress)
-                        await new Promise(resolve => setTimeout(resolve, 500));
+                        // Wait before retry (token verification in progress)
+                        await new Promise(resolve => setTimeout(resolve, 800));
                     } catch(e) {
                         if (i === retries) return fallback;
                     }
                 }
                 return fallback;
             }
+
+            // Small delay to let Auth0 token verification complete
+            await new Promise(resolve => setTimeout(resolve, 300));
 
             const [tree, bisavos, avos, paisTios, primos, companies, properties, summary, timeline, sources, records] = await Promise.all([
                 fetchWithRetry(api+'/family/person/'+PAI_ID+'/tree', null),
