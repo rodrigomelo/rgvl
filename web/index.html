@@ -531,22 +531,19 @@
                 return fallback;
             }
 
-            // Small delay to let Auth0 token verification complete
-            await new Promise(resolve => setTimeout(resolve, 300));
-
-            const [tree, bisavos, avos, paisTios, primos, companies, properties, summary, timeline, sources, records] = await Promise.all([
-                fetchWithRetry(api+'/family/person/'+PAI_ID+'/tree', null),
-                fetchWithRetry(api+'/family/generation/1', []),
-                fetchWithRetry(api+'/family/generation/2', []),
-                fetchWithRetry(api+'/family/generation/3', []),
-                fetchWithRetry(api+'/family/generation/4', []),
-                fetchWithRetry(api+'/assets/companies', []),
-                fetchWithRetry(api+'/assets/properties', []),
-                fetchWithRetry(api+'/family/summary', {}),
-                fetchWithRetry(api+'/family/timeline', []),
-                fetchWithRetry(api+'/sources/summary', {total_records:0,sources:[]}),
-                fetchWithRetry(api+'/sources/records', {total:0,records:[]}),
-            ]);
+            // Fetch sequentially to allow token cache to populate
+            // First request caches the token verification, rest are fast
+            const tree = await fetchWithRetry(api+'/family/person/'+PAI_ID+'/tree', null, 2);
+            const bisavos = await fetchWithRetry(api+'/family/generation/1', [], 2);
+            const avos = await fetchWithRetry(api+'/family/generation/2', [], 2);
+            const paisTios = await fetchWithRetry(api+'/family/generation/3', [], 2);
+            const primos = await fetchWithRetry(api+'/family/generation/4', [], 2);
+            const companies = await fetchWithRetry(api+'/assets/companies', [], 2);
+            const properties = await fetchWithRetry(api+'/assets/properties', [], 2);
+            const summary = await fetchWithRetry(api+'/family/summary', {}, 2);
+            const timeline = await fetchWithRetry(api+'/family/timeline', [], 2);
+            const sources = await fetchWithRetry(api+'/sources/summary', {total_records:0,sources:[]}, 2);
+            const records = await fetchWithRetry(api+'/sources/records', {total:0,records:[]}, 2);
             window.__rgvl_records = records;
             render({tree, bisavos:bisavos||[], avos:avos||[], paisTios:paisTios||[], primos:primos||[], companies:companies||[], properties:properties||[], summary, timeline:timeline||[], sources:sources||{}, records:records||[]});
         } catch(e) {
