@@ -547,21 +547,15 @@ Step 12: Test: /api/health remains accessible without auth
 
 ## Access Control
 
-Access is controlled via `AUTH_ALLOWED_USERS` environment variable.
+Access is controlled via **Auth0 native user management**.
 
-**Configuration:**
-```bash
-# Single email
-AUTH_ALLOWED_USERS=melorodrigo@gmail.com
+**Adding users:**
+1. Go to Auth0 Dashboard → Users
+2. Click "Create User" or "Invite User"
+3. User receives email → creates account → accesses portal
 
-# Multiple emails (comma-separated)
-AUTH_ALLOWED_USERS=melorodrigo@gmail.com,outro@email.com
+**Removing users:**
+1. Go to Auth0 Dashboard → Users
+2. Find user → click "Actions" → "Block" or "Delete"
 
-# By domain (any email @domain)
-AUTH_ALLOWED_USERS=gmail.com
-```
-
-**Behavior:**
-- If not set: all authenticated users can access
-- If set: only users with matching email/domain can access
-- Non-authorized users get: `403 Access denied`
+No configuration needed in the application - Auth0 handles everything.
