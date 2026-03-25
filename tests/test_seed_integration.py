@@ -141,6 +141,74 @@ Situação: REGULAR
 class TestSeedIntegrity:
     """Integrity tests for seed process"""
 
+    def test_all_events_have_valid_person_id(self, tmp_path):
+        """All events should have valid person_id after seeding"""
+        # Create INTEL file with person-linked events
+        intel_file = tmp_path / "INTEL.md"
+        intel_file.write_text("""
+## CPF Data
+**CPF:** 111.111.111-11
+Nome: TEST PERSON
+Data de Nascimento: 01/01/1980
+Situação: REGULAR
+""")
+        
+        # Create DB with persons table
+        db_file = tmp_path / "test.db"
+        conn = sqlite3.connect(db_file)
+        conn.execute("""
+            CREATE TABLE pessoas (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome_completo TEXT,
+                cpf TEXT,
+                data_nascimento TEXT,
+                observacoes TEXT,
+                fonte TEXT,
+                created_at TEXT
+            )
+        """)
+        conn.execute("""
+            CREATE TABLE events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                person_id INTEGER,
+                event_type TEXT,
+                description TEXT,
+                event_date TEXT,
+                fonte TEXT,
+                created_at TEXT
+            )
+        """)
+        # Insert person first
+        conn.execute("""
+            INSERT INTO pessoas (nome_completo, cpf)
+            VALUES ('TEST PERSON', '111.111.111-11')
+        """)
+        conn.commit()
+        conn.close()
+        
+        # Parse and seed
+        parser = IntelParser(intel_file)
+        cpf_data = parser.extract_cpf_data()
+        
+        seeder = DBSeeder(db_file)
+        seeder.connect()
+        
+        # Insert event with person_id
+        person_id = 1  # First person
+        seeder.conn.execute("""
+            INSERT INTO events (person_id, event_type, description, event_date, fonte, created_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (person_id, 'birth', 'Test birth', '01/01/1980', 'INTEL.md', '2024-01-01'))
+        seeder.conn.commit()
+        seeder.close()
+        
+        # Verify all events have valid person_id
+        conn = sqlite3.connect(db_file)
+        null_events = conn.execute("SELECT COUNT(*) FROM events WHERE person_id IS NULL").fetchone()[0]
+        conn.close()
+        
+        assert null_events == 0, f"Found {null_events} events with NULL person_id"
+
     def test_counts_match(self, tmp_path):
         """INTEL parsed counts should match DB counts"""
         intel_file = tmp_path / "INTEL.md"
