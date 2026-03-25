@@ -516,17 +516,17 @@
             const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
             const [tree, bisavos, avos, paisTios, primos, companies, properties, summary, timeline, sources, records] = await Promise.all([
-                fetch(api+'/family/person/'+PAI_ID+'/tree', { headers }).then(r=>{  return r.json(); }).catch(e=>{  return null; }),
-                fetch(api+'/family/generation/1', { headers }).then(r=>r.json()).catch(()=>[]),
-                fetch(api+'/family/generation/2', { headers }).then(r=>r.json()).catch(()=>[]),
-                fetch(api+'/family/generation/3', { headers }).then(r=>r.json()).catch(()=>[]),
-                fetch(api+'/family/generation/4', { headers }).then(r=>r.json()).catch(()=>[]),
-                fetch(api+'/assets/companies', { headers }).then(r=>r.json()).catch(()=>[]),
-                fetch(api+'/assets/properties', { headers }).then(r=>r.json()).catch(()=>[]),
-                fetch(api+'/family/summary', { headers }).then(r=>r.json()).catch(()=>{}),
-                fetch(api+'/family/timeline', { headers }).then(r=>r.json()).catch(()=>[]),
-                fetch(api+'/sources/summary', { headers }).then(r=>r.json()).catch(()=>({total_records:0,sources:[]})),
-                fetch(api+'/sources/records', { headers }).then(r=>r.json()).catch(()=>({total:0,records:[]})),
+                fetch(api+'/family/person/'+PAI_ID+'/tree', { headers }).then(r=>r.ok ? r.json() : null).catch(()=>null),
+                fetch(api+'/family/generation/1', { headers }).then(r=>r.ok ? r.json() : []).catch(()=>[]),
+                fetch(api+'/family/generation/2', { headers }).then(r=>r.ok ? r.json() : []).catch(()=>[]),
+                fetch(api+'/family/generation/3', { headers }).then(r=>r.ok ? r.json() : []).catch(()=>[]),
+                fetch(api+'/family/generation/4', { headers }).then(r=>r.ok ? r.json() : []).catch(()=>[]),
+                fetch(api+'/assets/companies', { headers }).then(r=>r.ok ? r.json() : []).catch(()=>[]),
+                fetch(api+'/assets/properties', { headers }).then(r=>r.ok ? r.json() : []).catch(()=>[]),
+                fetch(api+'/family/summary', { headers }).then(r=>r.ok ? r.json() : {}).catch(()=>{}),
+                fetch(api+'/family/timeline', { headers }).then(r=>r.ok ? r.json() : []).catch(()=>[]),
+                fetch(api+'/sources/summary', { headers }).then(r=>r.ok ? r.json() : {total_records:0,sources:[]}).catch(()=>({total_records:0,sources:[]})),
+                fetch(api+'/sources/records', { headers }).then(r=>r.ok ? r.json() : {total:0,records:[]}).catch(()=>({total:0,records:[]})),
             ]);
             window.__rgvl_records = records;
             render({tree, bisavos:bisavos||[], avos:avos||[], paisTios:paisTios||[], primos:primos||[], companies:companies||[], properties:properties||[], summary, timeline:timeline||[], sources:sources||{}, records:records||[]});
