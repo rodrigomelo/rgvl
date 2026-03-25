@@ -131,6 +131,14 @@ class IntelParser:
             })
         return persons
     
+    # Backward compatibility
+    def extract_cpf_data(self) -> dict:
+        """Legacy method - use extract_persons() instead"""
+        persons = self.extract_persons()
+        if persons:
+            return persons[0]
+        return {}
+    
     def extract_insights(self) -> list:
         """Extract insights/facts from INTEL content"""
         insights = []
@@ -338,7 +346,7 @@ class DBSeeder:
                   insight.get('discovered_at')))
             return cursor.lastrowid
     
-    def seed(self, data: dict):
+    def seed(self, data: dict, mode: str = 'upsert'):
         """Seed DB from parsed data"""
         self.connect()
         

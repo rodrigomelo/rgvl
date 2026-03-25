@@ -80,6 +80,7 @@ from api.routes.legal import legal_bp
 from api.routes.research import research_bp
 from api.routes.sources import sources_bp
 from api.routes.insights import insights_bp
+from api.routes.properties import properties_bp
 
 app.register_blueprint(family_bp)
 app.register_blueprint(assets_bp)
@@ -87,6 +88,7 @@ app.register_blueprint(legal_bp)
 app.register_blueprint(research_bp)
 app.register_blueprint(sources_bp)
 app.register_blueprint(insights_bp, url_prefix='/api')
+app.register_blueprint(properties_bp, url_prefix='/api')
 
 
 # ============ Root ============
