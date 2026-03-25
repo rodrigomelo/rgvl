@@ -44,13 +44,43 @@ class IntelParser:
         }
     
     def extract_events(self) -> list:
-        """Extract life events"""
+        """Extract life events from markdown tables with section tracking"""
         events = []
         lines = self.content.split('\n')
+        
+        current_person = 'Rodrigo Gorgulho de Vasconcellos Lanna'  # default
+        current_section = ''
+        
         for i, line in enumerate(lines):
+            # Track current person from section headers
+            if line.startswith('## '):
+                section_title = line[3:].strip()
+                # Check if it's a person section
+                if 'Rodrigo Gorgulho' in section_title:
+                    current_person = 'Rodrigo Gorgulho de Vasconcellos Lanna'
+                elif 'Rodrigo Melo' in section_title:
+                    current_person = 'Rodrigo Melo Lanna'
+                elif 'Edmundo' in section_title and 'Avô' in section_title:
+                    current_person = 'Edmundo de Vasconcellos Lanna'
+                elif 'Nice' in section_title:
+                    current_person = 'Nice Gorgulho de Vasconcellos Lanna'
+                elif 'Henrique' in section_title:
+                    current_person = 'Henrique Gorgulho de Vasconcellos Lanna'
+                elif 'Marcos' in section_title:
+                    current_person = 'Research'  # not a family person
+            
+            # Find event table
             if '| Evento |' in line or '| Evento|' in line:
-                for j in range(i+1, min(i+20, len(lines))):
-                    row = lines[j]
+                # Process rows until next header or empty row
+                for j in range(i+1, min(i+30, len(lines))):
+                    row = lines[j].strip()
+                    
+                    # Stop at next header or section
+                    if row.startswith('## ') or row.startswith('##Notas'):
+                        break
+                    if not row:
+                        continue
+                    
                     if '|' in row and '---' not in row:
                         parts = [p.strip() for p in row.split('|')]
                         if len(parts) >= 4:
@@ -58,16 +88,23 @@ class IntelParser:
                             date = parts[2]
                             details = parts[3]
                             
-                            if not event_name:
+                            # Skip header rows or empty
+                            if not event_name or event_name == 'Evento' or event_name == 'Details':
+                                continue
+                            if date == 'Data' or date == 'Date':
                                 continue
                             
                             event_type = 'other'
-                            if 'Nascimento' in event_name or 'nascimento' in event_name.lower():
+                            if 'Nascimento' in event_name or 'nasc' in event_name.lower():
                                 event_type = 'birth'
                             elif 'Falecimento' in event_name or 'óbito' in event_name.lower():
                                 event_type = 'death'
                             elif 'Casamento' in event_name or 'casamento' in event_name.lower():
                                 event_type = 'marriage'
+                            
+                            # Skip "Data | Detalhes" placeholder
+                            if event_name == 'Data' or details == 'Detalhes':
+                                continue
                             
                             # Handle approximate dates
                             is_approximate = date.startswith('~') if date else False
@@ -76,13 +113,15 @@ class IntelParser:
                             if clean_date and len(clean_date) == 4 and clean_date.isdigit():
                                 is_approximate = True
                             
+                            desc = details
                             if is_approximate:
-                                details = f"[~] {details}"
+                                desc = f"[~] {details}"
                             
                             events.append({
                                 'event_type': event_type,
                                 'event_date': clean_date,
-                                'description': details,
+                                'description': f"{event_name}: {desc}",
+                                'person_name': current_person,
                                 'source': self.filepath.name if self.filepath else 'INTEL.md'
                             })
         return events
