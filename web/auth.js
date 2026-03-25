@@ -43,7 +43,7 @@ function logout(reason) {
 }
 
 // Handle callback - extract token from URL hash
-function handleCallback() {
+async function handleCallback() {
     const hash = window.location.hash;
     if (!hash) return null;
     
