@@ -8,14 +8,14 @@ RGVL (Rodrigo Gorgulho de Vasconcellos Lanna) is a research platform for genealo
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     INTEL.md (narrative)                    │
-│              Manual research, long-term knowledge            │
+│                     intel/ (modular)                        │
+│  master.md | timeline.md | companies.md | legal.md | etc.   │
 └─────────────────────────┬───────────────────────────────────┘
-                          │ seed.py (manual)
+                          │ etl/seed.py (ETL)
                           ▼
 ┌─────────────────────────────────────────────────────────────┐
-│              SQLite Database (operational)                    │
-│   pessoas | relacionamentos | empresas | tarefas | buscas    │
+│              SQLite Database (presentation cache)            │
+│   persons | events | companies | legal_processes | etc.     │
 └─────────────────────────┬───────────────────────────────────┘
                           │ collectors (automated)
                           ▼
@@ -35,10 +35,10 @@ RGVL (Rodrigo Gorgulho de Vasconcellos Lanna) is a research platform for genealo
 
 ## Key Principles
 
-1. **INTEL.md** = source of truth for narrative/context (manual)
-2. **Database** = operational state (automated collectors)
-3. **seed.py** = populate DB from INTEL (one-way, manual)
-4. **sync_to_intel.py** = append DB changes to INTEL (closes the loop)
+1. **intel/*.md** = source of truth for structured knowledge (manual research)
+2. **Database** = presentation cache only (NOT a repository)
+3. **etl/seed.py** = ETL layer: intel/*.md → DB (one-way, manual)
+4. **NEVER** insert data directly into DB without passing through ETL
 
 ## Sync Mechanism
 
@@ -104,16 +104,21 @@ rgvl/
 │   └── routes/          # API route blueprints
 ├── web/                 # Web dashboard (port 5002)
 ├── etl/
-│   ├── seed.py          # Populate DB from INTEL.md
-│   └── sync_to_intel.py # Sync DB changes → INTEL.md
-├── database/
-│   ├── schema.sql       # Reference DDL
-│   ├── last_sync.txt    # Sync timestamp marker
-│   └── rgvl.db         # SQLite database
+│   └── seed.py          # ETL: intel/*.md → DB
+├── intel/               # Modular intelligence files
+│   ├── master.md        # Index
+│   ├── timeline.md      # Events (birth, death, marriage, etc.)
+│   ├── companies.md     # Companies and participations
+│   ├── legal.md         # Legal processes
+│   ├── properties.md    # Properties and addresses
+│   ├── family.md        # Family network
+│   └── contacts.md      # Contacts
+├── data/
+│   └── rgvl.db         # SQLite database (presentation cache)
 └── docs/
-    ├── INTEL.md         # Knowledge base
-    ├── FAMILY_TREE.md   # Tree visualization
-    └── BUSCAS.md        # Research log
+    ├── INTEL.md         # Legacy knowledge base
+    ├── ARCHITECTURE.md  # This file
+    └── MASTER_PLAN.md   # Project master plan
 ```
 
 ---
@@ -135,6 +140,29 @@ rgvl/
 | Single DB: `data/rgvl.db` | 2026-03-24 | ONLY this path exists. Never create another DB. |
 | Table names: English only | 2026-03-24 | English: persons, children, companies, etc. Portuguese tables (eventos, etc.) do NOT exist. |
 | DB Schema | 2026-03-24 | 11 tables: persons, children, siblings, nephews, companies, properties, contacts, documents, legal_processes, official_gazettes, research_tasks |
+
+### Modular INTEL Structure (2026-03-24)
+| Decision | Notes |
+|----------|-------|
+| intel/*.md modular | Separated by domain: timeline, companies, legal, properties, family, contacts |
+| intel/master.md | Index linking all modular files |
+| ETL: seed.py | Reads from intel/*.md, outputs to DB |
+| Data flow | intel/*.md → seed.py → DB → API → Web |
+
+### Data Quality Fixes (2026-03-24)
+| Decision | Notes |
+|----------|-------|
+| person_id linking | Parser now correctly links events to persons by name |
+| ~ prefix for year-only dates | Shows as "aproximado" in UI |
+| Rodrigo Melo vs RGVL separation | Son (ID=11) and father (ID=6) events kept separate |
+| Rodrigo Melo's personal events | Removed from RGVL timeline (privacy) |
+
+### Team Rules (2026-03-24)
+| Decision | Notes |
+|----------|-------|
+| Channel #rgvl | RGVL project ONLY — never Palmeiras or other projects |
+| Approval flow | Agent → Hermes → Rodrigo (never directly to Rodrigo) |
+| INTEL = source of truth | All data must go through INTEL before DB |
 
 ### Project Conventions
 | Decision | Date | Notes |
