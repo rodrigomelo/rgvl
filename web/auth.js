@@ -119,8 +119,7 @@ function renderUserMenu() {
     if (!container) return;
     
     if (isAuthenticated()) {
-        const name = user.name || user.email || 'User';
-        const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        const name = (user && (user.name || user.email)) || 'Usuário';
         container.innerHTML = `
             <div class="user-menu">
                 <span class="user-name">${escapeHtml(name)}</span>

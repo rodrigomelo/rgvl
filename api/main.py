@@ -22,7 +22,16 @@ Base.metadata.create_all(bind=engine)
 
 # App
 app = Flask(__name__)
-CORS(app)
+# CORS is handled manually
+@app.after_request
+def add_cors_headers(response):
+    origin = request.headers.get('Origin', '')
+    if origin in ['http://localhost:5002', 'http://localhost:5003'] or origin.endswith('.vercel.app'):
+        response.headers['Access-Control-Allow-Origin'] = origin
+        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+        response.headers['Access-Control-Max-Age'] = '3600'
+    return response
 
 # Public routes that don't require auth
 PUBLIC_ROUTES = ['/', '/api/health', '/api/stats', '/api/search']
@@ -31,6 +40,10 @@ PUBLIC_ROUTES = ['/', '/api/health', '/api/stats', '/api/search']
 def check_auth():
     """Check if route requires authentication"""
     from flask import request, jsonify, g
+    
+    # Always allow OPTIONS requests (CORS preflight)
+    if request.method == 'OPTIONS':
+        return None
     
     # Skip auth for public routes
     if request.path in PUBLIC_ROUTES:
