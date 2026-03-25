@@ -30,7 +30,7 @@
   - Edmundo Gonçalves Lanna (advogado)
   - Edmundo de V. Lanna Filho (engenheiro na CBM desde 2006)
   - Júnia Gorgulho de V. Lanna (advogada, OAB)
-  - ⚠️ Obituário "Edmundo Lanna, dono do Buona Tav" em 2022 — verificar se é este Edmundo
+  
 
 ## Geração 5 — Filhos
 - [A confirmar]
@@ -39,4 +39,4 @@
 - LinkedIn: linkedin.com/in/edmundo-lanna-1b25308a
 - linkedin.com/in/henrique-lanna-47999732
 - linkedin.com/in/marcelo-ibrahim-lana
-- em.com.br: obituário Edmundo Lanna (2022) — NECESSITA CONFIRMAÇÃO
+

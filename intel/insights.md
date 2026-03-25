@@ -8,11 +8,7 @@
 - **Source:** forebears.io
 - **Tags:** origem, família, genealogy
 
-### Edmundo Lanna - Obituário 2022
-- **Fact:** "Edmundo Lanna, empresário, dono do Restaurante Buona Tavola em BH" faleceu em 2022
-- **Source:** em.com.br
-- **Status:** ⚠️ NECESSITA CONFIRMAÇÃO se é pai de RGVL
-- **Tags:** genealogy, obituary
+
 
 ### Henrique Gorgulho de V. Lanna
 - **Fact:** Irmão de RGVL, LinkedIn: Rx Digital Odontologia / Simão Radiografias

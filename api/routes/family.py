@@ -254,13 +254,13 @@ def get_timeline():
                         'norm_date': norm_date or '9999-12-31',
                         'approx': approx,
                         'description': desc,
-                        'source': source
+                        'source': r[6] if len(r) > 6 else source, 'confidence': r[7] if len(r) > 7 else 'medium'
                     })
             return out
 
         # Query both tables
         events_q = text("""
-        SELECT e.id, e.person_id, p.nome_completo, e.event_type, e.event_date, e.description
+        SELECT e.id, e.person_id, p.nome_completo, e.event_type, e.event_date, e.description, e.source, e.confidence
         FROM events e LEFT JOIN pessoas p ON e.person_id = p.id
         """)
         rows_e = db.execute(events_q).fetchall()

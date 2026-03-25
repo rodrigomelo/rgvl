@@ -363,11 +363,23 @@ class DBSeeder:
             result = cursor.fetchone()
             person_id = result['id'] if result else None
         
+        # Check for duplicate before inserting
         cursor.execute("""
-            INSERT INTO events (person_id, event_type, event_date, description, reference_table, reference_id)
-            VALUES (?, ?, ?, ?, 'INTEL', NULL)
+            SELECT id FROM events 
+            WHERE person_id = ? AND event_date = ? AND description = ?
+        """, (person_id, event.get('event_date'), event.get('description')))
+        
+        existing = cursor.fetchone()
+        if existing:
+            return existing['id']  # Already exists, skip
+        
+        cursor.execute("""
+            INSERT INTO events (person_id, event_type, event_date, description, reference_table, reference_id, source, confidence)
+            VALUES (?, ?, ?, ?, 'INTEL', NULL, ?, ?)
         """, (person_id, event.get('event_type'), event.get('event_date'),
-              event.get('description')))
+              event.get('description'), 
+              event.get('source', 'INTEL'),
+              event.get('confidence', 'medium')))
         return cursor.lastrowid
     
     def upsert_insight(self, insight: dict) -> int:
