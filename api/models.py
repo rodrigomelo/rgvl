@@ -424,15 +424,3 @@ class TarefaPesquisa(Base):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
-
-class Insight(Base):
-    __tablename__ = 'insights'
-    
-    id = Column(Integer, primary_key=True)
-    category = Column(String(50))
-    title = Column(String(200))
-    description = Column(Text)
-    source = Column(String(100))
-    tags = Column(String(200))
-    discovered_at = Column(Date)
-    created_at = Column(DateTime, default=datetime.utcnow)
