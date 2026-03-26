@@ -629,6 +629,14 @@
     }
 
     function render(D) {
+        // Hide nav items for empty sections
+        const hideEmpty = (id, data) => {
+            const el = document.querySelector(`.nav-item[data-section="${id}"]`);
+            if (el) el.style.display = (data && data.length > 0) ? '' : 'none';
+        };
+        hideEmpty('gazettes', D.gazettes);
+        hideEmpty('documents', D.documents);
+
         const t = D.tree || {};
         const p = t || {};
         const spouse = t.conjuge || null;
@@ -929,9 +937,9 @@
 
 <!-- Gazettes -->
         <div class="section" id="gazettes">
-            <div class="section-title">📰 Diários Oficiais (${D.gazettes.length})</div>
+            <div class="section-title">📰 Diários Oficiais (${(D.gazettes||[]).length})</div>
             <div class="info-grid">
-                ${D.gazettes.length === 0 ? '<div class="empty-state">Nenhuma gazette encontrada</div>' : D.gazettes.map(g => `
+                ${(D.gazettes||[]).length === 0 ? '<div class="empty-state">Nenhuma gazette encontrada</div>' : (D.gazettes||[]).map(g => `
                     <div class="company">
                         <div class="company-name">${esc(g.title || '-')}</div>
                         <div class="row"><span class="label">Fonte</span><span class="value">${esc(g.source || '-')}</span></div>
@@ -944,9 +952,9 @@
 
         <!-- Documents -->
         <div class="section" id="documents">
-            <div class="section-title">📄 Documentos (${D.documents.length})</div>
+            <div class="section-title">📄 Documentos (${(D.documents||[]).length})</div>
             <div class="info-grid">
-                ${D.documents.length === 0 ? '<div class="empty-state">Nenhum documento encontrado</div>' : D.documents.map(d => `
+                ${(D.documents||[]).length === 0 ? '<div class="empty-state">Nenhum documento encontrado</div>' : (D.documents||[]).map(d => `
                     <div class="company">
                         <div class="company-name">${esc(d.title || '-')}</div>
                         <div class="row"><span class="label">Tipo</span><span class="value">${esc(d.doc_type || '-')}</span></div>
