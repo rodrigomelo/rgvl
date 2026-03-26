@@ -1080,7 +1080,7 @@
                     if (window.__tl_filters.types.has(t)) window.__tl_filters.types.delete(t);
                     else window.__tl_filters.types.add(t);
                     window.__updateActiveFilterBar();
-                    renderTimelineFiltered(window.__tl_data.timeline);
+                    window.__renderTimelineFiltered(window.__tl_data.timeline);
                 };
                 btn.dataset.type = t;
                 typeGroup.appendChild(btn);
@@ -1095,7 +1095,7 @@
                     if (window.__tl_filters.sources.has(s)) window.__tl_filters.sources.delete(s);
                     else window.__tl_filters.sources.add(s);
                     window.__updateActiveFilterBar();
-                    renderTimelineFiltered(window.__tl_data.timeline);
+                    window.__renderTimelineFiltered(window.__tl_data.timeline);
                 };
                 btn.dataset.source = s;
                 srcGroup.appendChild(btn);
@@ -1125,18 +1125,18 @@
             let html = '<span class="timeline-filter-active-label">Filtros:</span>';
             types.forEach(t => {
                 const typeLabels = {birth:'👶 Nascimento',death:'⚰️ Falecimento',marriage:'💍 Casamento',company:'🏢 Empresa',career:'💼 Carreira',name_change:'✏️ Nome',paternity:'🤝 Paternidade',legal:'⚖️ Legal',family_contact:'📞 Contato',default:'📋 Outro'};
-                html += `<button class="timeline-filter-active-tag type-${t}" style="background:inherit;color:inherit;border:1px solid currentColor;opacity:0.9"><span>${typeLabels[t]||t}</span> <span class="tl-close" onclick="(function(){window.__tl_filters.types.delete('${t}');window.__updateActiveFilterBar();renderTimelineFiltered(window.__tl_data.timeline)})()">✕</span></button>`;
+                html += `<button class="timeline-filter-active-tag type-${t}" style="background:inherit;color:inherit;border:1px solid currentColor;opacity:0.9"><span>${typeLabels[t]||t}</span> <span class="tl-close" onclick="(function(){window.__tl_filters.types.delete('${t}');window.__updateActiveFilterBar();window.__renderTimelineFiltered(window.__tl_data.timeline)})()">✕</span></button>`;
             });
             sources.forEach(s => {
                 const label = s.startsWith('intel') ? 'INTEL' : s.replace('.md','').toUpperCase();
-                html += `<button class="timeline-filter-active-tag" style="background:#E0E7FF;color:#3730A3;border:1px solid #C7D2FE"><span>${label}</span> <span class="tl-close" onclick="(function(){window.__tl_filters.sources.delete('${s}');window.__updateActiveFilterBar();renderTimelineFiltered(window.__tl_data.timeline)})()">✕</span></button>`;
+                html += `<button class="timeline-filter-active-tag" style="background:#E0E7FF;color:#3730A3;border:1px solid #C7D2FE"><span>${label}</span> <span class="tl-close" onclick="(function(){window.__tl_filters.sources.delete('${s}');window.__updateActiveFilterBar();window.__renderTimelineFiltered(window.__tl_data.timeline)})()">✕</span></button>`;
             });
-            html += `<button class="timeline-clear-all" onclick="(function(){window.__tl_filters.types.clear();window.__tl_filters.sources.clear();window.__updateActiveFilterBar();renderTimelineFiltered(window.__tl_data.timeline)})()">Limpar tudo</button>`;
+            html += `<button class="timeline-clear-all" onclick="(function(){window.__tl_filters.types.clear();window.__tl_filters.sources.clear();window.__updateActiveFilterBar();window.__renderTimelineFiltered(window.__tl_data.timeline)})()">Limpar tudo</button>`;
             bar.innerHTML = html;
         }
 
         // Filtered timeline render
-        function renderTimelineFiltered(events) {
+        window.__renderTimelineFiltered = function(events) {
             const tl = document.getElementById('timeline-container');
             if (!tl) return;
             const { types, sources } = window.__tl_filters;
@@ -1167,7 +1167,7 @@
         // Render Timeline
         const tl = document.getElementById('timeline-container');
         if (tl && D.timeline && D.timeline.length > 0) {
-            renderTimelineFiltered(D.timeline);
+            window.__renderTimelineFiltered(D.timeline);
         } else if (tl) {
             tl.innerHTML = '<div class="timeline-empty">Nenhum evento encontrado</div>';
         }
