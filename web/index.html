@@ -1087,6 +1087,8 @@
             renderSources({ sources: D.sources, total_records: D.sources.reduce((s,x) => s + (x.count||0), 0) });
         }
 
+
+    } // end render(D)
         // Show main content after auth check
         function showMainContent() {
             document.getElementById('login-screen').style.display = 'none';
