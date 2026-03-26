@@ -1066,8 +1066,9 @@
             D.timeline.forEach(e => {
                 const t = e.event_type || 'default';
                 if (t !== 'research') { typeCounts[t] = (typeCounts[t] || 0) + 1; }
-                const s = e.source_type || e.fonte || 'INTEL';
-                if (s && s !== 'eventos') srcCounts[s] = (srcCounts[s] || 0) + 1;
+                const raw = e.source_type || e.source || '';
+                const s = raw.startsWith('intel') ? 'INTEL' : (raw.replace('.md','').toUpperCase() || 'OUTRO');
+                if (s && s !== 'EVENTOS') srcCounts[s] = (srcCounts[s] || 0) + 1;
             });
             const typeLabels = {birth:'👶 Nascimento',death:'⚰️ Falecimento',marriage:'💍 Casamento',company:'🏢 Empresa',career:'💼 Carreira',name_change:'✏️ Nome',paternity:'🤝 Paternidade',legal:'⚖️ Legal',family_contact:'📞 Contato',default:'📋 Outro'};
             const typeGroup = document.getElementById('tl-filter-types');
@@ -1131,7 +1132,7 @@
             const active = types.size > 0 || sources.size > 0;
             const filtered = active ? events.filter(e => {
                 if (types.size > 0 && !types.has(e.event_type || 'default')) return false;
-                if (sources.size > 0) { const s = e.source_type || e.fonte || 'INTEL'; if (!sources.has(s)) return false; }
+                if (sources.size > 0) { const raw = e.source_type || e.source || ''; const s = raw.startsWith('intel') ? 'INTEL' : (raw.replace('.md','').toUpperCase() || 'OUTRO'); if (!sources.has(s)) return false; }
                 return true;
             }) : events;
             if (filtered.length === 0) { tl.innerHTML = '<div class="timeline-empty-filtered">Nenhum evento para os filtros selecionados</div>'; return; }
@@ -1144,7 +1145,7 @@
                 const tlEmoji = TL_EMOJI[typeKey] || '';
                 const TL_LABELS = {birth:'Nascimento',death:'Falecimento',marriage:'Casamento',company:'Empresa',career:'Carreira',name_change:'Nome',paternity:'Paternidade',legal:'Legal',family_contact:'Contato',default:'Outro'};
                 const tlLabel = TL_LABELS[typeKey] || typeKey;
-                let sourceBadge = ''; const rawFonte = e.source_type || e.fonte || '';
+                let sourceBadge = ''; const rawFonte = e.source_type || e.source || '';
                 const fonteKey = rawFonte.startsWith('intel') ? 'inteli' : rawFonte.replace('.md','').toLowerCase();
                 if (fonteKey && fonteKey !== 'eventos') sourceBadge = ' ' + sourceBadgeHTML(fonteKey, 'sm');
                 return `<div class="timeline-event"><div class="timeline-date">${dateDisplay}</div><div class="timeline-person">${esc(e.person_name||'Unknown')}</div><span class="timeline-type ${cssClass}">${tlEmoji} ${esc(tlLabel)}</span>${sourceBadge}<div class="timeline-desc">${esc(e.description||'')}</div></div>`;
