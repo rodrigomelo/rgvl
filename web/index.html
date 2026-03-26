@@ -927,7 +927,36 @@
         </div>
 
 
-        <!-- Contacts -->
+<!-- Gazettes -->
+        <div class="section" id="gazettes">
+            <div class="section-title">📰 Diários Oficiais (${D.gazettes.length})</div>
+            <div class="info-grid">
+                ${D.gazettes.length === 0 ? '<div class="empty-state">Nenhuma gazette encontrada</div>' : D.gazettes.map(g => `
+                    <div class="company">
+                        <div class="company-name">${esc(g.title || '-')}</div>
+                        <div class="row"><span class="label">Fonte</span><span class="value">${esc(g.source || '-')}</span></div>
+                        ${g.publication_date ? `<div class="row"><span class="label">Data</span><span class="value">${fmtDate(g.publication_date)}</span></div>` : ''}
+                        ${g.edition ? `<div class="row"><span class="label">Edição</span><span class="value">${esc(g.edition)}</span></div>` : ''}
+                    </div>`).join('')}
+            </div>
+        </div>
+
+
+        <!-- Documents -->
+        <div class="section" id="documents">
+            <div class="section-title">📄 Documentos (${D.documents.length})</div>
+            <div class="info-grid">
+                ${D.documents.length === 0 ? '<div class="empty-state">Nenhum documento encontrado</div>' : D.documents.map(d => `
+                    <div class="company">
+                        <div class="company-name">${esc(d.title || '-')}</div>
+                        <div class="row"><span class="label">Tipo</span><span class="value">${esc(d.doc_type || '-')}</span></div>
+                        ${d.description ? `<div class="row"><span class="label">Descrição</span><span class="value">${esc(d.description)}</span></div>` : ''}
+                        ${d.issue_date ? `<div class="row"><span class="label">Data</span><span class="value">${fmtDate(d.issue_date)}</span></div>` : ''}
+                    </div>`).join('')}
+            </div>
+        </div>
+
+<!-- Contacts -->
         <div class="section" id="contacts">
             <div class="section-title">📞 Contacts (${D.contacts.length})</div>
             <div class="info-grid">
@@ -943,7 +972,12 @@
             </div>
         </div>
 
-        <!-- Timeline -->
+                <!-- Sources -->
+        <div class="section" id="sources">
+            <div class="section-title">📜 Fontes dos Dados</div>
+
+
+<!-- Timeline -->
         <div class="section timeline-section" id="timeline">
             <div class="section-title">📅 Linha do Tempo</div>
             <div class="timeline-filters" id="timeline-filters">
@@ -955,10 +989,6 @@
                 <div class="loading">Carregando eventos...</div>
             </div>
         </div>
-
-        <!-- Sources -->
-        <div class="section" id="sources">
-            <div class="section-title">📜 Fontes dos Dados</div>
 
             <!-- Confidence bar -->
             <div class="sources-confidence" id="sources-confidence" style="display:none">
