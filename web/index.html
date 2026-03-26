@@ -188,6 +188,7 @@
             .source-badge { padding: 6px 10px; }
         }
 
+        .empty-state { text-align: center; color: var(--text-muted); padding: 24px; font-size: 13px; }
         .loading { text-align: center; padding: 60px; color: var(--text-muted); }
         .spinner { border: 4px solid var(--border); border-top: 4px solid var(--primary); border-radius: 50%; width: 36px; height: 36px; animation: spin 1s linear infinite; margin: 0 auto 12px; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -347,15 +348,16 @@
     <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
     <nav class="sidebar" id="sidebar">
         <a class="nav-item active" data-section="overview">📊 Visão Geral</a>
+        <a class="nav-item" data-section="patrimony">💰 Patrimônio</a>
         <a class="nav-item" data-section="family">👨‍👩‍👧 Família</a>
         <a class="nav-item" data-section="person">👤 Dados Pessoais</a>
         <a class="nav-item" data-section="companies">🏢 Empresas</a>
         <a class="nav-item" data-section="properties">🏠 Imóveis</a>
         <a class="nav-item" data-section="legal">⚖️ Legal</a>
-        <a class="nav-item" data-section="gazettes">📰 Gazettes</a>
-        <a class="nav-item" data-section="documents">📄 Docs</a>
-        <a class="nav-item" data-section="contacts">📞 Contacts</a>
-        <a class="nav-item" data-section="sources">📊 Sources</a>
+        <a class="nav-item" data-section="contacts">📞 Contatos</a>
+        <a class="nav-item" data-section="gazettes">📰 Diários Oficiais</a>
+        <a class="nav-item" data-section="documents">📄 Documentos</a>
+        <a class="nav-item" data-section="sources">📊 Fontes</a>
         <a class="nav-item" data-section="timeline">📅 Timeline</a>
     </nav>
     <!-- Login Screen -->
@@ -640,6 +642,7 @@
         };
         hideEmpty('gazettes', D.gazettes);
         hideEmpty('documents', D.documents);
+        hideEmpty('contacts', D.contacts);
 
         const t = D.tree || {};
         const p = t || {};
@@ -674,7 +677,7 @@
         </div>
 
         <!-- Patrimony -->
-        <div class="section">
+        <div class="section" id="patrimony">
             <div class="section-title">💰 Patrimônio Estimado</div>
             <div class="stats">
                 <div class="stat" style="border:2px solid var(--primary);background:#F0F4FA">
@@ -940,17 +943,30 @@
 
 
         <!-- Contacts -->
-        
+        <div class="section" id="contacts">
+            <div class="section-title">📞 Contatos (${D.contacts.length})</div>
+            <div class="info-grid">
+                ${D.contacts.length === 0 ? '<div class="empty-state">Nenhum contato encontrado</div>' : D.contacts.map(c => `
+                    <div class="company">
+                        <div class="company-name">${esc(c.nome || '-')}</div>
+                        <div class="row"><span class="label">Função</span><span class="value">${esc(c.role || '-')}</span></div>
+                        <div class="row"><span class="label">Empresa</span><span class="value">${esc(c.empresa || '-')}</span></div>
+                        <div class="row"><span class="label">Telefone</span><span class="value">${esc(c.telefone || '-')}</span></div>
+                        <div class="row"><span class="label">Email</span><span class="value">${esc(c.email || '-')}</span></div>
+                        ${c.is_primary ? '<div class="row"><span class="badge badge-ativa">Principal</span></div>' : ''}
+                    </div>`).join('')}
+            </div>
+        </div>
 
         <!-- Gazettes -->
         <div class="section" id="gazettes">
             <div class="section-title">📰 Diários Oficiais (${(D.gazettes||[]).length})</div>
             <div class="info-grid">
-                ${(D.gazettes||[]).length === 0 ? '<div class="empty-state">Nenhuma gazette encontrada</div>' : (D.gazettes||[]).map(g => `
+                ${(D.gazettes||[]).length === 0 ? '<div class="empty-state">Nenhum diário oficial encontrado</div>' : (D.gazettes||[]).map(g => `
                     <div class="company">
                         <div class="company-name">${esc(g.title || '-')}</div>
-                        <div class="row"><span class="label">Source</span><span class="value">${esc(g.source || '-')}</span></div>
-                        <div class="row"><span class="label">Date</span><span class="value">${g.publication_date ? fmtDate(g.publication_date) : '-'}</span></div>
+                        <div class="row"><span class="label">Fonte</span><span class="value">${esc(g.source || '-')}</span></div>
+                        <div class="row"><span class="label">Data</span><span class="value">${g.publication_date ? fmtDate(g.publication_date) : '-'}</span></div>
                         ${g.edition ? `<div class="row"><span class="label">Edição</span><span class="value">${esc(g.edition)}</span></div>` : ''}
                     </div>`).join('')}
             </div>
@@ -970,22 +986,7 @@
             </div>
         </div>
 
-        <div class="section" id="contacts">
-            <div class="section-title">📞 Contacts (${D.contacts.length})</div>
-            <div class="info-grid">
-                ${D.contacts.length === 0 ? '<div class="empty-state">No contacts found</div>' : D.contacts.map(c => `
-                    <div class="company">
-                        <div class="company-name">${esc(c.nome || '-')}</div>
-                        <div class="row"><span class="label">Role</span><span class="value">${esc(c.role || '-')}</span></div>
-                        <div class="row"><span class="label">Company</span><span class="value">${esc(c.empresa || '-')}</span></div>
-                        <div class="row"><span class="label">Phone</span><span class="value">${esc(c.telefone || '-')}</span></div>
-                        <div class="row"><span class="label">Email</span><span class="value">${esc(c.email || '-')}</span></div>
-                        ${c.is_primary ? '<div class="row"><span class="badge badge-ativa">Primary</span></div>' : ''}
-                    </div>`).join('')}
-            </div>
-        </div>
-
-        <!-- Timeline -->
+        <!-- Sources -->
         <div class="section" id="sources">
             <div class="section-title">📜 Fontes dos Dados</div>
 
@@ -1021,7 +1022,7 @@
             </div>
         </div>
 
-        
+        <!-- Timeline -->
         <div class="section timeline-section" id="timeline">
             <div class="section-title">📅 Linha do Tempo</div>
             <div class="timeline-filters" id="timeline-filters">
