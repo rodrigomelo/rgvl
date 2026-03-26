@@ -112,6 +112,7 @@
         .timeline-type.family_contact { background: #E0E7FF; color: #3730A3; }
         .timeline-type.research, .timeline-event.research { display: none !important; }
         .timeline-type.career { background: #D1FAE5; color: #065F46; }
+        .tl-tags { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
         .timeline-desc { font-size: 14px; color: var(--text); line-height: 1.5; }
         .timeline-empty { text-align: center; color: var(--text-muted); padding: 40px; }
         /* Timeline filters */
@@ -414,7 +415,7 @@
         GMAIL:'GMAIL', GOOGLE_DRIVE:'GOOGLE DRIVE', TJMG:'TJMG', TJSP:'TJSP',
         JUCEMG:'JUCEMG', JUCEP:'JUCEP', CARTORIO:'CARTÓRIO', WEB_SEARCH:'WEB SEARCH',
         FAMILYSEARCH:'FAMILYSEARCH', MANUAL:'MANUAL', CREA:'CREA', LINKEDIN:'LINKEDIN',
-        ESCADADOR:'ESCAVADOR', INTEL:'INTEL', TIMELINE:'TIMELINE', COMPANIES:'COMPANIES', DEFAULT:'OUTRO'
+        ESCADADOR:'ESCAVADOR', INTEL:'INTEL', TIMELINE:'OUTRO', COMPANIES:'COMPANIES', DEFAULT:'OUTRO'
     };
 
     function sourceBadgeHTML(type, size) {
@@ -1067,7 +1068,7 @@
                 const t = e.event_type || 'default';
                 if (t !== 'research') { typeCounts[t] = (typeCounts[t] || 0) + 1; }
                 const raw = e.source_type || e.source || '';
-                const s = raw.startsWith('intel') ? 'INTEL' : (raw.replace('.md','').toUpperCase() || 'OUTRO');
+                const s = raw.startsWith('intel') ? 'INTEL' : (raw && raw !== 'timeline.md' ? raw.replace('.md','').toUpperCase() : 'OUTRO');
                 if (s && s !== 'EVENTOS') { srcCounts[s] = (srcCounts[s] || 0) + 1; }
             });
             const typeLabels = {birth:'👶 NASCIMENTO',death:'⚰️ FALECIMENTO',marriage:'💍 CASAMENTO',company:'🏢 EMPRESA',career:'💼 CARREIRA',name_change:'✏️ NOME',paternity:'🤝 PATERNIDADE',legal:'⚖️ LEGAL',family_contact:'📞 CONTATO',default:'📋 OUTRO'};
@@ -1087,7 +1088,7 @@
             });
             const srcGroup = document.getElementById('tl-filter-sources');
             Object.keys(srcCounts).sort().forEach(raw => {
-                const s = raw.startsWith('intel') ? 'INTEL' : (raw.replace('.md','').toUpperCase() || 'OUTRO');
+                const s = raw.startsWith('intel') ? 'INTEL' : (raw && raw !== 'timeline.md' ? raw.replace('.md','').toUpperCase() : 'OUTRO');
                 const btn = document.createElement('button');
                 btn.className = 'timeline-filter-tag source-tag';
                 btn.innerHTML = s + ` <span class="count">${srcCounts[raw]}</span>`;
@@ -1142,7 +1143,7 @@
             const active = types.size > 0 || sources.size > 0;
             const filtered = active ? events.filter(e => {
                 if (types.size > 0 && !types.has(e.event_type || 'default')) return false;
-                if (sources.size > 0) { const raw = e.source_type || e.source || ''; const s = raw.startsWith('intel') ? 'INTEL' : (raw.replace('.md','').toUpperCase() || 'OUTRO'); if (!sources.has(s)) return false; }
+                if (sources.size > 0) { const raw = e.source_type || e.source || ''; const s = raw.startsWith('intel') ? 'INTEL' : (raw && raw !== 'timeline.md' ? raw.replace('.md','').toUpperCase() : 'OUTRO'); if (!sources.has(s)) return false; }
                 return true;
             }) : events;
             if (filtered.length === 0) { tl.innerHTML = '<div class="timeline-empty-filtered">Nenhum evento para os filtros selecionados</div>'; return; }
@@ -1156,9 +1157,9 @@
                 const TL_LABELS = {birth:'NASCIMENTO',death:'FALECIMENTO',marriage:'CASAMENTO',company:'EMPRESA',career:'CARREIRA',name_change:'NOME',paternity:'PATERNIDADE',legal:'LEGAL',family_contact:'CONTATO',default:'OUTRO'};
                 const tlLabel = TL_LABELS[typeKey] || typeKey;
                 let sourceBadge = ''; const rawFonte = e.source_type || e.source || '';
-                const fonteKey = rawFonte.startsWith('intel') ? 'INTEL' : (rawFonte.replace('.md','').toUpperCase() || 'OUTRO');
+                const fonteKey = rawFonte.startsWith('intel') ? 'INTEL' : (rawFonte && rawFonte !== 'timeline.md' ? rawFonte.replace('.md','').toUpperCase() : 'OUTRO');
                 if (fonteKey && fonteKey !== 'EVENTOS') sourceBadge = ' ' + sourceBadgeHTML(fonteKey, 'sm');
-                return `<div class="timeline-event"><div class="timeline-date">${dateDisplay}</div><div class="timeline-person">${esc(e.person_name||'Unknown')}</div><span class="timeline-type ${cssClass}">${tlEmoji} ${esc(tlLabel)}</span>${sourceBadge}<div class="timeline-desc">${esc(e.description||'')}</div></div>`;
+                return `<div class="timeline-event"><div class="timeline-date">${dateDisplay}</div><div class="timeline-person">${esc(e.person_name||'Unknown')}</div><div class="tl-tags"><span class="timeline-type ${cssClass}">${tlEmoji} ${esc(tlLabel)}</span>${sourceBadge}</div><div class="timeline-desc">${esc(e.description||'')}</div></div>`;
             }).join('');
             window.__updateActiveFilterBar();
         }
