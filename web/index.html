@@ -1144,8 +1144,9 @@
                 const tlEmoji = TL_EMOJI[typeKey] || '';
                 const TL_LABELS = {birth:'Nascimento',death:'Falecimento',marriage:'Casamento',company:'Empresa',career:'Carreira',name_change:'Nome',paternity:'Paternidade',legal:'Legal',family_contact:'Contato',default:'Outro'};
                 const tlLabel = TL_LABELS[typeKey] || typeKey;
-                let sourceBadge = ''; const srcType = e.source_type || e.fonte || 'default';
-                if (srcType && srcType !== 'eventos') sourceBadge = ' ' + sourceBadgeHTML(srcType, 'sm');
+                let sourceBadge = ''; const rawFonte = e.source_type || e.fonte || '';
+                const fonteKey = rawFonte.startsWith('intel') ? 'inteli' : rawFonte.replace('.md','').toLowerCase();
+                if (fonteKey && fonteKey !== 'eventos') sourceBadge = ' ' + sourceBadgeHTML(fonteKey, 'sm');
                 return `<div class="timeline-event"><div class="timeline-date">${dateDisplay}</div><div class="timeline-person">${esc(e.person_name||'Unknown')}</div><span class="timeline-type ${cssClass}">${tlEmoji} ${esc(tlLabel)}</span>${sourceBadge}<div class="timeline-desc">${esc(e.description||'')}</div></div>`;
             }).join('');
             updateActiveFilterBar();
