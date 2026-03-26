@@ -1011,34 +1011,38 @@
             });
             const typeLabels = {birth:'👶 NASCIMENTO',death:'⚰️ FALECIMENTO',marriage:'💍 CASAMENTO',company:'🏢 EMPRESA',career:'💼 CARREIRA',name_change:'✏️ NOME',paternity:'🤝 PATERNIDADE',legal:'⚖️ LEGAL',family_contact:'📞 CONTATO',default:'📋 OUTRO'};
             const typeGroup = document.getElementById('tl-filter-types');
-            Object.keys(typeCounts).sort().forEach(t => {
-                const btn = document.createElement('button');
-                btn.className = 'timeline-filter-tag type-' + t;
-                btn.innerHTML = (typeLabels[t] || t) + ` <span class="count">${typeCounts[t]}</span>`;
-                btn.onclick = () => {
-                    if (window.__tl_filters.types.has(t)) window.__tl_filters.types.delete(t);
-                    else window.__tl_filters.types.add(t);
-                    window.__updateActiveFilterBar();
-                    window.__renderTimelineFiltered(window.__tl_data.timeline);
-                };
-                btn.dataset.type = t;
-                typeGroup.appendChild(btn);
-            });
+            if (typeGroup) {
+                Object.keys(typeCounts).sort().forEach(t => {
+                    const btn = document.createElement('button');
+                    btn.className = 'timeline-filter-tag type-' + t;
+                    btn.innerHTML = (typeLabels[t] || t) + ` <span class="count">${typeCounts[t]}</span>`;
+                    btn.onclick = () => {
+                        if (window.__tl_filters.types.has(t)) window.__tl_filters.types.delete(t);
+                        else window.__tl_filters.types.add(t);
+                        window.__updateActiveFilterBar();
+                        window.__renderTimelineFiltered(window.__tl_data.timeline);
+                    };
+                    btn.dataset.type = t;
+                    typeGroup.appendChild(btn);
+                });
+            }
             const srcGroup = document.getElementById('tl-filter-sources');
-            Object.keys(srcCounts).sort().forEach(raw => {
-                const s = raw.startsWith('intel') ? 'INTEL' : (raw && raw !== 'timeline.md' ? raw.replace('.md','').toUpperCase() : 'OUTRO');
-                const btn = document.createElement('button');
-                btn.className = 'timeline-filter-tag source-tag';
-                btn.innerHTML = s + ` <span class="count">${srcCounts[raw]}</span>`;
-                btn.onclick = () => {
-                    if (window.__tl_filters.sources.has(s)) window.__tl_filters.sources.delete(s);
-                    else window.__tl_filters.sources.add(s);
-                    window.__updateActiveFilterBar();
-                    window.__renderTimelineFiltered(window.__tl_data.timeline);
-                };
-                btn.dataset.source = s;
-                srcGroup.appendChild(btn);
-            });
+            if (srcGroup) {
+                Object.keys(srcCounts).sort().forEach(raw => {
+                    const s = raw.startsWith('intel') ? 'INTEL' : (raw && raw !== 'timeline.md' ? raw.replace('.md','').toUpperCase() : 'OUTRO');
+                    const btn = document.createElement('button');
+                    btn.className = 'timeline-filter-tag source-tag';
+                    btn.innerHTML = s + ` <span class="count">${srcCounts[raw]}</span>`;
+                    btn.onclick = () => {
+                        if (window.__tl_filters.sources.has(s)) window.__tl_filters.sources.delete(s);
+                        else window.__tl_filters.sources.add(s);
+                        window.__updateActiveFilterBar();
+                        window.__renderTimelineFiltered(window.__tl_data.timeline);
+                    };
+                    btn.dataset.source = s;
+                    srcGroup.appendChild(btn);
+                });
+            }
             window.__tl_filters._built = true;
         }
 
