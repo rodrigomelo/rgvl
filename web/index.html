@@ -111,8 +111,28 @@
         .timeline-type.paternity { background: #FCE7F3; color: #9D174D; }
         .timeline-type.family_contact { background: #E0E7FF; color: #3730A3; }
         .timeline-type.research, .timeline-event.research { display: none !important; }
+        .timeline-type.career { background: #D1FAE5; color: #065F46; }
         .timeline-desc { font-size: 14px; color: var(--text); line-height: 1.5; }
         .timeline-empty { text-align: center; color: var(--text-muted); padding: 40px; }
+        /* Timeline filters */
+        .timeline-filters { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; align-items: center; }
+        .timeline-filter-group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+        .timeline-filter-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 4px; }
+        .timeline-filter-tag { padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--bg); color: var(--text-muted); transition: all 0.15s; user-select: none; }
+        .timeline-filter-tag:hover { border-color: var(--primary); color: var(--primary); }
+        .timeline-filter-tag.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .timeline-filter-tag.type-birth.active { background: #065F46; border-color: #065F46; }
+        .timeline-filter-tag.type-death.active { background: #374151; border-color: #374151; }
+        .timeline-filter-tag.type-marriage.active { background: #92400E; border-color: #92400E; }
+        .timeline-filter-tag.type-company.active { background: #1D4ED8; border-color: #1D4ED8; }
+        .timeline-filter-tag.type-career.active { background: #065F46; border-color: #065F46; }
+        .timeline-filter-tag.type-name_change.active { background: #6D28D9; border-color: #6D28D9; }
+        .timeline-filter-tag.type-paternity.active { background: #9D174D; border-color: #9D174D; }
+        .timeline-filter-tag.type-legal.active { background: #92400E; border-color: #92400E; }
+        .timeline-filter-tag.type-family_contact.active { background: #3730A3; border-color: #3730A3; }
+        .timeline-filter-tag.type-default.active { background: var(--primary); border-color: var(--primary); }
+        .timeline-filter-tag.source-active { background: var(--secondary); border-color: var(--secondary); color: white; }
+        .timeline-filter-tag .count { opacity: 0.7; margin-left: 3px; }
         .sources-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
         .source-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
         .source-name { font-weight: 600; font-size: 13px; color: var(--primary); margin-bottom: 6px; word-break: break-word; }
@@ -979,6 +999,10 @@
         <!-- Timeline -->
         <div class="section timeline-section" id="timeline">
             <div class="section-title">📅 Linha do Tempo</div>
+            <div class="timeline-filters" id="timeline-filters">
+                <div class="timeline-filter-group" id="tl-filter-types"><span class="timeline-filter-label">Tipo:</span></div>
+                <div class="timeline-filter-group" id="tl-filter-sources"><span class="timeline-filter-label">Fonte:</span></div>
+            </div>
             <div class="timeline" id="timeline-container">
                 <div class="loading">Carregando eventos...</div>
             </div>
@@ -1022,41 +1046,80 @@
         `;
         initScrollSpy();
         
+        // Timeline filter state (persists across re-renders)
+        window.__tl_filters = window.__tl_filters || { types: new Set(), sources: new Set(), _built: false };
+
+        // Build filter tags once
+        if (!window.__tl_filters._built && D.timeline && D.timeline.length > 0) {
+            const typeCounts = {}, srcCounts = {};
+            D.timeline.forEach(e => {
+                const t = e.event_type || 'default';
+                typeCounts[t] = (typeCounts[t] || 0) + 1;
+                const s = e.source_type || e.fonte || 'INTEL';
+                if (s && s !== 'eventos') srcCounts[s] = (srcCounts[s] || 0) + 1;
+            });
+            const typeLabels = {birth:'👶 Nasc',death:'⚰️ Falec',marriage:'💍 Casam',company:'🏢 Empresa',career:'💼 Carreira',name_change:'✏️ Nome',paternity:'🤝 Pat.',legal:'⚖️ Legal',family_contact:'📞 Contato',default:'📋 Outro'};
+            const typeGroup = document.getElementById('tl-filter-types');
+            Object.keys(typeCounts).sort().forEach(t => {
+                const btn = document.createElement('button');
+                btn.className = 'timeline-filter-tag type-' + t + (window.__tl_filters.types.has(t) ? ' active' : '');
+                btn.innerHTML = (typeLabels[t] || t) + ` <span class="count">${typeCounts[t]}</span>`;
+                btn.onclick = () => {
+                    if (window.__tl_filters.types.has(t)) window.__tl_filters.types.delete(t);
+                    else window.__tl_filters.types.add(t);
+                    document.querySelectorAll('#tl-filter-types .timeline-filter-tag').forEach(b => b.classList.toggle('active', window.__tl_filters.types.has(b.dataset.type)));
+                    renderTimelineFiltered(D.timeline);
+                };
+                btn.dataset.type = t;
+                typeGroup.appendChild(btn);
+            });
+            const srcGroup = document.getElementById('tl-filter-sources');
+            Object.keys(srcCounts).sort().forEach(s => {
+                const label = s.replace('intel/','').replace('.md','').replace('timeline','INTEL').replace('companies','Empresas');
+                const btn = document.createElement('button');
+                btn.className = 'timeline-filter-tag' + (window.__tl_filters.sources.has(s) ? ' source-active' : '');
+                btn.innerHTML = label + ` <span class="count">${srcCounts[s]}</span>`;
+                btn.onclick = () => {
+                    if (window.__tl_filters.sources.has(s)) window.__tl_filters.sources.delete(s);
+                    else window.__tl_filters.sources.add(s);
+                    btn.classList.toggle('source-active', window.__tl_filters.sources.has(s));
+                    renderTimelineFiltered(D.timeline);
+                };
+                btn.dataset.source = s;
+                srcGroup.appendChild(btn);
+            });
+            window.__tl_filters._built = true;
+        }
+
+        // Filtered timeline render
+        function renderTimelineFiltered(events) {
+            const tl = document.getElementById('timeline-container');
+            if (!tl) return;
+            const { types, sources } = window.__tl_filters;
+            const active = types.size > 0 || sources.size > 0;
+            const filtered = active ? events.filter(e => {
+                if (types.size > 0 && !types.has(e.event_type || 'default')) return false;
+                if (sources.size > 0) { const s = e.source_type || e.fonte || 'INTEL'; if (!sources.has(s)) return false; }
+                return true;
+            }) : events;
+            if (filtered.length === 0) { tl.innerHTML = '<div class="timeline-empty">Nenhum evento para os filtros selecionados</div>'; return; }
+            const typeClasses = {'birth':'birth','death':'death','marriage':'marriage','company':'company','legal':'legal','research':'research','family_contact':'family_contact','paternity':'paternity','name_change':'name_change','career':'career','default':'default'};
+            const TL_EMOJI = {'birth':'👶','death':'⚰️','marriage':'💍','company':'🏢','name_change':'✏️','paternity':'🤝','career':'💼','legal':'⚖️','family_contact':'📞','default':'📋'};
+            tl.innerHTML = filtered.map(e => {
+                let dateDisplay = '-';
+                if (e.event_date) { const raw = String(e.event_date); dateDisplay = raw.startsWith('~') ? fmtDate(raw.substring(1)) + ' <span style="color:var(--text-muted);font-size:11px">(aprox.)</span>' : fmtDate(raw); }
+                const typeKey = e.event_type || 'default', cssClass = typeClasses[typeKey] || 'default';
+                const tlEmoji = TL_EMOJI[typeKey] || '';
+                let sourceBadge = ''; const srcType = e.source_type || e.fonte || 'default';
+                if (srcType && srcType !== 'eventos') sourceBadge = ' ' + sourceBadgeHTML(srcType, 'sm');
+                return `<div class="timeline-event"><div class="timeline-date">${dateDisplay}</div><div class="timeline-person">${esc(e.person_name||'Unknown')}</div><span class="timeline-type ${cssClass}">${tlEmoji} ${esc(typeKey)}</span>${sourceBadge}<div class="timeline-desc">${esc(e.description||'')}</div></div>`;
+            }).join('');
+        }
+
         // Render Timeline
         const tl = document.getElementById('timeline-container');
         if (tl && D.timeline && D.timeline.length > 0) {
-            tl.innerHTML = D.timeline.map(e => {
-                const typeClasses = {
-                    'birth': 'birth', 'death': 'death', 'marriage': 'marriage',
-                    'company': 'company', 'legal': 'legal', 'research': 'research',
-                    'family_contact': 'family_contact', 'paternity': 'paternity',
-                    'name_change': 'name_change', 'default': 'default'
-                };
-                let dateDisplay = '-';
-                if (e.event_date) {
-                    const raw = String(e.event_date);
-                    if (raw.startsWith('~')) {
-                        dateDisplay = fmtDate(raw.substring(1)) + ' <span style="color:var(--text-muted);font-size:11px">(aproximado)</span>';
-                    } else {
-                        dateDisplay = fmtDate(raw);
-                    }
-                }
-                const typeKey = e.event_type || 'default';
-                const cssClass = typeClasses[typeKey] || 'default';
-                const TL_EMOJI = {'birth':'👶','death':'⚰️','marriage':'💍','company':'🏢','name_change':'✏️','legal':'⚖️','paternity':'🤝','family_contact':'📞','default':'📋'};
-                const tlEmoji = TL_EMOJI[typeKey] || '';
-                let sourceBadge = '';
-                const srcType = e.source_type || e.fonte || 'default';
-                if (srcType && srcType !== 'eventos') {
-                    sourceBadge = ' ' + sourceBadgeHTML(srcType, 'sm');
-                }
-                return `<div class="timeline-event">
-                    <div class="timeline-date">${dateDisplay}</div>
-                    <div class="timeline-person">${esc(e.person_name || 'Unknown')}</div>
-                    <span class="timeline-type ${cssClass}">${tlEmoji} ${esc(typeKey)}</span>${sourceBadge}
-                    <div class="timeline-desc">${esc(e.description || '')}</div>
-                </div>`;
-            }).join('');
+            renderTimelineFiltered(D.timeline);
         } else if (tl) {
             tl.innerHTML = '<div class="timeline-empty">Nenhum evento encontrado</div>';
         }
