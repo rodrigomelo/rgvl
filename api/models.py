@@ -378,6 +378,8 @@ class Evento(Base):
     # Provenance
     reference_table = Column(String(50))                     # Source table (pessoas, empresas, etc.)
     reference_id = Column(Integer)                          # Source row ID
+    confidence = Column(String(20))                         # high, medium, low
+    source = Column(String(100))                            # Source of the event data
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     __table_args__ = (

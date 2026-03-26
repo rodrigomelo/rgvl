@@ -6,16 +6,15 @@ as a "Recent Discoveries" section to INTEL.md.
 
 This closes the loop: collectors write to DB → sync updates INTEL.
 
-Supported tables: pessoas, empresas_familia, relacionamentos, tarefas_pesquisa
+Supported tables: pessoas, empresas_familia, relacionamentos, tarefas_pesquisa, events, legal_processes
 
 NOT covered by this sync (silent skip — add formatter if needed later):
   - imoveis         (Imovel)
-  - processos_judiciais (ProcessoJudicial)
-  - documentos  (Documento)
-  - contatos    (Contato)
+  - documentos      (Documento)
+  - contatos        (Contato)
   - diarios_oficiais (DiarioOficial)
-  - perfis     (Perfil)
-  - events     (Evento)
+  - perfis          (Perfil)
+  - buscas_realizadas
 
 Usage:
     cd rgvl && python -m etl.sync_to_intel
@@ -33,7 +32,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from api.db import get_session
-from api.models import Pessoa, Empresa, Relacionamento, TarefaPesquisa
+from api.models import Pessoa, Empresa, Relacionamento, TarefaPesquisa, Evento, ProcessoJudicial
 
 INTEL_PATH = PROJECT_ROOT / 'docs' / 'INTEL.md'
 SYNC_MARKER_FILE = PROJECT_ROOT / 'database' / 'last_sync.txt'
@@ -195,6 +194,62 @@ def _task_summary(t: TarefaPesquisa) -> str:
     return '\n'.join(lines)
 
 
+def _event_summary(e: Evento, session) -> str:
+    """Format a single event record as markdown."""
+    person_name = ''
+    if e.person_id:
+        try:
+            person = session.get(Pessoa, e.person_id)
+            person_name = f" — {person.nome_completo}" if person else f" [ID {e.person_id}]"
+        except Exception:
+            person_name = f" [ID {e.person_id}]"
+
+    lines = [
+        f"### 📅 {e.event_type or 'evento'}{person_name}",
+        '',
+        f"**Data:** {e.event_date or 'N/A'}",
+        f"**Descrição:** {e.description or 'N/A'}",
+    ]
+
+    if e.reference_table:
+        lines.append(f"**Origem:** {e.reference_table} (ID {e.reference_id})")
+    if e.source:
+        lines.append(f"**Fonte:** {e.source}")
+    if e.confidence and e.confidence != 'high':
+        lines.append(f"**Confiança:** {e.confidence}")
+
+    return '\n'.join(lines)
+
+
+def _legal_summary(p: ProcessoJudicial, session) -> str:
+    """Format a single legal process as markdown."""
+    parties_str = ''
+    if p.parties:
+        try:
+            parties = json.loads(p.parties)
+            parties_str = ', '.join(parties.get('autores', []) + parties.get('reus', []))[:200]
+        except (json.JSONDecodeError, TypeError):
+            parties_str = str(p.parties)[:200]
+
+    lines = [
+        f"### ⚖️ {p.process_number or 'N/A'}",
+        '',
+        f"**Tribunal:** {p.court or 'N/A'}",
+        f"**Tema:** {p.subject or 'N/A'}",
+        f"**Status:** {p.status or 'N/A'}",
+    ]
+
+    if p.value:
+        lines.append(f"**Valor:** R$ {p.value:,.2f}")
+    if parties_str:
+        lines.append(f"**Partes:** {parties_str}")
+
+    if p.fonte:
+        lines.append(f"**Fonte:** {p.fonte}")
+
+    return '\n'.join(lines)
+
+
 def _build_discoveries_section(new_ts: datetime, discoveries: dict, session) -> str:
     """Build a 'Recent Discoveries' markdown section."""
     lines = [
@@ -237,6 +292,20 @@ def _build_discoveries_section(new_ts: datetime, discoveries: dict, session) -> 
             lines.append(_task_summary(t))
             lines.append('')
 
+    if discoveries.get('events'):
+        lines.append(f"### 📅 Eventos ({len(discoveries['events'])})")
+        lines.append('')
+        for e in discoveries['events']:
+            lines.append(_event_summary(e, session))
+            lines.append('')
+
+    if discoveries.get('legal_processes'):
+        lines.append(f"### ⚖️ Processos Judiciais ({len(discoveries['legal_processes'])})")
+        lines.append('')
+        for p in discoveries['legal_processes']:
+            lines.append(_legal_summary(p, session))
+            lines.append('')
+
     return '\n'.join(lines)
 
 
@@ -273,11 +342,21 @@ def sync() -> dict:
             TarefaPesquisa.created_at > since
         ).all()
 
+        new_events = db.query(Evento).filter(
+            Evento.created_at > since
+        ).all()
+
+        new_legal = db.query(ProcessoJudicial).filter(
+            ProcessoJudicial.collected_at > since
+        ).all()
+
         discoveries = {
             'pessoas': new_pessoas,
             'empresas': new_empresas,
             'relacionamentos': new_relacionamentos,
             'tarefas': new_tarefas,
+            'events': new_events,
+            'legal_processes': new_legal,
         }
 
         total = sum(len(v) for v in discoveries.values())
@@ -302,6 +381,8 @@ def sync() -> dict:
         print(f'   🏢 {len(new_empresas)} empresas')
         print(f'   🔗 {len(new_relacionamentos)} relacionamentos')
         print(f'   📋 {len(new_tarefas)} tarefas')
+        print(f'   📅 {len(new_events)} eventos')
+        print(f'   ⚖️  {len(new_legal)} processos')
         print(f'   📄 Section appended to INTEL.md')
 
         return {
@@ -310,6 +391,8 @@ def sync() -> dict:
             'empresas': len(new_empresas),
             'relacionamentos': len(new_relacionamentos),
             'tarefas': len(new_tarefas),
+            'events': len(new_events),
+            'legal_processes': len(new_legal),
         }
 
     finally:

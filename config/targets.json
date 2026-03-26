@@ -1,0 +1,18 @@
+{
+  "targets": [
+    {
+      "id": "rgvl",
+      "name": "Rodrigo Gorgulho de Vasconcellos Lanna",
+      "cpf": "317.462.238-71",
+      "role": "primary",
+      "search_names": [
+        "Rodrigo Gorgulho de Vasconcellos Lanna",
+        "Rodrigo Gorgulho Lanna",
+        "Rodrigo G. V. Lanna",
+        "Rodrigo Gorgulho",
+        "Rodrigo Lanna"
+      ]
+    }
+  ],
+  "description": "Central configuration for RGVL data collection targets. Import via config.targets.get_targets()."
+}
