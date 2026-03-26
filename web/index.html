@@ -1058,6 +1058,7 @@
         
         // Timeline filter state (persists across re-renders)
         window.__tl_filters = window.__tl_filters || { types: new Set(), sources: new Set(), _built: false };
+        window.__tl_data = D; // store for inline onclick handlers (D is not in global scope)
 
         // Build filter tags once
         if (!window.__tl_filters._built && D.timeline && D.timeline.length > 0) {
@@ -1112,13 +1113,13 @@
             let html = '<span class="timeline-filter-active-label">Filtros:</span>';
             types.forEach(t => {
                 const typeLabels = {birth:'👶 Nascimento',death:'⚰️ Falecimento',marriage:'💍 Casamento',company:'🏢 Empresa',career:'💼 Carreira',name_change:'✏️ Nome',paternity:'🤝 Paternidade',legal:'⚖️ Legal',family_contact:'📞 Contato',default:'📋 Outro'};
-                html += `<button class="timeline-filter-active-tag type-${t}" style="background:inherit;color:inherit;border:1px solid currentColor;opacity:0.9"><span>${typeLabels[t]||t}</span> <span class="tl-close" onclick="window.__tl_filters.types.delete('${t}');updateActiveFilterBar();renderTimelineFiltered(D.timeline)">✕</span></button>`;
+                html += `<button class="timeline-filter-active-tag type-${t}" style="background:inherit;color:inherit;border:1px solid currentColor;opacity:0.9"><span>${typeLabels[t]||t}</span> <span class="tl-close" onclick="window.__tl_filters.types.delete('${t}');updateActiveFilterBar();renderTimelineFiltered(window.__tl_data.timeline)">✕</span></button>`;
             });
             sources.forEach(s => {
                 const label = s.replace('intel/','').replace('.md','').replace('timeline','INTEL').replace('companies','Empresas');
-                html += `<button class="timeline-filter-active-tag" style="background:#E0E7FF;color:#3730A3;border:1px solid #C7D2FE"><span>${label}</span> <span class="tl-close" onclick="window.__tl_filters.sources.delete('${s}');updateActiveFilterBar();renderTimelineFiltered(D.timeline)">✕</span></button>`;
+                html += `<button class="timeline-filter-active-tag" style="background:#E0E7FF;color:#3730A3;border:1px solid #C7D2FE"><span>${label}</span> <span class="tl-close" onclick="window.__tl_filters.sources.delete('${s}');updateActiveFilterBar();renderTimelineFiltered(window.__tl_data.timeline)">✕</span></button>`;
             });
-            html += `<button class="timeline-clear-all" onclick="window.__tl_filters.types.clear();window.__tl_filters.sources.clear();updateActiveFilterBar();renderTimelineFiltered(D.timeline)">Limpar tudo</button>`;
+            html += `<button class="timeline-clear-all" onclick="window.__tl_filters.types.clear();window.__tl_filters.sources.clear();updateActiveFilterBar();renderTimelineFiltered(window.__tl_data.timeline)">Limpar tudo</button>`;
             bar.innerHTML = html;
         }
 
