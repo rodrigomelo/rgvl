@@ -1070,7 +1070,7 @@
                 const s = raw.startsWith('intel') ? 'INTEL' : (raw.replace('.md','').toUpperCase() || 'OUTRO');
                 if (s && s !== 'EVENTOS') { srcCounts[s] = (srcCounts[s] || 0) + 1; }
             });
-            const typeLabels = {birth:'👶 Nascimento',death:'⚰️ Falecimento',marriage:'💍 Casamento',company:'🏢 Empresa',career:'💼 Carreira',name_change:'✏️ Nome',paternity:'🤝 Paternidade',legal:'⚖️ Legal',family_contact:'📞 Contato',default:'📋 Outro'};
+            const typeLabels = {birth:'👶 NASCIMENTO',death:'⚰️ FALECIMENTO',marriage:'💍 CASAMENTO',company:'🏢 EMPRESA',career:'💼 CARREIRA',name_change:'✏️ NOME',paternity:'🤝 PATERNIDADE',legal:'⚖️ LEGAL',family_contact:'📞 CONTATO',default:'📋 OUTRO'};
             const typeGroup = document.getElementById('tl-filter-types');
             Object.keys(typeCounts).sort().forEach(t => {
                 const btn = document.createElement('button');
@@ -1124,7 +1124,7 @@
             bar.style.display = 'flex';
             let html = '<span class="timeline-filter-active-label">Filtros:</span>';
             types.forEach(t => {
-                const typeLabels = {birth:'👶 Nascimento',death:'⚰️ Falecimento',marriage:'💍 Casamento',company:'🏢 Empresa',career:'💼 Carreira',name_change:'✏️ Nome',paternity:'🤝 Paternidade',legal:'⚖️ Legal',family_contact:'📞 Contato',default:'📋 Outro'};
+                const typeLabels = {birth:'👶 NASCIMENTO',death:'⚰️ FALECIMENTO',marriage:'💍 CASAMENTO',company:'🏢 EMPRESA',career:'💼 CARREIRA',name_change:'✏️ NOME',paternity:'🤝 PATERNIDADE',legal:'⚖️ LEGAL',family_contact:'📞 CONTATO',default:'📋 OUTRO'};
                 html += `<button class="timeline-filter-active-tag type-${t}" style="background:inherit;color:inherit;border:1px solid currentColor;opacity:0.9"><span>${typeLabels[t]||t}</span> <span class="tl-close" onclick="(function(){window.__tl_filters.types.delete('${t}');window.__updateActiveFilterBar();window.__renderTimelineFiltered(window.__tl_data.timeline)})()">✕</span></button>`;
             });
             sources.forEach(s => {
@@ -1153,7 +1153,7 @@
                 if (e.event_date) { const raw = String(e.event_date); dateDisplay = raw.startsWith('~') ? fmtDate(raw.substring(1)) + ' <span style="color:var(--text-muted);font-size:11px">(aprox.)</span>' : fmtDate(raw); }
                 const typeKey = e.event_type || 'default', cssClass = typeClasses[typeKey] || 'default';
                 const tlEmoji = TL_EMOJI[typeKey] || '';
-                const TL_LABELS = {birth:'Nascimento',death:'Falecimento',marriage:'Casamento',company:'Empresa',career:'Carreira',name_change:'Nome',paternity:'Paternidade',legal:'Legal',family_contact:'Contato',default:'Outro'};
+                const TL_LABELS = {birth:'NASCIMENTO',death:'FALECIMENTO',marriage:'CASAMENTO',company:'EMPRESA',career:'CARREIRA',name_change:'NOME',paternity:'PATERNIDADE',legal:'LEGAL',family_contact:'CONTATO',default:'OUTRO'};
                 const tlLabel = TL_LABELS[typeKey] || typeKey;
                 let sourceBadge = ''; const rawFonte = e.source_type || e.source || '';
                 const fonteKey = rawFonte.startsWith('intel') ? 'INTEL' : (rawFonte.replace('.md','').toUpperCase() || 'OUTRO');
