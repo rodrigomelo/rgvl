@@ -1078,12 +1078,6 @@
         }
 
 
-                    renderTimelineEnhanced(D.timeline);
-        } else if (tl) {
-            tl.innerHTML = '<div class="timeline-empty">Nenhum evento encontrado</div>';
-        }
-
-
 
         // Render Sources panel
         if (D.sources && D.sources.sources) {
@@ -1091,7 +1085,6 @@
         } else if (D.sources && Array.isArray(D.sources)) {
             // Legacy format: { sources: [...] }
             renderSources({ sources: D.sources, total_records: D.sources.reduce((s,x) => s + (x.count||0), 0) });
-        }
         }
 
         // Show main content after auth check
