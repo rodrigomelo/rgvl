@@ -1103,24 +1103,35 @@
             window.__tl_filters._built = true;
         }
 
-        // Active filter bar (above timeline events)
+        // Active filter bar + sync main tag button states
         function updateActiveFilterBar() {
             const bar = document.getElementById('tl-active-bar');
-            if (!bar) return;
             const { types, sources } = window.__tl_filters;
             const total = types.size + sources.size;
-            if (total === 0) { bar.style.display = 'none'; return; }
+
+            // Sync main tag buttons active state
+            document.querySelectorAll('#tl-filter-types .timeline-filter-tag').forEach(btn => {
+                const t = btn.dataset.type;
+                if (t) btn.classList.toggle('active', window.__tl_filters.types.has(t));
+            });
+            document.querySelectorAll('#tl-filter-sources .timeline-filter-tag').forEach(btn => {
+                const s = btn.dataset.source;
+                if (s) btn.classList.toggle('source-active', window.__tl_filters.sources.has(s));
+            });
+
+            if (!bar) return;
+            if (total === 0) { bar.style.display = 'none'; bar.innerHTML = ''; return; }
             bar.style.display = 'flex';
             let html = '<span class="timeline-filter-active-label">Filtros:</span>';
             types.forEach(t => {
                 const typeLabels = {birth:'👶 Nascimento',death:'⚰️ Falecimento',marriage:'💍 Casamento',company:'🏢 Empresa',career:'💼 Carreira',name_change:'✏️ Nome',paternity:'🤝 Paternidade',legal:'⚖️ Legal',family_contact:'📞 Contato',default:'📋 Outro'};
-                html += `<button class="timeline-filter-active-tag type-${t}" style="background:inherit;color:inherit;border:1px solid currentColor;opacity:0.9"><span>${typeLabels[t]||t}</span> <span class="tl-close" onclick="window.__tl_filters.types.delete('${t}');updateActiveFilterBar();renderTimelineFiltered(window.__tl_data.timeline)">✕</span></button>`;
+                html += `<button class="timeline-filter-active-tag type-${t}" style="background:inherit;color:inherit;border:1px solid currentColor;opacity:0.9"><span>${typeLabels[t]||t}</span> <span class="tl-close" onclick="(function(){window.__tl_filters.types.delete('${t}');updateActiveFilterBar();renderTimelineFiltered(window.__tl_data.timeline)})()">✕</span></button>`;
             });
             sources.forEach(s => {
                 const label = s.startsWith('intel') ? 'INTEL' : s.replace('.md','').toUpperCase();
-                html += `<button class="timeline-filter-active-tag" style="background:#E0E7FF;color:#3730A3;border:1px solid #C7D2FE"><span>${label}</span> <span class="tl-close" onclick="window.__tl_filters.sources.delete('${s}');updateActiveFilterBar();renderTimelineFiltered(window.__tl_data.timeline)">✕</span></button>`;
+                html += `<button class="timeline-filter-active-tag" style="background:#E0E7FF;color:#3730A3;border:1px solid #C7D2FE"><span>${label}</span> <span class="tl-close" onclick="(function(){window.__tl_filters.sources.delete('${s}');updateActiveFilterBar();renderTimelineFiltered(window.__tl_data.timeline)})()">✕</span></button>`;
             });
-            html += `<button class="timeline-clear-all" onclick="window.__tl_filters.types.clear();window.__tl_filters.sources.clear();updateActiveFilterBar();renderTimelineFiltered(window.__tl_data.timeline)">Limpar tudo</button>`;
+            html += `<button class="timeline-clear-all" onclick="(function(){window.__tl_filters.types.clear();window.__tl_filters.sources.clear();updateActiveFilterBar();renderTimelineFiltered(window.__tl_data.timeline)})()">Limpar tudo</button>`;
             bar.innerHTML = html;
         }
 
