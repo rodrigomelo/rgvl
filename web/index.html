@@ -939,22 +939,24 @@
         </div>
 
 
-<!-- Gazettes -->
+        <!-- Contacts -->
+        
+
+        <!-- Gazettes -->
         <div class="section" id="gazettes">
             <div class="section-title">📰 Diários Oficiais (${(D.gazettes||[]).length})</div>
             <div class="info-grid">
                 ${(D.gazettes||[]).length === 0 ? '<div class="empty-state">Nenhuma gazette encontrada</div>' : (D.gazettes||[]).map(g => `
                     <div class="company">
                         <div class="company-name">${esc(g.title || '-')}</div>
-                        <div class="row"><span class="label">Fonte</span><span class="value">${esc(g.source || '-')}</span></div>
-                        ${g.publication_date ? `<div class="row"><span class="label">Data</span><span class="value">${fmtDate(g.publication_date)}</span></div>` : ''}
+                        <div class="row"><span class="label">Source</span><span class="value">${esc(g.source || '-')}</span></div>
+                        <div class="row"><span class="label">Date</span><span class="value">${g.publication_date ? fmtDate(g.publication_date) : '-'}</span></div>
                         ${g.edition ? `<div class="row"><span class="label">Edição</span><span class="value">${esc(g.edition)}</span></div>` : ''}
                     </div>`).join('')}
             </div>
         </div>
 
-
-        <!-- Documents -->
+        <!-- Documentos -->
         <div class="section" id="documents">
             <div class="section-title">📄 Documentos (${(D.documents||[]).length})</div>
             <div class="info-grid">
@@ -968,7 +970,6 @@
             </div>
         </div>
 
-<!-- Contacts -->
         <div class="section" id="contacts">
             <div class="section-title">📞 Contacts (${D.contacts.length})</div>
             <div class="info-grid">
@@ -984,23 +985,9 @@
             </div>
         </div>
 
-                <!-- Sources -->
+        <!-- Timeline -->
         <div class="section" id="sources">
             <div class="section-title">📜 Fontes dos Dados</div>
-
-
-<!-- Timeline -->
-        <div class="section timeline-section" id="timeline">
-            <div class="section-title">📅 Linha do Tempo</div>
-            <div class="timeline-filters" id="timeline-filters">
-                <div class="timeline-filter-group" id="tl-filter-types"><span class="timeline-filter-label">Tipo:</span></div>
-                <div class="timeline-filter-group" id="tl-filter-sources"><span class="timeline-filter-label">Fonte:</span></div>
-            </div>
-            <div class="timeline-filter-active-bar" id="tl-active-bar" style="display:none"></div>
-            <div class="timeline" id="timeline-container">
-                <div class="loading">Carregando eventos...</div>
-            </div>
-        </div>
 
             <!-- Confidence bar -->
             <div class="sources-confidence" id="sources-confidence" style="display:none">
@@ -1031,6 +1018,19 @@
                     <div class="sources-view-total" id="sources-view-total"></div>
                 </div>
                 <div id="sources-list"></div>
+            </div>
+        </div>
+
+        
+        <div class="section timeline-section" id="timeline">
+            <div class="section-title">📅 Linha do Tempo</div>
+            <div class="timeline-filters" id="timeline-filters">
+                <div class="timeline-filter-group" id="tl-filter-types"><span class="timeline-filter-label">Tipo:</span></div>
+                <div class="timeline-filter-group" id="tl-filter-sources"><span class="timeline-filter-label">Fonte:</span></div>
+            </div>
+            <div class="timeline-filter-active-bar" id="tl-active-bar" style="display:none"></div>
+            <div class="timeline" id="timeline-container">
+                <div class="loading">Carregando eventos...</div>
             </div>
         </div>
         `;
