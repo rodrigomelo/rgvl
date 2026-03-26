@@ -1128,8 +1128,7 @@
                 html += `<button class="timeline-filter-active-tag type-${t}" style="background:inherit;color:inherit;border:1px solid currentColor;opacity:0.9"><span>${typeLabels[t]||t}</span> <span class="tl-close" onclick="(function(){window.__tl_filters.types.delete('${t}');window.__updateActiveFilterBar();window.__renderTimelineFiltered(window.__tl_data.timeline)})()">✕</span></button>`;
             });
             sources.forEach(s => {
-                const label = s.startsWith('intel') ? 'INTEL' : s.replace('.md','').toUpperCase();
-                html += `<button class="timeline-filter-active-tag" style="background:#E0E7FF;color:#3730A3;border:1px solid #C7D2FE"><span>${label}</span> <span class="tl-close" onclick="(function(){window.__tl_filters.sources.delete('${s}');window.__updateActiveFilterBar();window.__renderTimelineFiltered(window.__tl_data.timeline)})()">✕</span></button>`;
+                html += `<button class="timeline-filter-active-tag" style="background:#E0E7FF;color:#3730A3;border:1px solid #C7D2FE"><span>${s}</span> <span class="tl-close" onclick="(function(){window.__tl_filters.sources.delete('${s}');window.__updateActiveFilterBar();window.__renderTimelineFiltered(window.__tl_data.timeline)})()">✕</span></button>`;
             });
             html += `<button class="timeline-clear-all" onclick="(function(){window.__tl_filters.types.clear();window.__tl_filters.sources.clear();window.__updateActiveFilterBar();window.__renderTimelineFiltered(window.__tl_data.timeline)})()">Limpar tudo</button>`;
             bar.innerHTML = html;
