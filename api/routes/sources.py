@@ -61,7 +61,7 @@ def get_source_info(fonte_str):
         stype = 'crea'
     elif 'escavador' in fonte_lower:
         stype = 'escavador'
-    elif 'inteli' in fonte_lower or 'intel' in fonte_lower:
+    elif 'inteli' in fonte_lower or 'intel' in fonte_lower or fonte_lower in ('timeline.md', 'companies.md'):
         stype = 'inteli'
     elif 'manual' in fonte_lower or 'manual' in fonte_lower:
         stype = 'manual'

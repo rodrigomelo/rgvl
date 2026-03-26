@@ -414,7 +414,7 @@
         gmail:'Gmail', google_drive:'Google Drive', tjmg:'TJMG', tjsp:'TJSP',
         jucemg:'JUCEMG', jucep:'JUCEP', cartorio:'Cartório', web_search:'Web Search',
         familysearch:'FamilySearch', manual:'Manual', crea:'CREA', linkedin:'LinkedIn',
-        escavador:'Escavador', inteli:'INTEL', default:'Outro'
+        escavador:'ESCAVADOR', inteli:'INTEL', default:'OUTRO'
     };
 
     function sourceBadgeHTML(type, size) {
@@ -1086,7 +1086,7 @@
             });
             const srcGroup = document.getElementById('tl-filter-sources');
             Object.keys(srcCounts).sort().forEach(s => {
-                const label = s.replace('intel/','').replace('.md','').replace('timeline','INTEL').replace('companies','Empresas');
+                const label = s.startsWith('intel') ? 'INTEL' : s.replace('.md','').toUpperCase();
                 const btn = document.createElement('button');
                 btn.className = 'timeline-filter-tag source-tag';
                 btn.innerHTML = label + ` <span class="count">${srcCounts[s]}</span>`;
@@ -1116,7 +1116,7 @@
                 html += `<button class="timeline-filter-active-tag type-${t}" style="background:inherit;color:inherit;border:1px solid currentColor;opacity:0.9"><span>${typeLabels[t]||t}</span> <span class="tl-close" onclick="window.__tl_filters.types.delete('${t}');updateActiveFilterBar();renderTimelineFiltered(window.__tl_data.timeline)">✕</span></button>`;
             });
             sources.forEach(s => {
-                const label = s.replace('intel/','').replace('.md','').replace('timeline','INTEL').replace('companies','Empresas');
+                const label = s.startsWith('intel') ? 'INTEL' : s.replace('.md','').toUpperCase();
                 html += `<button class="timeline-filter-active-tag" style="background:#E0E7FF;color:#3730A3;border:1px solid #C7D2FE"><span>${label}</span> <span class="tl-close" onclick="window.__tl_filters.sources.delete('${s}');updateActiveFilterBar();renderTimelineFiltered(window.__tl_data.timeline)">✕</span></button>`;
             });
             html += `<button class="timeline-clear-all" onclick="window.__tl_filters.types.clear();window.__tl_filters.sources.clear();updateActiveFilterBar();renderTimelineFiltered(window.__tl_data.timeline)">Limpar tudo</button>`;
