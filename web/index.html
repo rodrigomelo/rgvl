@@ -622,7 +622,7 @@
             const sources = await fetchWithRetry(api+'/sources/summary', {total_records:0,sources:[]}, 2);
             const records = await fetchWithRetry(api+'/sources/records', {total:0,records:[]}, 2);
             window.__rgvl_records = records;
-            render({tree, bisavos:bisavos||[], avos:avos||[], paisTios:paisTios||[], primos:primos||[], companies:companies||[], properties:properties||[], summary, timeline:timeline||[], sources:sources||{}, records:records||[], legal:legal||[], contacts:contacts||[], documents:documents||[], gazettes:gazettes||[], searches:searches||[]});
+            render({tree, bisavos:bisavos||[], avos:avos||[], paisTios:paisTios||[], primos:primos||[], companies:companies||[], properties:properties||[], summary, timeline:timeline||[], sources:sources||{}, records:records||[], legal:legal||[], contacts:contacts||[], documents:documents||[], gazettes:gazettes||[]});
         } catch(e) {
             
             document.getElementById('app').innerHTML = '<div class="section"><h2>⚠️ Erro</h2><p>'+esc(e.message)+'</p><pre>'+esc(e.stack||'')+'</pre></div>';
