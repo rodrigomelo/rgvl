@@ -125,3 +125,15 @@ function escapeHtml(s) {
     if (!s) return '';
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+
+// Validate token with API
+async function validateToken() {
+    const token = localStorage.getItem('access_token');
+    if (!token) return false;
+    try {
+        const api = window.__rgvl_api || (window.location.origin.replace(/:\d+/, ':5003') + '/api');
+        const resp = await fetch(api + '/health', {headers: {'Authorization': 'Bearer ' + token}});
+        if (resp.status === 401) return false;
+        return true;
+    } catch(e) { return false; }
+}

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RGVL - Dados Pessoais</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <script src="auth.js?v=5"></script>
+    <script src="auth.js?v=6"></script>
     <style>
         :root {
             --primary: #1E3A5F;
@@ -1096,7 +1096,10 @@
 
         // Check auth and load data
         async function init() {
-            if (!isAuthenticated()) {
+            const authValid = await validateToken();
+            if (!authValid) {
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('id_token');
                 document.getElementById('login-screen').style.display = 'flex';
                 document.getElementById('main-content').style.display = 'none';
                 renderUserMenu();
