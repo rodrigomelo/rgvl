@@ -132,7 +132,8 @@ async function validateToken() {
     if (!token) return false;
     try {
         const api = window.__rgvl_api || (window.location.origin.replace(/:\d+/, ':5003') + '/api');
-        const resp = await fetch(api + '/health', {headers: {'Authorization': 'Bearer ' + token}});
+        // Use /api/family/summary which requires auth (protected route)
+        const resp = await fetch(api + '/family/summary', {headers: {'Authorization': 'Bearer ' + token}});
         if (resp.status === 401) return false;
         return true;
     } catch(e) { return false; }
