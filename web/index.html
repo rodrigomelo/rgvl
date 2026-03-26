@@ -1068,7 +1068,7 @@
                 if (t !== 'research') { typeCounts[t] = (typeCounts[t] || 0) + 1; }
                 const raw = e.source_type || e.source || '';
                 const s = raw.startsWith('intel') ? 'INTEL' : (raw.replace('.md','').toUpperCase() || 'OUTRO');
-                if (s && s !== 'EVENTOS') srcCounts[s] = (srcCounts[s] || 0) + 1;
+                if (s && s !== 'EVENTOS') { srcCounts[s] = (srcCounts[s] || 0) + 1; }
             });
             const typeLabels = {birth:'👶 Nascimento',death:'⚰️ Falecimento',marriage:'💍 Casamento',company:'🏢 Empresa',career:'💼 Carreira',name_change:'✏️ Nome',paternity:'🤝 Paternidade',legal:'⚖️ Legal',family_contact:'📞 Contato',default:'📋 Outro'};
             const typeGroup = document.getElementById('tl-filter-types');
@@ -1086,11 +1086,11 @@
                 typeGroup.appendChild(btn);
             });
             const srcGroup = document.getElementById('tl-filter-sources');
-            Object.keys(srcCounts).sort().forEach(s => {
-                const label = s.startsWith('intel') ? 'INTEL' : s.replace('.md','').toUpperCase();
+            Object.keys(srcCounts).sort().forEach(raw => {
+                const s = raw.startsWith('intel') ? 'INTEL' : (raw.replace('.md','').toUpperCase() || 'OUTRO');
                 const btn = document.createElement('button');
                 btn.className = 'timeline-filter-tag source-tag';
-                btn.innerHTML = label + ` <span class="count">${srcCounts[s]}</span>`;
+                btn.innerHTML = s + ` <span class="count">${srcCounts[raw]}</span>`;
                 btn.onclick = () => {
                     if (window.__tl_filters.sources.has(s)) window.__tl_filters.sources.delete(s);
                     else window.__tl_filters.sources.add(s);
