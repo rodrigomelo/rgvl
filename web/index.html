@@ -367,6 +367,26 @@
         .source-panel-title { font-size: 16px; font-weight: 600; color: var(--primary); }
         .source-panel-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted); padding: 0; line-height: 1; }
         .source-panel-close:hover { color: var(--text); }
+
+        /* Person detail drawer */
+        .person-drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 300; display: none; justify-content: flex-end; }
+        .person-drawer-overlay.open { display: flex; }
+        .person-drawer { width: 420px; max-width: 95vw; background: var(--card-bg); height: 100%; overflow-y: auto; padding: 20px; box-shadow: -4px 0 20px rgba(0,0,0,0.15); }
+        .person-drawer-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid var(--accent); }
+        .person-drawer-name { font-size: 18px; font-weight: 700; color: var(--primary); line-height: 1.3; }
+        .person-drawer-prof { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+        .person-drawer-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted); padding: 0; line-height: 1; flex-shrink: 0; margin-left: 12px; }
+        .person-drawer-close:hover { color: var(--text); }
+        .person-drawer-section { margin-bottom: 16px; }
+        .person-drawer-section-title { font-size: 12px; font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
+        .person-drawer-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13px; border-bottom: 1px solid var(--border); }
+        .person-drawer-row:last-child { border-bottom: none; }
+        .person-drawer-row .label { color: var(--text-muted); }
+        .person-drawer-row .value { color: var(--text); text-align: right; font-weight: 500; max-width: 60%; overflow: hidden; text-overflow: ellipsis; }
+        .person-drawer-empty { font-size: 12px; color: var(--text-muted); font-style: italic; }
+        .person-drawer-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+        .person-drawer-badge.confirmed { background: #D1FAE5; color: #065F46; }
+        .person-drawer-badge.pending { background: #FEF3C7; color: #92400E; }
         .source-panel-item { padding: 12px; background: var(--bg); border-radius: 8px; margin-bottom: 8px; border: 1px solid var(--border); }
         .source-panel-item-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
         .source-panel-item-detail { font-size: 11px; color: var(--text-muted); }
@@ -395,6 +415,20 @@
         <a class="nav-item" data-section="sources">📜 Fontes dos Dados</a>
         <a class="nav-item" data-section="timeline">📅 Linha do Tempo</a>
     </nav>
+    <!-- Person Detail Drawer -->
+    <div class="person-drawer-overlay" id="person-drawer-overlay" onclick="window.__closePersonDrawer(event)">
+        <div class="person-drawer" id="person-drawer">
+            <div class="person-drawer-header">
+                <div>
+                    <div class="person-drawer-name" id="pd-name"></div>
+                    <div class="person-drawer-prof" id="pd-prof"></div>
+                </div>
+                <button class="person-drawer-close" onclick="window.__closePersonDrawer()">×</button>
+            </div>
+            <div id="pd-body"></div>
+        </div>
+    </div>
+
     <!-- Global Search Overlay -->
     <div class="search-overlay" id="search-overlay">
         <div class="search-box">
@@ -452,8 +486,6 @@
     function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
     function fmtDate(d) { if (!d) return '-'; try { return new Date(d).toLocaleDateString('pt-BR'); } catch(e) { return d; } }
     function fmtMoney(v) { if (!v) return '-'; return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v); }
-    function maskCPF(v) { if (!v) return '-'; var s = String(v).replace(/[^0-9]/g,''); if (s.length < 3) return '***.***.***-'+s; return '***.***.***.'+s.slice(-2); }
-    function maskRG(v) { if (!v) return '-'; var s = String(v); if (s.length <= 3) return '***'+s; return '***'+s.slice(-3); }
 
     function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
     function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); }
@@ -773,7 +805,7 @@
                 <div class="gen">
                     <div class="gen-label">Geração 1 — Bisavós</div>
                     <div class="gen-row">
-                        <div class="node grandparent">
+                        <div class="node grandparent" data-person-id="1">
                             <div class="node-name">Edmundo Mariano da Costa Lanna</div>
                             <div class="node-detail">1878-1968 · Dentista</div>
                             <div class="node-detail">+ Maria da Glória de Vasconcellos</div>
@@ -786,11 +818,11 @@
                 <div class="gen">
                     <div class="gen-label">Geração 2 — Avós</div>
                     <div class="gen-row">
-                        ${pai ? `<div class="node grandparent">
+                        ${pai ? `<div class="node grandparent" data-person-id="${pai.id}">
                             <div class="node-name">${esc(pai.nome_completo)}</div>
                             <div class="node-detail">${esc(pai.data_nascimento || '?')} - ${esc(pai.data_falecimento || '?')} · ${esc(pai.profissao || '-')}</div>
                         </div>` : ''}
-                        ${mae ? `<div class="node grandparent">
+                        ${mae ? `<div class="node grandparent" data-person-id="${mae.id}">
                             <div class="node-name">${esc(mae.nome_completo)}</div>
                             <div class="node-detail">${esc(mae.data_nascimento || '?')} - ${esc(mae.data_falecimento || '?')}</div>
                         </div>` : ''}
@@ -804,12 +836,12 @@
                     <div class="gen-label">Geração 3 — Pais + Tios</div>
                     <div class="gen-row">
                         ${siblings.map(s => `
-                            <div class="node sibling">
+                            <div class="node sibling" data-person-id="${s.id}">
                                 <div class="node-name">${esc(s.nome_completo)}</div>
                                 <div class="node-detail">${esc((s.observacoes || '').substring(0, 70))}${(s.observacoes||'').length > 70 ? '...' : ''}</div>
                             </div>
                         `).join('')}
-                        <div class="node" style="border-color:var(--accent);background:#FFF8E1">
+                        <div class="node" style="border-color:var(--accent);background:#FFF8E1" data-person-id="${p.id}">
                             <div class="node-name">👨 ${esc(p.nome_completo)}</div>
                             <div class="node-detail">${esc(p.profissao || '-')}</div>
                             <div class="node-detail">${esc(p.empresa || '')}</div>
@@ -820,11 +852,11 @@
                     <div style="margin-top:8px">
                         <div class="gen-label">Cônjuge</div>
                         <div class="gen-row">
-                            <div class="node spouse">
+                            <div class="node spouse" data-person-id="${spouse.id}">
                                 <div class="node-name">👩 ${esc(spouse.nome_completo)}</div>
                                 <div class="node-detail">${esc(spouse.profissao || '-')}</div>
-                                ${spouse.rg ? `<div class="node-detail">RG: ${maskRG(spouse.rg)}</div>` : ''}
-                                ${spouse.cpf ? `<div class="node-detail">CPF: ${maskCPF(spouse.cpf)}</div>` : ''}
+                                ${spouse.rg ? `<div class="node-detail">RG: ${esc(spouse.rg)}</div>` : ''}
+                                ${spouse.cpf ? `<div class="node-detail">CPF: ${esc(spouse.cpf)}</div>` : ''}
                             </div>
                         </div>
                     </div>` : ''}
@@ -839,7 +871,7 @@
                         <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">⚡ Você</div>
                         <div class="gen-row">
                             ${D.primos.filter(c => c.nome_completo === 'Rodrigo Melo Lanna').map(c => `
-                                <div class="node child" style="border-color:var(--accent);background:#FFF8E1">
+                                <div class="node child" style="border-color:var(--accent);background:#FFF8E1" data-person-id="${c.id}">
                                     <div class="node-name">⚡ ${esc(c.nome_completo)}</div>
                                     <div class="node-detail">${esc(c.profissao || c.empresa || '-')}</div>
                                     ${c.local_nascimento ? `<div class="node-detail">Nasc: ${esc(c.local_nascimento)}</div>` : ''}
@@ -853,7 +885,7 @@
                         <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">👨‍👧 Filhos de Henrique (${primosHenrique.length})</div>
                         <div class="gen-row">
                             ${primosHenrique.map(c => `
-                                <div class="node nephew">
+                                <div class="node nephew" data-person-id="${c.id}">
                                     <div class="node-name">${esc(c.nome_completo)}</div>
                                     <div class="node-detail">${esc((c.observacoes||'').split('.')[0])}</div>
                                 </div>
@@ -866,7 +898,7 @@
                         <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">👨‍👧 Filhos de Marcelo (${primosMarcelo.length})</div>
                         <div class="gen-row">
                             ${primosMarcelo.map(c => `
-                                <div class="node nephew">
+                                <div class="node nephew" data-person-id="${c.id}">
                                     <div class="node-name">${esc(c.nome_completo)}</div>
                                     <div class="node-detail">${esc((c.observacoes||'').split('.')[0])}</div>
                                 </div>
@@ -879,7 +911,7 @@
                         <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">👩‍👧 Filhos de Júnia (${primosJunia.length})</div>
                         <div class="gen-row">
                             ${primosJunia.map(c => `
-                                <div class="node nephew">
+                                <div class="node nephew" data-person-id="${c.id}">
                                     <div class="node-name">${esc(c.nome_completo)}</div>
                                     <div class="node-detail">${esc((c.observacoes||'').split('.')[0])}</div>
                                 </div>
@@ -898,8 +930,8 @@
                 <div class="info-card">
                     <h3>Identificação</h3>
                     <div class="row"><span class="label">Nome</span><span class="value">${esc(p.nome_completo)}</span></div>
-                    ${p.cpf ? `<div class="row"><span class="label">CPF</span><span class="value">${maskCPF(p.cpf)}</span></div>` : ''}
-                    ${p.rg ? `<div class="row"><span class="label">RG</span><span class="value">${maskRG(p.rg)}</span></div>` : ''}
+                    ${p.cpf ? `<div class="row"><span class="label">CPF</span><span class="value">${esc(p.cpf)}</span></div>` : ''}
+                    ${p.rg ? `<div class="row"><span class="label">RG</span><span class="value">${esc(p.rg)}</span></div>` : ''}
                     <div class="row"><span class="label">Profissão</span><span class="value">${esc(p.profissao || '-')}</span></div>
                     <div class="row"><span class="label">Cargo</span><span class="value">${esc(p.cargo || '-')}</span></div>
                     <div class="row"><span class="label">Empresa</span><span class="value">${esc(p.empresa || '-')}</span></div>
@@ -1093,10 +1125,166 @@
         </div>
         `;
         initScrollSpy();
-        
+
+        // Tree node click delegation — open person drawer
+        document.getElementById('family').addEventListener('click', function(e) {
+            const node = e.target.closest('.node');
+            if (!node) return;
+            const id = parseInt(node.dataset.personId);
+            if (id) window.__openPersonDrawerById(id);
+        });
+
         // Timeline filter state (persists across re-renders)
         window.__tl_filters = window.__tl_filters || { types: new Set(), sources: new Set(), _built: false };
         window.__tl_data = D; // store for inline onclick handlers (D is not in global scope)
+        window.__rgvl_data = D; // expose for search
+
+        // Search: Ctrl+K to open
+        const searchOverlay = document.getElementById('search-overlay');
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const q = this.value.trim().toLowerCase();
+                const results = document.getElementById('search-results');
+                if (!q) { results.innerHTML = '<div class="search-empty">Digite para buscar...</div>'; return; }
+                const data = window.__rgvl_data;
+                if (!data) return;
+                const hits = [];
+                // People
+                const allPeople = [...(data.tree ? [data.tree.person] : []), ...(data.bisavos||[]), ...(data.avos||[]), ...(data.paisTios||[]), ...(data.primos||[])].filter(Boolean);
+                allPeople.forEach(p => {
+                    if (!p.id) return;
+                    const name = (p.nome_completo||'').toLowerCase();
+                    if (name.includes(q)) hits.push({type:'person', id:p.id, label:p.nome_completo, sub: p.profissao||p.empresa||'', icon:'👤'});
+                });
+                // Companies
+                (data.companies||[]).forEach(c => {
+                    const name = ((c.nome_fantasia||c.razao_social)||'').toLowerCase();
+                    if (name.includes(q)) hits.push({type:'section', section:'companies', label:c.nome_fantasia||c.razao_social, sub:c.cnpj||'', icon:'🏢'});
+                });
+                // Properties
+                (data.properties||[]).forEach(p => {
+                    const name = ((p.building_name||p.address)||'').toLowerCase();
+                    if (name.includes(q)) hits.push({type:'section', section:'properties', label:p.building_name||p.address, sub:p.neighborhood||'', icon:'🏠'});
+                });
+                // Legal
+                (data.legal||[]).forEach(l => {
+                    const num = ((l.process_number)||'').toLowerCase();
+                    if (num.includes(q)) hits.push({type:'section', section:'legal', label:l.process_number, sub:l.subject||'', icon:'⚖️'});
+                });
+                // Contacts
+                (data.contacts||[]).forEach(c => {
+                    const name = ((c.nome)||'').toLowerCase();
+                    if (name.includes(q)) hits.push({type:'section', section:'contacts', label:c.nome, sub:c.empresa||'', icon:'📞'});
+                });
+                // Timeline events
+                (data.timeline||[]).forEach(e => {
+                    const desc = ((e.description||e.person_name)||'').toLowerCase();
+                    if (desc.includes(q)) hits.push({type:'timeline', label:e.person_name||'', sub:e.description||'', icon:'📅'});
+                });
+                if (hits.length === 0) { results.innerHTML = '<div class="search-empty">Nenhum resultado</div>'; return; }
+                results.innerHTML = hits.slice(0,12).map((h,i) => `
+                    <div class="search-result" data-index="${i}" data-type="${h.type}" data-id="${h.id||''}" data-section="${h.section||''}" onclick="window.__searchNavigate(this)">
+                        <span class="search-result-icon">${h.icon}</span>
+                        <span class="search-result-text"><span class="search-result-title">${esc(h.label)}</span><span class="search-result-sub">${esc(h.sub)}</span></span>
+                    </div>`).join('');
+            });
+            // Enter to navigate first result
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') { var first = document.querySelector('.search-result-item'); if (first) first.click(); }
+            });
+        }
+        // ESC to close search
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey||e.metaKey) && e.key === 'k') { e.preventDefault(); if (searchOverlay) { searchOverlay.classList.add('open'); searchInput && searchInput.focus(); } }
+            if (e.key === 'Escape' && searchOverlay && searchOverlay.classList.contains('open')) { searchOverlay.classList.remove('open'); }
+        });
+        // Click outside to close
+        if (searchOverlay) searchOverlay.addEventListener('click', function(e) { if (e.target === searchOverlay) searchOverlay.classList.remove('open'); });
+        // Person drawer - by object or by id
+        window.__openPersonDrawerById = function(id) {
+            const data = window.__rgvl_data;
+            if (!data || !id) return;
+            const allPeople = [data.tree ? data.tree.person : null, ...(data.bisavos||[]), ...(data.avos||[]), ...(data.paisTios||[]), ...(data.primos||[])].filter(Boolean);
+            const person = allPeople.find(p => p.id === id);
+            if (person) window.__openPersonDrawer(person);
+        };
+        window.__openPersonDrawer = function(person) {
+            if (!person) return;
+            const overlay = document.getElementById('person-drawer-overlay');
+            if (!overlay) return;
+            document.getElementById('pd-name').textContent = person.nome_completo || '—';
+            document.getElementById('pd-prof').textContent = person.profissao || person.empresa || '';
+            let html = '';
+            // Identification
+            html += '<div class="person-drawer-section">';
+            html += '<div class="person-drawer-section-title">Identificação</div>';
+            if (person.cpf) html += `<div class="person-drawer-row"><span class="label">CPF</span><span class="value">${esc(person.cpf)}</span></div>`;
+            if (person.rg) html += `<div class="person-drawer-row"><span class="label">RG</span><span class="value">${esc(person.rg)}</span></div>`;
+            if (person.data_nascimento) html += `<div class="person-drawer-row"><span class="label">Nascimento</span><span class="value">${esc(person.data_nascimento)}</span></div>`;
+            if (person.local_nascimento) html += `<div class="person-drawer-row"><span class="label">Local</span><span class="value">${esc(person.local_nascimento)}</span></div>`;
+            if (person.data_falecimento) html += `<div class="person-drawer-row"><span class="label">Falecimento</span><span class="value">${esc(person.data_falecimento)}</span></div>`;
+            if (person.geracao) html += `<div class="person-drawer-row"><span class="label">Geração</span><span class="value">${person.geracao}ª</span></div>`;
+            if (person.status) html += `<div class="person-drawer-row"><span class="label">Status</span><span class="value">${esc(person.status)}</span></div>`;
+            html += '</div>';
+            // Parents
+            const data = window.__rgvl_data;
+            if (data) {
+                const findPerson = (id) => {
+                    const all = [...(data.bisavos||[]), ...(data.avos||[]), ...(data.paisTios||[]), ...(data.primos||[])];
+                    return all.find(p => p.id === id);
+                };
+                if (person.pai_id || person.mae_id) {
+                    html += '<div class="person-drawer-section">';
+                    html += '<div class="person-drawer-section-title">Filiação</div>';
+                    const pai = findPerson(person.pai_id);
+                    const mae = findPerson(person.mae_id);
+                    if (pai) html += `<div class="person-drawer-row"><span class="label">Pai</span><span class="value">${esc(pai.nome_completo)}</span></div>`;
+                    if (mae) html += `<div class="person-drawer-row"><span class="label">Mãe</span><span class="value">${esc(mae.nome_completo)}</span></div>`;
+                    html += '</div>';
+                }
+                // Spouse
+                if (person.conjuge_id) {
+                    const conjuge = findPerson(person.conjuge_id);
+                    if (conjuge) {
+                        html += '<div class="person-drawer-section">';
+                        html += '<div class="person-drawer-section-title">Cônjuge</div>';
+                        html += `<div class="person-drawer-row"><span class="label">Nome</span><span class="value">${esc(conjuge.nome_completo)}</span></div>`;
+                        if (conjuge.profissao) html += `<div class="person-drawer-row"><span class="label">Profissão</span><span class="value">${esc(conjuge.profissao)}</span></div>`;
+                        html += '</div>';
+                    }
+                }
+                // Source
+                if (person.fonte) {
+                    html += '<div class="person-drawer-section">';
+                    html += '<div class="person-drawer-section-title">Fonte</div>';
+                    html += `<div class="person-drawer-row"><span class="label">Origem</span><span class="value">${sourceBadgeHTML(person.fonte, 'sm')}</span></div>`;
+                    html += '</div>';
+                }
+            }
+            if (html === '') html = '<div class="person-drawer-empty">Sem dados disponíveis</div>';
+            document.getElementById('pd-body').innerHTML = html;
+            overlay.classList.add('open');
+        };
+        window.__closePersonDrawer = function(e) {
+            if (e && e.target !== document.getElementById('person-drawer-overlay')) return;
+            const overlay = document.getElementById('person-drawer-overlay');
+            if (overlay) overlay.classList.remove('open');
+        };
+
+        // Search navigation helper
+        window.__searchNavigate = function(el) {
+            const type = el.dataset.type, section = el.dataset.section, id = el.dataset.id;
+            searchOverlay && searchOverlay.classList.remove('open');
+            if (type === 'person' && id) {
+                // Navigate to person section and highlight
+                document.getElementById('person') && document.getElementById('person').scrollIntoView({behavior:'smooth'});
+            } else if (type === 'section' && section) {
+                document.getElementById(section) && document.getElementById(section).scrollIntoView({behavior:'smooth'});
+            } else if (type === 'timeline') {
+                document.getElementById('timeline') && document.getElementById('timeline').scrollIntoView({behavior:'smooth'});
+            }
+        };
 
         // Build filter tags once
         if (!window.__tl_filters._built && D.timeline && D.timeline.length > 0) {
@@ -1260,7 +1448,6 @@
     </script>
     <script src="search.js"></script>
     <script src="extras.js"></script>
-    <script src="timeline.js"></script>
     <script src="timeline.js"></script>
 </body>
 </html>
