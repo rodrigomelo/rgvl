@@ -452,6 +452,8 @@
     function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
     function fmtDate(d) { if (!d) return '-'; try { return new Date(d).toLocaleDateString('pt-BR'); } catch(e) { return d; } }
     function fmtMoney(v) { if (!v) return '-'; return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v); }
+    function maskCPF(v) { if (!v) return '-'; var s = String(v).replace(/[^0-9]/g,''); if (s.length < 3) return '***.***.***-'+s; return '***.***.***.'+s.slice(-2); }
+    function maskRG(v) { if (!v) return '-'; var s = String(v); if (s.length <= 3) return '***'+s; return '***'+s.slice(-3); }
 
     function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
     function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); }
@@ -821,8 +823,8 @@
                             <div class="node spouse">
                                 <div class="node-name">👩 ${esc(spouse.nome_completo)}</div>
                                 <div class="node-detail">${esc(spouse.profissao || '-')}</div>
-                                ${spouse.rg ? `<div class="node-detail">RG: ${esc(spouse.rg)}</div>` : ''}
-                                ${spouse.cpf ? `<div class="node-detail">CPF: ${esc(spouse.cpf)}</div>` : ''}
+                                ${spouse.rg ? `<div class="node-detail">RG: ${maskRG(spouse.rg)}</div>` : ''}
+                                ${spouse.cpf ? `<div class="node-detail">CPF: ${maskCPF(spouse.cpf)}</div>` : ''}
                             </div>
                         </div>
                     </div>` : ''}
@@ -896,8 +898,8 @@
                 <div class="info-card">
                     <h3>Identificação</h3>
                     <div class="row"><span class="label">Nome</span><span class="value">${esc(p.nome_completo)}</span></div>
-                    ${p.cpf ? `<div class="row"><span class="label">CPF</span><span class="value">${esc(p.cpf)}</span></div>` : ''}
-                    ${p.rg ? `<div class="row"><span class="label">RG</span><span class="value">${esc(p.rg)}</span></div>` : ''}
+                    ${p.cpf ? `<div class="row"><span class="label">CPF</span><span class="value">${maskCPF(p.cpf)}</span></div>` : ''}
+                    ${p.rg ? `<div class="row"><span class="label">RG</span><span class="value">${maskRG(p.rg)}</span></div>` : ''}
                     <div class="row"><span class="label">Profissão</span><span class="value">${esc(p.profissao || '-')}</span></div>
                     <div class="row"><span class="label">Cargo</span><span class="value">${esc(p.cargo || '-')}</span></div>
                     <div class="row"><span class="label">Empresa</span><span class="value">${esc(p.empresa || '-')}</span></div>
