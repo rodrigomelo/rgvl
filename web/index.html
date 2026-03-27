@@ -120,6 +120,8 @@
         .timeline-filter-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 4px; }
         .timeline-filter-tag { padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--bg); color: var(--text-muted); transition: all 0.15s; user-select: none; display: inline-flex; align-items: center; gap: 4px; }
         .timeline-filter-tag:hover { opacity: 0.8; }
+        .timeline-filter-tag.active { box-shadow: 0 0 0 2px var(--primary); opacity: 1; font-weight: 600; }
+        .timeline-filter-tag.source-active { box-shadow: 0 0 0 2px #3730A3; opacity: 1; font-weight: 600; background: #E0E7FF; color: #3730A3; border-color: #C7D2FE; }
         .timeline-filter-tag .tl-close { font-size: 13px; line-height: 1; opacity: 0.6; }
         .timeline-filter-tag:hover .tl-close { opacity: 1; }
         .timeline-filter-tag.type-birth { background: #DBEAFE; color: #1E40AF; border-color: #BFDBFE; }
@@ -1107,6 +1109,7 @@
 
         // Filtered timeline render
         window.__renderTimelineFiltered = function(events) {
+            const _scrollY = window.scrollY;
             const tl = document.getElementById('timeline-container');
             if (!tl) return;
             const { types, sources } = window.__tl_filters;
@@ -1132,6 +1135,7 @@
                 return `<div class="timeline-event"><div class="timeline-date">${dateDisplay}</div><div class="timeline-person">${esc(e.person_name||'Unknown')}</div><span class="timeline-type ${cssClass}">${tlEmoji} ${esc(tlLabel)}</span>${sourceBadge}<div class="timeline-desc">${esc(e.description||'')}</div></div>`;
             }).join('');
             window.__updateActiveFilterBar();
+            window.scrollTo(0, _scrollY);
         }
 
         // Render Timeline
