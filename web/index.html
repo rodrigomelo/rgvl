@@ -48,6 +48,9 @@
         .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
         .section { background: var(--card-bg); padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+        /* Section entrance animation */
+        .section { opacity: 0; transform: translateY(16px); transition: opacity 0.4s ease, transform 0.4s ease; }
+        .section.visible { opacity: 1; transform: translateY(0); }
         .section-title { font-size: 16px; color: var(--primary); font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--accent); }
 
         .tree { text-align: center; }
@@ -180,6 +183,13 @@
         }
 
         .empty-state { text-align: center; color: var(--text-muted); padding: 24px; font-size: 13px; }
+        /* Skeleton loader */
+        .skeleton-container { padding: 10px 0; }
+        .skeleton-title { height: 20px; width: 40%; background: linear-gradient(90deg, var(--border) 25%, #eef2f7 50%, var(--border) 75%); background-size: 200% 100%; border-radius: 4px; margin-bottom: 16px; animation: shimmer 1.5s infinite; }
+        .skeleton-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 24px; }
+        .skeleton-stat { height: 70px; background: linear-gradient(90deg, var(--border) 25%, #eef2f7 50%, var(--border) 75%); background-size: 200% 100%; border-radius: 10px; animation: shimmer 1.5s infinite; }
+        .skeleton-card { height: 120px; background: linear-gradient(90deg, var(--border) 25%, #eef2f7 50%, var(--border) 75%); background-size: 200% 100%; border-radius: 10px; margin-bottom: 16px; animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         .loading { text-align: center; padding: 60px; color: var(--text-muted); }
         .spinner { border: 4px solid var(--border); border-top: 4px solid var(--primary); border-radius: 50%; width: 36px; height: 36px; animation: spin 1s linear infinite; margin: 0 auto 12px; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -363,7 +373,17 @@
 
     <div id="main-content">
         <main class="main">
-            <div id="app"><div class="loading"><div class="spinner"></div>Carregando...</div></div>
+            <div id="app"><div class="skeleton-container">
+        <div class="skeleton-title"></div>
+        <div class="skeleton-stats">
+            <div class="skeleton-stat"></div><div class="skeleton-stat"></div><div class="skeleton-stat"></div><div class="skeleton-stat"></div>
+        </div>
+        <div class="skeleton-title"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-title"></div>
+        <div class="skeleton-card"></div>
+    </div></div>
         </main>
     </div>
     <script>
@@ -558,6 +578,7 @@
         window.__scrollObserver = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
                     const id = entry.target.id;
                     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
                     const active = document.querySelector(`.nav-item[data-section="${id}"]`);
@@ -599,22 +620,27 @@
                 return fallback;
             }
 
-            // Fetch sequentially to allow token cache to populate
-            // First request caches the token verification, rest are fast
-            const tree = await fetchWithRetry(api+'/family/person/'+PAI_ID+'/tree', null, 2);
-            const bisavos = await fetchWithRetry(api+'/family/generation/1', [], 2);
-            const avos = await fetchWithRetry(api+'/family/generation/2', [], 2);
-            const paisTios = await fetchWithRetry(api+'/family/generation/3', [], 2);
-            const primos = await fetchWithRetry(api+'/family/generation/4', [], 2);
-            const companies = await fetchWithRetry(api+'/assets/companies', [], 2);
-            const properties = await fetchWithRetry(api+'/assets/properties', [], 2);
-            const legal = await fetchWithRetry(api+'/legal/processes', [], 2);
-            const contacts = await fetchWithRetry(api+'/contacts', [], 2);
-                        const documents = await fetchWithRetry(api+'/documents', [], 2);
-                        const summary = await fetchWithRetry(api+'/family/summary', {}, 2);
-            const timeline = await fetchWithRetry(api+'/family/timeline', [], 2);
-            const sources = await fetchWithRetry(api+'/sources/summary', {total_records:0,sources:[]}, 2);
-            const records = await fetchWithRetry(api+'/sources/records', {total:0,records:[]}, 2);
+            // Fetch all data in parallel for faster load
+            const [
+                tree, bisavos, avos, paisTios, primos,
+                companies, properties, legal, contacts, documents,
+                summary, timeline, sources, records
+            ] = await Promise.all([
+                fetchWithRetry(api+'/family/person/'+PAI_ID+'/tree', null, 2),
+                fetchWithRetry(api+'/family/generation/1', [], 2),
+                fetchWithRetry(api+'/family/generation/2', [], 2),
+                fetchWithRetry(api+'/family/generation/3', [], 2),
+                fetchWithRetry(api+'/family/generation/4', [], 2),
+                fetchWithRetry(api+'/assets/companies', [], 2),
+                fetchWithRetry(api+'/assets/properties', [], 2),
+                fetchWithRetry(api+'/legal/processes', [], 2),
+                fetchWithRetry(api+'/contacts', [], 2),
+                fetchWithRetry(api+'/documents', [], 2),
+                fetchWithRetry(api+'/family/summary', {}, 2),
+                fetchWithRetry(api+'/family/timeline', [], 2),
+                fetchWithRetry(api+'/sources/summary', {total_records:0,sources:[]}, 2),
+                fetchWithRetry(api+'/sources/records', {total:0,records:[]}, 2),
+            ]);
             window.__rgvl_records = records;
             render({tree, bisavos:bisavos||[], avos:avos||[], paisTios:paisTios||[], primos:primos||[], companies:companies||[], properties:properties||[], summary, timeline:timeline||[], sources:sources||{}, records:records||[], legal:legal||[], contacts:contacts||[], documents:documents||[]});
         } catch(e) {
