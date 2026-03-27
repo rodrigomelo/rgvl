@@ -275,6 +275,28 @@
         .sources-tab:hover { color: var(--primary); }
         .sources-tab.active { color: var(--primary); border-bottom-color: var(--accent); font-weight: 600; }
 
+        /* Global Search */
+        .search-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;display:none;justify-content:center;padding-top:80px}
+        .search-overlay.open{display:flex}
+        .search-box{background:white;border-radius:16px;width:560px;max-width:90vw;max-height:70vh;box-shadow:0 20px 60px rgba(0,0,0,0.3);overflow:hidden;display:flex;flex-direction:column}
+        .search-input-wrap{display:flex;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border);gap:10px}
+        .search-input-wrap .icon{font-size:20px;color:var(--text-muted)}
+        .search-input{flex:1;border:none;outline:none;font-size:16px;color:var(--text);font-family:inherit}
+        .search-input::placeholder{color:var(--text-muted)}
+        .search-kbd{font-size:11px;color:var(--text-muted);background:var(--bg);padding:2px 8px;border-radius:4px;border:1px solid var(--border)}
+        .search-results{overflow-y:auto;flex:1;padding:8px}
+        .search-result{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:8px;cursor:pointer;transition:background 0.15s}
+        .search-result:hover,.search-result.selected{background:var(--bg)}
+        .search-result-icon{font-size:18px;min-width:28px;text-align:center}
+        .search-result-text{flex:1;min-width:0}
+        .search-result-title{font-size:14px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .search-result-title mark{background:#FEF3C7;color:inherit;padding:0 2px;border-radius:2px}
+        .search-result-sub{font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .search-result-section{font-size:10px;color:var(--primary);font-weight:600;text-transform:uppercase;background:#E0E7FF;padding:1px 6px;border-radius:3px}
+        .search-empty{text-align:center;padding:40px;color:var(--text-muted);font-size:13px}
+        .search-hint{padding:10px 20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-muted);display:flex;gap:16px}
+        .search-hint kbd{font-size:10px;background:var(--bg);padding:1px 5px;border-radius:3px;border:1px solid var(--border)}
+
         /* Sources grid */
 
         .sources-card {
@@ -360,6 +382,24 @@
         <a class="nav-item" data-section="sources">📜 Fontes dos Dados</a>
         <a class="nav-item" data-section="timeline">📅 Linha do Tempo</a>
     </nav>
+    <!-- Global Search Overlay -->
+    <div class="search-overlay" id="search-overlay">
+        <div class="search-box">
+            <div class="search-input-wrap">
+                <span class="icon">🔍</span>
+                <input class="search-input" id="search-input" type="text" placeholder="Buscar pessoas, empresas, processos..." autocomplete="off">
+                <span class="search-kbd">ESC</span>
+            </div>
+            <div class="search-results" id="search-results">
+                <div class="search-empty">Digite para buscar...</div>
+            </div>
+            <div class="search-hint">
+                <span><kbd>↑↓</kbd> navegar</span>
+                <span><kbd>Enter</kbd> abrir</span>
+                <span><kbd>Ctrl+K</kbd> fechar</span>
+            </div>
+        </div>
+    </div>
     <!-- Login Screen -->
     <div id="login-screen" style="display:none;position:fixed;inset:0;background:var(--bg);justify-content:center;align-items:center;z-index:1000">
         <div style="text-align:center;background:white;padding:48px;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.15);max-width:400px;width:90%">
@@ -1202,6 +1242,9 @@
         }
 
         init();
-    </script>
+    <script src="search.js"></script>
+    <script src="search.js"></script>`
+
+
 </body>
 </html>
