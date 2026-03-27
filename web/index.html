@@ -566,7 +566,7 @@
         const sections = document.querySelectorAll('.section[id]');
         if (!sections.length) return;
 
-        const observer = new IntersectionObserver(entries => {
+        window.__scrollObserver = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const id = entry.target.id;
@@ -577,7 +577,7 @@
             });
         }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
 
-        sections.forEach(section => observer.observe(section));
+        sections.forEach(section => window.__scrollObserver.observe(section));
     }
 
     // RGVL pai ID — Rodrigo Gorgulho de Vasconcellos Lanna
@@ -1110,6 +1110,7 @@
         // Filtered timeline render
         window.__renderTimelineFiltered = function(events) {
             const _scrollY = window.scrollY;
+            if (window.__scrollObserver) window.__scrollObserver.disconnect();
             const tl = document.getElementById('timeline-container');
             if (!tl) return;
             const { types, sources } = window.__tl_filters;
@@ -1135,7 +1136,12 @@
                 return `<div class="timeline-event"><div class="timeline-date">${dateDisplay}</div><div class="timeline-person">${esc(e.person_name||'Unknown')}</div><span class="timeline-type ${cssClass}">${tlEmoji} ${esc(tlLabel)}</span>${sourceBadge}<div class="timeline-desc">${esc(e.description||'')}</div></div>`;
             }).join('');
             window.__updateActiveFilterBar();
-            window.scrollTo(0, _scrollY);
+            requestAnimationFrame(() => {
+                window.scrollTo(0, _scrollY);
+                if (window.__scrollObserver) {
+                    document.querySelectorAll('.section[id]').forEach(s => window.__scrollObserver.observe(s));
+                }
+            });
         }
 
         // Render Timeline
