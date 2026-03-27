@@ -316,6 +316,7 @@ class DBSeeder:
     
     def connect(self):
         self.conn = sqlite3.connect(self.db_path)
+        self.conn.execute("PRAGMA foreign_keys = ON")
         self.conn.row_factory = sqlite3.Row
     
     def close(self):
