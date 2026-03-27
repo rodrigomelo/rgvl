@@ -120,21 +120,10 @@
         .timeline-filter-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 4px; }
         .timeline-filter-tag { padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--bg); color: var(--text-muted); transition: all 0.15s; user-select: none; display: inline-flex; align-items: center; gap: 4px; }
         .timeline-filter-tag:hover { opacity: 0.8; }
-        .timeline-filter-tag.active { box-shadow: 0 0 0 2px var(--primary); opacity: 1; font-weight: 600; }
-        .timeline-filter-tag.source-active { box-shadow: 0 0 0 2px #3730A3; opacity: 1; font-weight: 600; background: #E0E7FF; color: #3730A3; border-color: #C7D2FE; }
+        .timeline-filter-tag.active { box-shadow: 0 0 0 2px var(--primary); opacity: 1; font-weight: 600; background: var(--primary); color: white; border-color: var(--primary); }
+        .timeline-filter-tag.source-active { box-shadow: 0 0 0 2px var(--primary); opacity: 1; font-weight: 600; background: var(--primary); color: white; border-color: var(--primary); }
         .timeline-filter-tag .tl-close { font-size: 13px; line-height: 1; opacity: 0.6; }
         .timeline-filter-tag:hover .tl-close { opacity: 1; }
-        .timeline-filter-tag.type-birth { background: #DBEAFE; color: #1E40AF; border-color: #BFDBFE; }
-        .timeline-filter-tag.type-death { background: #FEE2E2; color: #991B1B; border-color: #FECACA; }
-        .timeline-filter-tag.type-marriage { background: #FEF3C7; color: #92400E; border-color: #FDE68A; }
-        .timeline-filter-tag.type-career { background: #D1FAE5; color: #065F46; border-color: #A7F3D0; }
-        .timeline-filter-tag.type-company { background: #FEF3C7; color: #92400E; border-color: #FDE68A; }
-        .timeline-filter-tag.type-paternity { background: #E9D5FF; color: #6B21A8; border-color: #D8B4FE; }
-        .timeline-filter-tag.type-legal { background: #FFEDD5; color: #9A3412; border-color: #FED7AA; }
-        .timeline-filter-tag.type-name_change { background: #CFFAFE; color: #0E7490; border-color: #A5F3FC; }
-        .timeline-filter-tag.type-family_contact { background: #E0E7FF; color: #3730A3; border-color: #C7D2FE; }
-        .timeline-filter-tag.type-default, .timeline-filter-tag.type-research { background: var(--bg); color: var(--text-muted); }
-        .timeline-filter-tag.source-tag { background: #E0E7FF; color: #3730A3; border-color: #C7D2FE; }
         .timeline-filter-tag .count { opacity: 0.6; font-size: 10px; }
         .timeline-filter-active-bar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
         .timeline-filter-active-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 4px; }
@@ -1098,10 +1087,10 @@
             let html = '<span class="timeline-filter-active-label">Filtros:</span>';
             types.forEach(t => {
                 const typeLabels = {birth:'👶 NASCIMENTO',death:'⚰️ FALECIMENTO',marriage:'💍 CASAMENTO',company:'🏢 EMPRESA',career:'💼 CARREIRA',name_change:'✏️ NOME',paternity:'🤝 PATERNIDADE',legal:'⚖️ LEGAL',family_contact:'📞 CONTATO',default:'📋 OUTRO'};
-                html += `<button class="timeline-filter-active-tag type-${t}" style="background:inherit;color:inherit;border:1px solid currentColor;opacity:0.9"><span>${typeLabels[t]||t}</span> <span class="tl-close" onclick="(function(){window.__tl_filters.types.delete('${t}');window.__updateActiveFilterBar();window.__renderTimelineFiltered(window.__tl_data.timeline)})()">✕</span></button>`;
+                html += `<button class="timeline-filter-active-tag type-${t}" style="background:var(--primary);color:white;border:1px solid var(--primary)"><span>${typeLabels[t]||t}</span> <span class="tl-close" onclick="(function(){window.__tl_filters.types.delete('${t}');window.__updateActiveFilterBar();window.__renderTimelineFiltered(window.__tl_data.timeline)})()">✕</span></button>`;
             });
             sources.forEach(s => {
-                html += `<button class="timeline-filter-active-tag" style="background:#E0E7FF;color:#3730A3;border:1px solid #C7D2FE"><span>${SOURCE_LABELS[s]||SOURCE_LABELS[s.toLowerCase()]||s}</span> <span class="tl-close" onclick="(function(){window.__tl_filters.sources.delete('${s}');window.__updateActiveFilterBar();window.__renderTimelineFiltered(window.__tl_data.timeline)})()">✕</span></button>`;
+                html += `<button class="timeline-filter-active-tag" style="background:var(--primary);color:white;border:1px solid var(--primary)"><span>${SOURCE_LABELS[s]||SOURCE_LABELS[s.toLowerCase()]||s}</span> <span class="tl-close" onclick="(function(){window.__tl_filters.sources.delete('${s}');window.__updateActiveFilterBar();window.__renderTimelineFiltered(window.__tl_data.timeline)})()">✕</span></button>`;
             });
             html += `<button class="timeline-clear-all" onclick="(function(){window.__tl_filters.types.clear();window.__tl_filters.sources.clear();window.__updateActiveFilterBar();window.__renderTimelineFiltered(window.__tl_data.timeline)})()">Limpar tudo</button>`;
             bar.innerHTML = html;
