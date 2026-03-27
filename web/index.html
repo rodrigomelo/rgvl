@@ -347,17 +347,17 @@
     </header>
     <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
     <nav class="sidebar" id="sidebar">
-        <a class="nav-item active" data-section="overview">📊 Visão Geral</a>
-        <a class="nav-item" data-section="patrimony">💰 Patrimônio Estimado</a>
-        <a class="nav-item" data-section="family">🌳 Árvore Genealógica</a>
-        <a class="nav-item" data-section="person">👤 Dados Pessoais</a>
-        <a class="nav-item" data-section="companies">🏢 Empresas</a>
-        <a class="nav-item" data-section="properties">🏠 Imóveis</a>
-        <a class="nav-item" data-section="legal">⚖️ Processos Judiciais</a>
-        <a class="nav-item" data-section="contacts">📞 Contatos</a>
-        <a class="nav-item" data-section="documents">📄 Documentos</a>
-        <a class="nav-item" data-section="sources">📜 Fontes dos Dados</a>
-        <a class="nav-item" data-section="timeline">📅 Linha do Tempo</a>
+        <a class="nav-item active" data-section="overview">📊 VISÃO GERAL</a>
+        <a class="nav-item" data-section="patrimony">💰 PATRIMÔNIO ESTIMADO</a>
+        <a class="nav-item" data-section="family">🌳 ÁRVORE GENEALÓGICA</a>
+        <a class="nav-item" data-section="person">👤 DADOS PESSOAIS</a>
+        <a class="nav-item" data-section="companies">🏢 EMPRESAS</a>
+        <a class="nav-item" data-section="properties">🏠 IMÓVEIS</a>
+        <a class="nav-item" data-section="legal">⚖️ PROCESSOS JUDICIAIS</a>
+        <a class="nav-item" data-section="contacts">📞 CONTATOS</a>
+        <a class="nav-item" data-section="documents">📄 DOCUMENTOS</a>
+        <a class="nav-item" data-section="sources">📜 FONTES DOS DADOS</a>
+        <a class="nav-item" data-section="timeline">📅 LINHA DO TEMPO</a>
     </nav>
     <!-- Login Screen -->
     <div id="login-screen" style="display:none;position:fixed;inset:0;background:var(--bg);justify-content:center;align-items:center;z-index:1000">
@@ -662,20 +662,20 @@
         document.getElementById('app').innerHTML = `
         <!-- Overview -->
         <div class="section" id="overview">
-            <div class="section-title">📊 Visão Geral</div>
+            <div class="section-title">📊 VISÃO GERAL</div>
             <div class="stats">
                 <div class="stat"><div class="stat-value">${D.summary.total_pessoas || 0}</div><div class="stat-label">Pessoas</div></div>
                 <div class="stat"><div class="stat-value">${siblings.length}</div><div class="stat-label">Irmãos do Pai</div></div>
                 <div class="stat"><div class="stat-value">${D.primos.length}</div><div class="stat-label">Geração 4 — Você e Primos</div></div>
-                <div class="stat"><div class="stat-value">${D.companies.length}</div><div class="stat-label">Empresas</div></div>
-                <div class="stat"><div class="stat-value">${D.properties.length}</div><div class="stat-label">Imóveis</div></div>
+                <div class="stat"><div class="stat-value">${(D.companies||[]).length}</div><div class="stat-label">Empresas</div></div>
+                <div class="stat"><div class="stat-value">${(D.properties||[]).length}</div><div class="stat-label">Imóveis</div></div>
                 <div class="stat"><div class="stat-value">${D.summary.relacionamentos_confirmados || 0}</div><div class="stat-label">Vínculos Confirmados</div></div>
             </div>
         </div>
 
         <!-- Patrimony -->
         <div class="section" id="patrimony">
-            <div class="section-title">💰 Patrimônio Estimado</div>
+            <div class="section-title">💰 PATRIMÔNIO ESTIMADO</div>
             <div class="stats">
                 <div class="stat" style="border:2px solid var(--primary);background:#F0F4FA">
                     <div class="stat-value" style="color:var(--primary);font-size:26px;font-weight:800">${fmtMoney(totalWealth)}</div>
@@ -694,7 +694,7 @@
 
         <!-- Family Tree -->
         <div class="section" id="family">
-            <div class="section-title">🌳 Árvore Genealógica (${D.summary.total_pessoas || 0} pessoas)</div>
+            <div class="section-title">🌳 ÁRVORE GENEALÓGICA (${D.summary.total_pessoas || 0} pessoas)</div>
             <div class="tree">
 
                 <!-- Bisavós -->
@@ -866,7 +866,7 @@
 
         <!-- Companies -->
         <div class="section" id="companies">
-            <div class="section-title">🏢 Empresas (${D.companies.length})</div>
+            <div class="section-title">🏢 EMPRESAS (${(D.companies||[]).length})</div>
             <div class="info-grid">
                 ${D.companies.map(c => `
                     <div class="company">
@@ -889,7 +889,7 @@
 
         <!-- Properties -->
         <div class="section" id="properties">
-            <div class="section-title">🏠 Imóveis (${D.properties.length})</div>
+            <div class="section-title">🏠 IMÓVEIS (${(D.properties||[]).length})</div>
             <div class="info-grid">
                 ${D.properties.map(p => {
                     let owners = [];
@@ -923,9 +923,9 @@
 
         <!-- Legal -->
         <div class="section" id="legal">
-            <div class="section-title">⚖️ Processos Judiciais (${D.legal.length})</div>
+            <div class="section-title">⚖️ PROCESSOS JUDICIAIS (${(D.legal||[]).length})</div>
             <div class="info-grid">
-                ${D.legal.length === 0 ? '<div class="empty-state">Nenhum processo encontrado</div>' : D.legal.map(p => `
+                ${(D.legal||[]).length === 0 ? '<div class="empty-state">Nenhum processo encontrado</div>' : D.legal.map(p => `
                     <div class="company">
                         <div class="company-name">${esc(p.process_number || '-')}</div>
                         <div class="row"><span class="label">Tribunal</span><span class="value">${esc(p.court || '-')}</span></div>
@@ -941,9 +941,9 @@
 
         <!-- Contacts -->
         <div class="section" id="contacts">
-            <div class="section-title">📞 Contatos (${D.contacts.length})</div>
+            <div class="section-title">📞 CONTATOS (${(D.contacts||[]).length})</div>
             <div class="info-grid">
-                ${D.contacts.length === 0 ? '<div class="empty-state">Nenhum contato encontrado</div>' : D.contacts.map(c => `
+                ${(D.contacts||[]).length === 0 ? '<div class="empty-state">Nenhum contato encontrado</div>' : D.contacts.map(c => `
                     <div class="company">
                         <div class="company-name">${esc(c.nome || '-')}</div>
                         <div class="row"><span class="label">Função</span><span class="value">${esc(c.role || '-')}</span></div>
@@ -959,7 +959,7 @@
 
         <!-- Documentos -->
         <div class="section" id="documents">
-            <div class="section-title">📄 Documentos (${(D.documents||[]).length})</div>
+            <div class="section-title">📄 DOCUMENTOS (${(D.documents||[]).length})</div>
             <div class="info-grid">
                 ${(D.documents||[]).length === 0 ? '<div class="empty-state">Nenhum documento encontrado</div>' : (D.documents||[]).map(d => `
                     <div class="company">
@@ -973,7 +973,7 @@
 
         <!-- Sources -->
         <div class="section" id="sources">
-            <div class="section-title">📜 Fontes dos Dados</div>
+            <div class="section-title">📜 FONTES DOS DADOS</div>
 
             <!-- Confidence bar -->
             <div class="sources-confidence" id="sources-confidence" style="display:none">
@@ -1009,7 +1009,7 @@
 
         <!-- Timeline -->
         <div class="section timeline-section" id="timeline">
-            <div class="section-title">📅 Linha do Tempo</div>
+            <div class="section-title">📅 LINHA DO TEMPO</div>
             <div class="timeline-filters" id="timeline-filters">
                 <div class="timeline-filter-group" id="tl-filter-types"><span class="timeline-filter-label">Tipo:</span></div>
                 <div class="timeline-filter-group" id="tl-filter-sources"><span class="timeline-filter-label">Fonte:</span></div>
