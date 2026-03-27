@@ -193,7 +193,9 @@
             .source-badge { padding: 6px 10px; }
         }
 
-        .empty-state { text-align: center; color: var(--text-muted); padding: 24px; font-size: 13px; }
+        .empty-state { text-align: center; color: var(--text-muted); padding: 40px 24px; font-size: 13px; }
+        .empty-state .empty-icon { font-size: 40px; margin-bottom: 12px; display: block; }
+        .empty-state .empty-msg { margin-bottom: 8px; }
         /* Skeleton loader */
         .skeleton-container { padding: 10px 0; }
         .skeleton-title { height: 20px; width: 40%; background: linear-gradient(90deg, var(--border) 25%, #eef2f7 50%, var(--border) 75%); background-size: 200% 100%; border-radius: 4px; margin-bottom: 16px; animation: shimmer 1.5s infinite; }
@@ -993,7 +995,7 @@
         <div class="section" id="legal">
             <div class="section-title">⚖️ Processos Judiciais (${(D.legal||[]).length})</div>
             <div class="info-grid">
-                ${(D.legal||[]).length === 0 ? '<div class="empty-state">Nenhum processo encontrado</div>' : D.legal.map(p => `
+                ${(D.legal||[]).length === 0 ? '<div class="empty-state"><span class="empty-icon">⚖️</span><span class="empty-msg">Nenhum processo judicial encontrado</span><div>Os dados serão adicionados quando disponíveis</div></div>' : D.legal.map(p => `
                     <div class="company">
                         <div class="company-name">${esc(p.process_number || '-')}</div>
                         <div class="row"><span class="label">Tribunal</span><span class="value">${esc(p.court || '-')}</span></div>
@@ -1011,7 +1013,7 @@
         <div class="section" id="contacts">
             <div class="section-title">📞 Contatos (${(D.contacts||[]).length})</div>
             <div class="info-grid">
-                ${(D.contacts||[]).length === 0 ? '<div class="empty-state">Nenhum contato encontrado</div>' : D.contacts.map(c => `
+                ${(D.contacts||[]).length === 0 ? '<div class="empty-state"><span class="empty-icon">📞</span><span class="empty-msg">Nenhum contato cadastrado</span><div>Contatos serão adicionados conforme a pesquisa avança</div></div>' : D.contacts.map(c => `
                     <div class="company">
                         <div class="company-name">${esc(c.nome || '-')}</div>
                         <div class="row"><span class="label">Função</span><span class="value">${esc(c.role || '-')}</span></div>
@@ -1029,7 +1031,7 @@
         <div class="section" id="documents">
             <div class="section-title">📄 Documentos (${(D.documents||[]).length})</div>
             <div class="info-grid">
-                ${(D.documents||[]).length === 0 ? '<div class="empty-state">Nenhum documento encontrado</div>' : (D.documents||[]).map(d => `
+                ${(D.documents||[]).length === 0 ? '<div class="empty-state"><span class="empty-icon">📄</span><span class="empty-msg">Nenhum documento disponível</span><div>Documentos serão adicionados à medida que forem coletados</div></div>' : (D.documents||[]).map(d => `
                     <div class="company">
                         <div class="company-name">${esc(d.title || '-')}</div>
                         <div class="row"><span class="label">Tipo</span><span class="value">${esc(d.doc_type || '-')}</span></div>
@@ -1215,7 +1217,7 @@
         if (tl && D.timeline && D.timeline.length > 0) {
             window.__renderTimelineFiltered(D.timeline);
         } else if (tl) {
-            tl.innerHTML = '<div class="timeline-empty">Nenhum evento encontrado</div>';
+            tl.innerHTML = '<div class="timeline-empty"><span class="empty-icon">📅</span><span class="empty-msg">Nenhum evento na linha do tempo</span><div>Eventos serão adicionados conforme a pesquisa avança</div></div>';
         }
 
 
