@@ -412,8 +412,8 @@
         <a class="nav-item" data-section="legal">⚖️ Processos Judiciais</a>
         <a class="nav-item" data-section="contacts">📞 Contatos</a>
         <a class="nav-item" data-section="documents">📄 Documentos</a>
-        <a class="nav-item" data-section="sources">📜 Fontes dos Dados</a>
         <a class="nav-item" data-section="timeline">📅 Linha do Tempo</a>
+        <a class="nav-item" data-section="sources">📜 Fontes dos Dados</a>
     </nav>
     <!-- Person Detail Drawer -->
     <div class="person-drawer-overlay" id="person-drawer-overlay" onclick="window.__closePersonDrawer(event)">
@@ -1101,6 +1101,19 @@
             </div>
         </div>
 
+        <!-- Timeline -->
+        <div class="section timeline-section" id="timeline">
+            <div class="section-title">📅 Linha do Tempo</div>
+            <div class="timeline-filters" id="timeline-filters">
+                <div class="timeline-filter-group" id="tl-filter-types"><span class="timeline-filter-label">Tipo:</span></div>
+                <div class="timeline-filter-group" id="tl-filter-sources"><span class="timeline-filter-label">Fonte:</span></div>
+            </div>
+            <div class="timeline-filter-active-bar" id="tl-active-bar" style="display:none"></div>
+            <div class="timeline" id="timeline-container">
+                <div class="loading">Carregando eventos...</div>
+            </div>
+        </div>
+
         <!-- Sources -->
         <div class="section" id="sources">
             <div class="section-title">📜 Fontes dos Dados</div>
@@ -1134,19 +1147,6 @@
                     <div class="sources-view-total" id="sources-view-total"></div>
                 </div>
                 <div id="sources-list"></div>
-            </div>
-        </div>
-
-        <!-- Timeline -->
-        <div class="section timeline-section" id="timeline">
-            <div class="section-title">📅 Linha do Tempo</div>
-            <div class="timeline-filters" id="timeline-filters">
-                <div class="timeline-filter-group" id="tl-filter-types"><span class="timeline-filter-label">Tipo:</span></div>
-                <div class="timeline-filter-group" id="tl-filter-sources"><span class="timeline-filter-label">Fonte:</span></div>
-            </div>
-            <div class="timeline-filter-active-bar" id="tl-active-bar" style="display:none"></div>
-            <div class="timeline" id="timeline-container">
-                <div class="loading">Carregando eventos...</div>
             </div>
         </div>
         `;
