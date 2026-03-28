@@ -775,6 +775,32 @@
                 <div class="stat"><div class="stat-value">${(D.properties||[]).length}</div><div class="stat-label">Imóveis</div></div>
                 <div class="stat"><div class="stat-value">${D.summary.relacionamentos_confirmados || 0}</div><div class="stat-label">Vínculos Confirmados</div></div>
             </div>
+            ${(() => {
+                const persons = D.allPersons || [];
+                if (!persons.length) return '';
+                const total = persons.length;
+                const withBirth = persons.filter(p => p.data_nascimento).length;
+                const withCPF = persons.filter(p => p.cpf).length;
+                const withRG = persons.filter(p => p.rg).length;
+                const withCity = persons.filter(p => p.local_nascimento).length;
+                const pct = Math.round(((withBirth + withCPF + withRG + withCity) / (total * 4)) * 100);
+                const color = pct >= 75 ? '#2E7D32' : pct >= 50 ? '#F57F17' : '#C62828';
+                const missing = [];
+                if (withBirth < total) missing.push(`${total - withBirth} sem data de nascimento`);
+                if (withCPF < total) missing.push(`${total - withCPF} sem CPF`);
+                if (withRG < total) missing.push(`${total - withRG} sem RG`);
+                if (withCity < total) missing.push(`${total - withCity} sem local de nascimento`);
+                return `<div style="margin-top:16px;padding:16px;background:var(--bg);border-radius:10px;border:1px solid var(--border)">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                        <span style="font-size:13px;font-weight:600;color:var(--text)">📋 Completude dos Dados</span>
+                        <span style="font-size:22px;font-weight:800;color:${color}">${pct}%</span>
+                    </div>
+                    <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden">
+                        <div style="width:${pct}%;height:100%;background:${color};border-radius:4px;transition:width 0.5s"></div>
+                    </div>
+                    ${missing.length ? `<div style="margin-top:8px;font-size:11px;color:var(--text-muted)">${missing.join(' · ')}</div>` : '<div style="margin-top:8px;font-size:11px;color:#2E7D32">✅ Todos os dados completos!</div>'}
+                </div>`;
+            })()}
         </div>
 
         <!-- Patrimony -->
