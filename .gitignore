@@ -17,7 +17,9 @@ node_modules/
 *.sqlite3
 *.bak
 *.log
-data/
+data/*
+!data/migrations/
+!data/migrations/**
 
 # Backups
 .backups/
@@ -34,4 +36,3 @@ Thumbs.db
 .dist/
 .build/
 .trash/
-!data/migrations/
