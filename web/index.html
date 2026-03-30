@@ -1013,8 +1013,8 @@
                         ${c.data_abertura ? `<div class="row"><span class="label">Abertura</span><span class="value">${esc(c.data_abertura)}</span></div>` : ''}
                         ${c.data_baixa ? `<div class="row"><span class="label">Baixa</span><span class="value">${esc(c.data_baixa)}</span></div>` : ''}
                         ${c.endereco ? `<div class="row"><span class="label">Endereço</span><span class="value">${esc(c.endereco)}</span></div>` : ''}
-                        ${c.socios ? (() => { try { return '<div style="margin-top:8px;font-size:11px;color:var(--text-muted)">📋 ' + JSON.parse(c.socios).map(s => s.nome + ' (' + s.participacao + ')').join(', ') + '</div>'; } catch(e) { return ''; } })() : ''}
-                        ${c.observacoes ? `<div style="margin-top:6px;font-size:11px;color:var(--text-muted)">${esc(c.observacoes.substring(0, 120))}</div>` : ''}
+                        ${c.socios ? (() => { try { const ss = JSON.parse(c.socios); if (!ss.length) return ''; return '<div style="margin-top:8px;font-size:11px;color:var(--text-muted)">📋 ' + ss.map(s => s.nome + ' (' + (s.qualificacao || s.participacao || 'sócio') + ')').join(', ') + '</div>'; } catch(e) { return ''; } })() : ''}
+                        ${c.observacoes ? (() => { try { const o = JSON.parse(c.observacoes); const rf = o.receita_federal || {}; const parts = []; if (rf.cnae_descricao) parts.push(rf.cnae_descricao); if (rf.porte) parts.push(rf.porte); if (rf.telefone) parts.push('Tel: ' + rf.telefone); return parts.length ? `<div style="margin-top:6px;font-size:11px;color:var(--text-muted)">${esc(parts.join(' · '))}</div>` : ''; } catch(e) { return c.observacoes ? `<div style="margin-top:6px;font-size:11px;color:var(--text-muted)">${esc(c.observacoes.substring(0, 120))}</div>` : ''; } })() : ''}
                     </div>
                 `).join('')}
             </div>
