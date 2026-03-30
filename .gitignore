@@ -18,6 +18,10 @@ node_modules/
 *.bak
 *.log
 data/*
+!data/collectors/
+!data/collectors/*.py
+!data/migrations/
+!data/migrations/*.py
 !data/migrations/
 !data/migrations/**
 
