@@ -207,10 +207,9 @@ class BaseCollector(ABC):
         insight = models.Insight(
             category=category,
             title=title,
-            content=content,
+            description=content,  # DB column is 'description'
             source=source,
-            person_id=person_id,
-            confidence=confidence,
+            tags=json.dumps({"person_id": person_id, "confidence": confidence}) if person_id else None,
         )
         session.add(insight)
         self.results["added"] += 1

@@ -25,7 +25,7 @@ if str(PROJECT_ROOT) not in sys.path:
 COLLECTORS = {
     "local":            ("data.collectors.local",            "LocalCollector",         "Load local structured data files"),
     "import_structured": ("data.collectors.import_structured", "ImportStructuredCollector", "Import structured JSON/CSV data"),
-    "email":             ("data.collectors.mail_collector",   "EmailCollector",         "Scan Gmail for family documents"),
+    "gmail":            ("data.collectors.mail_collector",   "GmailCollector",         "Scan Gmail for family documents"),
     "father_drive":      ("data.collectors.father_drive",     "FatherDriveCollector",   "Extract docs from father's Google Drive"),
     "github":            ("data.collectors.github",           "GithubCollector",        "Search GitHub for mentions"),
     "web_search":        ("data.collectors.web_search",       "WebSearchCollector",     "Search web for name mentions"),
@@ -35,6 +35,10 @@ COLLECTORS = {
     "jucesp":            ("data.collectors.jucesp",           "JucespCollector",        "Search JUCESP company registry"),
     "tjmg":              ("data.collectors.tjmg",             "TjmgCollector",          "Search TJMG legal processes"),
     "tjsp":              ("data.collectors.tjsp",             "TjspCollector",          "Search TJSP legal processes"),
+    "arpensp":           ("data.collectors.arpensp",          "ArpenspCollector",       "Search Arpensp for civil records"),
+    "detran_mg":         ("data.collectors.detran_mg",        "DetranMGCollector",      "Search Detran-MG for vehicles"),
+    "tre_mg":            ("data.collectors.tre_mg",           "TREMGCollector",         "Search TRE-MG for electoral records"),
+    "familysearch":      ("data.collectors.familysearch",     "FamilySearchCollector",  "Search FamilySearch for genealogy"),
 }
 
 

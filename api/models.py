@@ -447,3 +447,18 @@ class Note(Base):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
+
+class Insight(Base):
+    """Research insight extracted from data sources."""
+    __tablename__ = 'insights'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+
+    category = Column(String(100))
+    title = Column(String(500))
+    description = Column(Text)
+    source = Column(String(100))
+    discovered_at = Column(DateTime)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    tags = Column(Text)
+
