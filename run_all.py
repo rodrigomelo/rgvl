@@ -39,6 +39,9 @@ COLLECTORS = {
     "detran_mg":         ("data.collectors.detran_mg",        "DetranMGCollector",      "Search Detran-MG for vehicles"),
     "tre_mg":            ("data.collectors.tre_mg",           "TREMGCollector",         "Search TRE-MG for electoral records"),
     "familysearch":      ("data.collectors.familysearch",     "FamilySearchCollector",  "Search FamilySearch for genealogy"),
+    "receita_federal":  ("data.collectors.receita_federal",  "ReceitaFederalCollector","Query CNPJ data from Receita Federal"),
+    "tjmg_playwright":  ("data.collectors.tjmg_playwright",  "TJMGPlaywrightCollector","Search TJMG via Playwright browser"),
+    "arisp":            ("data.collectors.arisp",            "ArispCollector",         "Search newspapers and property registries"),
 }
 
 
