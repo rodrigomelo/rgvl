@@ -426,3 +426,24 @@ class TarefaPesquisa(Base):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
+
+class Note(Base):
+    """Research note from collectors. Stores findings, observations, and raw data."""
+    __tablename__ = 'notes'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+
+    title = Column(String(500))
+    content = Column(Text)
+    category = Column(String(100))          # web_mention, legal_finding, person_data, etc.
+    source = Column(String(100))            # collector name: web_search, x_search, etc.
+    tags = Column(Text)                     # JSON array of tags
+    importance = Column(Integer, default=2) # 1=critical, 2=normal, 3=low
+    raw_data = Column(Text)                 # JSON original response
+
+    person_id = Column(Integer)             # Link to pessoa if applicable
+    confidence = Column(Integer, default=50)
+
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
