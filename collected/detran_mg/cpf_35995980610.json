@@ -1,0 +1,13 @@
+{
+  "target": "Rosália Fagundes Ladeira",
+  "cpf": "359.959.806-10",
+  "person_id": 7,
+  "portal_url": "https://www.detran.mg.gov.br/",
+  "vehicle_consultation_url": "https://portalservicos.detran.mg.gov.br/veiculos/consulta-veiculo",
+  "requires": {
+    "cpf": "359.959.806-10",
+    "birth_date": "DD/MM/YYYY (NOT available — need to add manually)"
+  },
+  "found_vehicles": [],
+  "searched_at": "2026-03-31T08:45:33.830439"
+}

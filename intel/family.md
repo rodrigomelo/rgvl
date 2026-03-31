@@ -1,42 +1,77 @@
 # Family Network
+*Last updated: 2026-03-31 — Artemis Research*
 
-## Geração 1 — Fundadores
-- [A pesquisar]
+## Núcleo Familiar (Lanna Gorgulho)
 
-## Geração 2 — avós de RGVL
-- [A pesquisar]
+### Rodrigo Gorgulho de Vasconcellos Lanna — RGVL (pai do cliente)
+- **CPF:** 314.516.326-49
+- **Nascimento:** ~1955-1964 (idade 61-70 em registros de 2026)
+- **Profissão:** Engenheiro — Diretor na Construtora Barbosa Mello S/A
+- **Desde:** Fevereiro 2013 (data de entrada como Diretor)
+- **Endereço (consulta):** Rua Gonçalves Dias 865, Apt 1201, Savassi, BH/MG
+- **SCP Administrator:** SCP 0125 em Parauapebas/PA (Carajás) — desde 2021
+- **Empresas próprias:** F Ladeira Consultoria Ltda. (com Rosália)
 
-## Geração 3 — Pais de RGVL
-- **Pai:** [A confirmar]
-- **Mãe:** [A confirmar]
+### Rosália Fagundes Ladeira (esposa de RGVL)
+- **CPF:** 359.959.806-10
+- **Empresas:** F Ladeira Consultoria Ltda. — sócia (com RGVL)
+- **Endereço:** Rua Gonçalves Dias 865, Apt 1201, Savassi, BH
+- **Perfil猜想:** Pode ser profissional de engenharia ou administra
 
-## Geração 4 — RGVL e siblings
-- **Rodrigo Gorgulho de Vasconcellos Lanna** (ID: 6)
-  - CPF: 314.516.326-49
-  - Nasc: 1955-12-17
-  - Cônjuge: Rosália Fagundes Ladeira (casamento 1992)
-  - Cargo: Diretor Engenheiro na CBM desde ~1992
+---
 
-- **Henrique Gorgulho de Vasconcellos Lanna** (ID: 8)
-  - Nasc: 1966-05-22
-  - Fundou ERH Lanna Engenharia (1998, baixa 2024)
-  - LinkedIn: linkedin.com/in/henrique-lanna-47999732 (Rx Digital Odontologia)
+## Irmãos / Parentes
 
-- **Marcelo Gorgulho de Vasconcellos Lanna** (ID: 9)
-  - LinkedIn: linkedin.com/in/marcelo-ibrahim-lana (Sistema Ocemg)
-  - Status: A confirmar se é irmão de RGVL
+### Henrique Gorgulho de Vasconcellos Lanna (irmão de RGVL)
+- **Idade estimada:** 51-60 anos (2026)
+- **Profissão:** Engenheiro (presumido)
+- **CNPJ Anterior:** ERH Lanna Engenharia Ltda. — 02.835.659/0001-93
+  - BAIXADA em 10/06/2024 (liquidação voluntária)
+  - Capital: R$ 45.000,00
+  - Endereço: Rua Professora Bartira Mourão 546, Apt 701, Buritis, BH, CEP 30.492-025
+  - Telefone: (31) 9115-6866 (celular)
+  - Email: hercelyfontes2@gmail.com
+  - **Possível esposa/parceira:** "Hercely Fontes" (baseado no email)
+- **Nota:** Empresa fechada poucos meses antes de procedimentos de inventário
+- **Pesquisa:** Não encontrado no LinkedIn, OAB ou outras plataformas
 
-- **Irmãos adicionais:**
-  - Edmundo Gonçalves Lanna (advogado)
-  - Edmundo de V. Lanna Filho (engenheiro na CBM desde 2006)
-  - Júnia Gorgulho de V. Lanna (advogada, OAB)
-  
+### Marcelo Gorgulho
+- **Status:** NENHUM registro público encontrado
+- **Parentesco:** Tio(?) de Rodrigo (cliente)
+- **Pesquisas:** LinkedIn, OAB, Receita Federal — sem resultados
 
-## Geração 5 — Filhos
-- [A confirmar]
+### Júnia Gorgulho Lanna
+- **Parentesco:** Possível irmã(?) de RGVL — filha de Nice e Edmundo
+- **Cargo:** Presidente da AVOSC (ONG/Associação de Voluntários)
+- **Local:** Carangola ou região (ligado à família)
+- **Status:** NENHUM registro público encontrado via busca automatizada
+- **Nota:** AVOSC pode ser organização religiosa ou humanitária local
 
-## Fontes
-- LinkedIn: linkedin.com/in/edmundo-lanna-1b25308a
-- linkedin.com/in/henrique-lanna-47999732
-- linkedin.com/in/marcelo-ibrahim-lana
+---
 
+## Avós / Ancestralidade
+
+### Nice Gorgulho (mãe de RGVL)
+- **Origem:** Carangola, Minas Gerais
+- **Falecimento:** ~2019 (7 anos atrás)
+- **Inventário:** NÃO encontrado publicamente — possível inventário extrajudicial ou em aberto
+- **Preocupação:** RGVL pode estar conduzindo inventário sem incluir Rodrigo
+
+### Edmundo de Vasconcellos Lanna (pai de RGVL)
+- **Origem:** Carangola, Minas Gerais
+- **Falecimento:** ~1992 (34 anos atrás)
+- **Inventário:** NÃO encontrado — provavelmente concluído há décadas, mas pode haver bens omissos
+
+---
+
+## Observações
+
+- **Origem da família:** Carangola, Minas Gerais (cidade histórica no estado)
+- **Padrão de engenharia:** Tanto RGVL quanto Henrique são engenheiros — tradição familiar
+- **CBM Connection:** RGVL e Rosália trabalham ambos na CBM (email, telefone em comum)
+- **Henrique's wife:** "Hercely Fontes" — possível procuradora ou esposa de Henrique
+- **Propriedades:** Savassi e Buritis são bairros de alto padrão em BH
+
+---
+
+*Fontes: ReceitaWS, Publica CNPJ, registros existentes*
