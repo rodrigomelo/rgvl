@@ -757,9 +757,9 @@
         const mae = t.mae || null;
 
         // Split primos by parent
-        const primosHenrique = D.primos.filter(c => c.observacoes && c.observacoes.includes('Henrique'));
-        const primosMarcelo = D.primos.filter(c => c.observacoes && c.observacoes.includes('Marcelo'));
-        const primosJunia = D.primos.filter(c => c.observacoes && c.observacoes.includes('Júnia'));
+        const primosHenrique = D.primos.filter(c => c.notes && c.notes.includes('Henrique'));
+        const primosMarcelo = D.primos.filter(c => c.notes && c.notes.includes('Marcelo'));
+        const primosJunia = D.primos.filter(c => c.notes && c.notes.includes('Júnia'));
 
         // Wealth calculations
         const totalCapital = D.companies.reduce((s,c) => s + (c.capital || 0), 0);
@@ -785,7 +785,7 @@
                 const withBirth = persons.filter(p => p.birth_date).length;
                 const withCPF = persons.filter(p => p.cpf).length;
                 const withRG = persons.filter(p => p.rg).length;
-                const withCity = persons.filter(p => p.local_nascimento).length;
+                const withCity = persons.filter(p => p.birth_place).length;
                 const pct = Math.round(((withBirth + withCPF + withRG + withCity) / (total * 4)) * 100);
                 const color = pct >= 75 ? '#2E7D32' : pct >= 50 ? '#F57F17' : '#C62828';
                 const missing = [];
@@ -867,7 +867,7 @@
                         ${siblings.map(s => `
                             <div class="node sibling" data-person-id="${s.id}">
                                 <div class="node-name">${esc(s.full_name)}</div>
-                                <div class="node-detail">${esc((s.observacoes || '').substring(0, 70))}${(s.observacoes||'').length > 70 ? '...' : ''}</div>
+                                <div class="node-detail">${esc((s.notes || '').substring(0, 70))}${(s.notes||'').length > 70 ? '...' : ''}</div>
                             </div>
                         `).join('')}
                         <div class="node" style="border-color:var(--accent);background:#FFF8E1" data-person-id="${p.id}">
@@ -903,7 +903,7 @@
                                 <div class="node child" style="border-color:var(--accent);background:#FFF8E1" data-person-id="${c.id}">
                                     <div class="node-name">⚡ ${esc(c.full_name)}</div>
                                     <div class="node-detail">${esc(c.profession || c.company || '-')}</div>
-                                    ${c.local_nascimento ? `<div class="node-detail">Nasc: ${esc(c.local_nascimento)}</div>` : ''}
+                                    ${c.birth_place ? `<div class="node-detail">Nasc: ${esc(c.birth_place)}</div>` : ''}
                                 </div>
                             `).join('')}
                         </div>
@@ -916,7 +916,7 @@
                             ${primosHenrique.map(c => `
                                 <div class="node nephew" data-person-id="${c.id}">
                                     <div class="node-name">${esc(c.full_name)}</div>
-                                    <div class="node-detail">${esc((c.observacoes||'').split('.')[0])}</div>
+                                    <div class="node-detail">${esc((c.notes||'').split('.')[0])}</div>
                                 </div>
                             `).join('')}
                         </div>
@@ -929,7 +929,7 @@
                             ${primosMarcelo.map(c => `
                                 <div class="node nephew" data-person-id="${c.id}">
                                     <div class="node-name">${esc(c.full_name)}</div>
-                                    <div class="node-detail">${esc((c.observacoes||'').split('.')[0])}</div>
+                                    <div class="node-detail">${esc((c.notes||'').split('.')[0])}</div>
                                 </div>
                             `).join('')}
                         </div>
@@ -942,7 +942,7 @@
                             ${primosJunia.map(c => `
                                 <div class="node nephew" data-person-id="${c.id}">
                                     <div class="node-name">${esc(c.full_name)}</div>
-                                    <div class="node-detail">${esc((c.observacoes||'').split('.')[0])}</div>
+                                    <div class="node-detail">${esc((c.notes||'').split('.')[0])}</div>
                                 </div>
                             `).join('')}
                         </div>
@@ -962,22 +962,22 @@
                     ${p.cpf ? `<div class="row"><span class="label">CPF</span><span class="value">${esc(p.cpf)}</span></div>` : ''}
                     ${p.rg ? `<div class="row"><span class="label">RG</span><span class="value">${esc(p.rg)}</span></div>` : ''}
                     <div class="row"><span class="label">Profissão</span><span class="value">${esc(p.profession || '-')}</span></div>
-                    <div class="row"><span class="label">Cargo</span><span class="value">${esc(p.cargo || '-')}</span></div>
+                    <div class="row"><span class="label">Cargo</span><span class="value">${esc(p.position || '-')}</span></div>
                     <div class="row"><span class="label">Empresa</span><span class="value">${esc(p.company || '-')}</span></div>
                     ${p.source ? `<div class="row"><span class="label">Fonte</span><span class="value">${sourceBadgeHTML(p.source || 'default')}</span></div>` : ''}
                 </div>
                 <div class="info-card">
                     <h3>Pessoal</h3>
                     <div class="row"><span class="label">Nascimento</span><span class="value">${esc(p.birth_date || '-')}</span></div>
-                    <div class="row"><span class="label">Local</span><span class="value">${esc(p.local_nascimento || '-')}</span></div>
-                    <div class="row"><span class="label">Geração</span><span class="value">${p.geracao || '-'}</span></div>
+                    <div class="row"><span class="label">Local</span><span class="value">${esc(p.birth_place || '-')}</span></div>
+                    <div class="row"><span class="label">Geração</span><span class="value">${p.generation || '-'}</span></div>
                     <div class="row"><span class="label">Status</span><span class="value">${esc(p.status || '-')}</span></div>
                 </div>
                 <div class="info-card">
                     <h3>Contato</h3>
                     <div class="row"><span class="label">Email</span><span class="value">${esc(p.email || '-')}</span></div>
-                    <div class="row"><span class="label">Telefone</span><span class="value">${esc(p.telefone || '-')}</span></div>
-                    <div class="row"><span class="label">Endereço</span><span class="value">${esc(p.endereco || '-')}</span></div>
+                    <div class="row"><span class="label">Telefone</span><span class="value">${esc(p.phone || '-')}</span></div>
+                    <div class="row"><span class="label">Endereço</span><span class="value">${esc(p.address || '-')}</span></div>
                 </div>
                 ${pai ? `
                 <div class="info-card">
@@ -1007,14 +1007,14 @@
                         ${c.source ? `<div style="margin-bottom:8px">${sourceBadgeHTML(c.source || 'default')}</div>` : ''}
                         <div class="row"><span class="label">CNPJ</span><span class="value">${esc(c.cnpj)}</span></div>
                         <div class="row"><span class="label">Razão Social</span><span class="value">${esc(c.legal_name)}</span></div>
-                        <div class="row"><span class="label">Status</span><span class="value"><span class="badge ${c.status_jucemg==='ativa'?'badge-ativa':'badge-baixada'}">${esc(c.status_jucemg || '-')}</span></span></div>
+                        <div class="row"><span class="label">Status</span><span class="value"><span class="badge ${c.registration_status==='ativa'?'badge-ativa':'badge-baixada'}">${esc(c.registration_status || '-')}</span></span></div>
                         ${c.capital ? `<div class="row"><span class="label">Capital</span><span class="value">${fmtMoney(c.capital)}</span></div>` : ''}
-                        ${c.cidade ? `<div class="row"><span class="label">Local</span><span class="value">${esc(c.cidade)}/${esc(c.uf || '')}</span></div>` : ''}
-                        ${c.data_abertura ? `<div class="row"><span class="label">Abertura</span><span class="value">${esc(c.data_abertura)}</span></div>` : ''}
-                        ${c.data_baixa ? `<div class="row"><span class="label">Baixa</span><span class="value">${esc(c.data_baixa)}</span></div>` : ''}
-                        ${c.endereco ? `<div class="row"><span class="label">Endereço</span><span class="value">${esc(c.endereco)}</span></div>` : ''}
-                        ${c.socios ? (() => { try { const ss = JSON.parse(c.socios); if (!ss.length) return ''; return '<div style="margin-top:8px;font-size:11px;color:var(--text-muted)">📋 ' + ss.map(s => s.nome + ' (' + (s.qualificacao || s.participacao || 'sócio') + ')').join(', ') + '</div>'; } catch(e) { return ''; } })() : ''}
-                        ${c.observacoes ? (() => { try { const o = JSON.parse(c.observacoes); const rf = o.receita_federal || {}; const parts = []; if (rf.cnae_descricao) parts.push(rf.cnae_descricao); if (rf.porte) parts.push(rf.porte); if (rf.telefone) parts.push('Tel: ' + rf.telefone); return parts.length ? `<div style="margin-top:6px;font-size:11px;color:var(--text-muted)">${esc(parts.join(' · '))}</div>` : ''; } catch(e) { return c.observacoes ? `<div style="margin-top:6px;font-size:11px;color:var(--text-muted)">${esc(c.observacoes.substring(0, 120))}</div>` : ''; } })() : ''}
+                        ${c.city ? `<div class="row"><span class="label">Local</span><span class="value">${esc(c.city)}/${esc(c.state || '')}</span></div>` : ''}
+                        ${c.opening_date ? `<div class="row"><span class="label">Abertura</span><span class="value">${esc(c.opening_date)}</span></div>` : ''}
+                        ${c.closing_date ? `<div class="row"><span class="label">Baixa</span><span class="value">${esc(c.closing_date)}</span></div>` : ''}
+                        ${c.address ? `<div class="row"><span class="label">Endereço</span><span class="value">${esc(c.address)}</span></div>` : ''}
+                        ${c.partners ? (() => { try { const ss = JSON.parse(c.partners); if (!ss.length) return ''; return '<div style="margin-top:8px;font-size:11px;color:var(--text-muted)">📋 ' + ss.map(s => s.nome + ' (' + (s.qualificacao || s.participation || 'sócio') + ')').join(', ') + '</div>'; } catch(e) { return ''; } })() : ''}
+                        ${c.notes ? (() => { try { const o = JSON.parse(c.notes); const rf = o.receita_federal || {}; const parts = []; if (rf.cnae_descricao) parts.push(rf.cnae_descricao); if (rf.porte) parts.push(rf.porte); if (rf.phone) parts.push('Tel: ' + rf.phone); return parts.length ? `<div style="margin-top:6px;font-size:11px;color:var(--text-muted)">${esc(parts.join(' · '))}</div>` : ''; } catch(e) { return c.notes ? `<div style="margin-top:6px;font-size:11px;color:var(--text-muted)">${esc(c.notes.substring(0, 120))}</div>` : ''; } })() : ''}
                     </div>
                 `).join('')}
             </div>
@@ -1047,7 +1047,7 @@
                         ${p.current_value ? `<div class="row"><span class="label" style="font-weight:700;color:#2E7D32">Valor Mercado</span><span class="value" style="font-weight:700;color:#2E7D32">${fmtMoney(p.current_value)}</span></div>` : ''}
                         <div class="row"><span class="label">Status</span><span class="value"><span class="badge ${p.status==='paid_off'?'badge-ativa':'badge-baixada'}">${esc(p.status === 'paid_off' ? 'Quitado' : p.status)}</span></span></div>
                         ${p.registration ? `<div class="row"><span class="label">Matrícula</span><span class="value">${esc(p.registration)}</span></div>` : ''}
-                        ${p.cartorio ? `<div class="row"><span class="label">Cartório</span><span class="value">${esc(p.cartorio)}</span></div>` : ''}
+                        ${p.notary_office ? `<div class="row"><span class="label">Cartório</span><span class="value">${esc(p.notary_office)}</span></div>` : ''}
                     </div>`;
                 }).join('')}
             </div>
@@ -1081,7 +1081,7 @@
                         <div class="company-name">${esc(c.name || '-')}</div>
                         <div class="row"><span class="label">Função</span><span class="value">${esc(c.role || '-')}</span></div>
                         <div class="row"><span class="label">Empresa</span><span class="value">${esc(c.company || '-')}</span></div>
-                        <div class="row"><span class="label">Telefone</span><span class="value">${esc(c.telefone || '-')}</span></div>
+                        <div class="row"><span class="label">Telefone</span><span class="value">${esc(c.phone || '-')}</span></div>
                         <div class="row"><span class="label">Email</span><span class="value">${esc(c.email || '-')}</span></div>
                         ${c.is_primary ? '<div class="row"><span class="badge badge-ativa">Principal</span></div>' : ''}
                     </div>`).join('')}
@@ -1251,9 +1251,9 @@
             if (person.cpf) html += `<div class="person-drawer-row"><span class="label">CPF</span><span class="value">${esc(person.cpf)}</span></div>`;
             if (person.rg) html += `<div class="person-drawer-row"><span class="label">RG</span><span class="value">${esc(person.rg)}</span></div>`;
             if (person.birth_date) html += `<div class="person-drawer-row"><span class="label">Nascimento</span><span class="value">${esc(person.birth_date)}</span></div>`;
-            if (person.local_nascimento) html += `<div class="person-drawer-row"><span class="label">Local</span><span class="value">${esc(person.local_nascimento)}</span></div>`;
+            if (person.birth_place) html += `<div class="person-drawer-row"><span class="label">Local</span><span class="value">${esc(person.birth_place)}</span></div>`;
             if (person.death_date) html += `<div class="person-drawer-row"><span class="label">Falecimento</span><span class="value">${esc(person.death_date)}</span></div>`;
-            if (person.geracao) html += `<div class="person-drawer-row"><span class="label">Geração</span><span class="value">${person.geracao}ª</span></div>`;
+            if (person.generation) html += `<div class="person-drawer-row"><span class="label">Geração</span><span class="value">${person.generation}ª</span></div>`;
             if (person.status) html += `<div class="person-drawer-row"><span class="label">Status</span><span class="value">${esc(person.status)}</span></div>`;
             html += '</div>';
             // Parents
@@ -1263,11 +1263,11 @@
                     const all = [...(data.bisavos||[]), ...(data.avos||[]), ...(data.paisTios||[]), ...(data.primos||[])];
                     return all.find(p => p.id === id);
                 };
-                if (person.pai_id || person.mae_id) {
+                if (person.father_id || person.mother_id) {
                     html += '<div class="person-drawer-section">';
                     html += '<div class="person-drawer-section-title">Filiação</div>';
-                    const pai = findPerson(person.pai_id);
-                    const mae = findPerson(person.mae_id);
+                    const pai = findPerson(person.father_id);
+                    const mae = findPerson(person.mother_id);
                     if (pai) html += `<div class="person-drawer-row"><span class="label">Pai</span><span class="value">${esc(pai.full_name)}</span></div>`;
                     if (mae) html += `<div class="person-drawer-row"><span class="label">Mãe</span><span class="value">${esc(mae.full_name)}</span></div>`;
                     html += '</div>';
