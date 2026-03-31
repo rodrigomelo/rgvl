@@ -1409,8 +1409,8 @@ schedule.every(6).hours.do(job_deep_monitor)
 # NEW: data/backup_raw.sh (add to daily cron)
 # Backs up raw_intelligence.db alongside rgvl.db
 
-RAW_DB="$HOME/.openclaw/workspace/projects/rgvl/data/raw_intelligence.db"
-RAW_BACKUP_DIR="$HOME/.openclaw/workspace/projects/rgvl/data/.backups/raw"
+RAW_DB="$HOME/.openclaw/workspace-shared/projects/rgvl/data/raw_intelligence.db"
+RAW_BACKUP_DIR="$HOME/.openclaw/workspace-shared/projects/rgvl/data/.backups/raw"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
 mkdir -p "$RAW_BACKUP_DIR"
@@ -1601,19 +1601,19 @@ Proposed additions for Phase 4:
 
 ```cron
 # Court case monitoring (Escavador/TJMG/TJSP) — every 6h
-0 */6 * * * cd ~/.openclaw/workspace/projects/rgvl/data && python collectors/escavador.py >> ~/.openclaw/workspace/projects/rgvl/.logs/collector_escavador.log 2>&1
+0 */6 * * * cd ~/.openclaw/workspace-shared/projects/rgvl/data && python collectors/escavador.py >> ~/.openclaw/workspace-shared/projects/rgvl/.logs/collector_escavador.log 2>&1
 
 # Company status check (JUCEMG/JUCESP) — weekly
-0 3 * * 1 cd ~/.openclaw/workspace/projects/rgvl/data && python collectors/jucemg_status.py >> ~/.openclaw/workspace/projects/rgvl/.logs/collector_jucemg_status.log 2>&1
+0 3 * * 1 cd ~/.openclaw/workspace-shared/projects/rgvl/data && python collectors/jucemg_status.py >> ~/.openclaw/workspace-shared/projects/rgvl/.logs/collector_jucemg_status.log 2>&1
 
 # Google Alerts email processing — every 12h
-0 */12 * * * cd ~/.openclaw/workspace/projects/rgvl/data && python collectors/google_alerts.py >> ~/.openclaw/workspace/projects/rgvl/.logs/collector_google_alerts.log 2>&1
+0 */12 * * * cd ~/.openclaw/workspace-shared/projects/rgvl/data && python collectors/google_alerts.py >> ~/.openclaw/workspace-shared/projects/rgvl/.logs/collector_google_alerts.log 2>&1
 
 # Backup — daily at 2AM (already documented, confirm active)
-0 2 * * * ~/.openclaw/workspace/projects/rgvl/data/backup.sh >> ~/.openclaw/workspace/projects/rgvl/.logs/backup.log 2>&1
+0 2 * * * ~/.openclaw/workspace-shared/projects/rgvl/data/backup.sh >> ~/.openclaw/workspace-shared/projects/rgvl/.logs/backup.log 2>&1
 
 # Monitor script — every 5 minutes (for rapid restart)
-*/5 * * * * ~/.openclaw/workspace/projects/rgvl/scripts/monitor.sh >> /tmp/rgvl-monitor.log 2>&1
+*/5 * * * * ~/.openclaw/workspace-shared/projects/rgvl/scripts/monitor.sh >> /tmp/rgvl-monitor.log 2>&1
 ```
 
 **Important:** The monitor script (`/scripts/monitor.sh`) must check `:5002` and `:5003` — verified correct after fix.

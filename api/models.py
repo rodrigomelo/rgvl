@@ -1,9 +1,8 @@
 """
-RGVL - SQLAlchemy Models
+RGVL — SQLAlchemy Models (English Schema)
 
-Canonical data model for the Lanna family research platform.
-All tables are part of the canonical schema (single source of truth).
-Old tables (persons, companies, etc.) have been migrated into these models.
+All tables and columns use English names.
+Brazilian-specific identifiers (CPF, CNPJ, RG) are kept as-is.
 """
 from datetime import datetime, timezone
 from sqlalchemy import (
@@ -16,97 +15,89 @@ Base = declarative_base()
 
 
 # =============================================================================
-# FAMILY
+# PEOPLE & FAMILY
 # =============================================================================
 
-class Pessoa(Base):
+class Person(Base):
     """Person — core entity of the family tree."""
-    __tablename__ = 'pessoas'
+    __tablename__ = 'people'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
     # Identity
-    nome_completo = Column(String(255), nullable=False)
-    nome_anterior = Column(String(255))  # Maiden name or previous name
+    full_name = Column(String(255), nullable=False)
+    previous_name = Column(String(255))
 
     # Dates & Location
-    data_nascimento = Column(String(10))  # YYYY-MM-DD
-    local_nascimento = Column(String(255))
-    data_falecimento = Column(String(10))
+    birth_date = Column(String(10))
+    birth_place = Column(String(255))
+    death_date = Column(String(10))
 
-    # Documents
+    # Documents (Brazilian standards — keep abbreviations)
     cpf = Column(String(14), unique=True)
     cnpj = Column(String(18))
     rg = Column(String(20))
 
     # Contact
     email = Column(String(255))
-    telefone = Column(String(30))
-    endereco = Column(Text)
+    phone = Column(String(30))
+    address = Column(Text)
 
     # Profession
-    profissao = Column(String(255))
-    cargo = Column(String(255))
-    empresa = Column(String(255))
+    profession = Column(String(255))
+    position = Column(String(255))
+    company = Column(String(255))
 
     # Genealogy
-    pai_id = Column(Integer, ForeignKey('pessoas.id'))
-    mae_id = Column(Integer, ForeignKey('pessoas.id'))
-    conjuge_id = Column(Integer, ForeignKey('pessoas.id'))
-    data_casamento = Column(String(10))
+    father_id = Column(Integer, ForeignKey('people.id'))
+    mother_id = Column(Integer, ForeignKey('people.id'))
+    spouse_id = Column(Integer, ForeignKey('people.id'))
+    marriage_date = Column(String(10))
 
     # Metadata
-    status = Column(String(20), default='ativo')
-    geracao = Column(Integer)  # 1=bisavós, 2=avós, 3=pais/tios, 4=primos (inclui RGVL)
+    status = Column(String(20), default='active')
+    generation = Column(Integer)
 
     # Provenance
-    fonte = Column(String(255))
-    observacoes = Column(Text)
+    source = Column(String(255))
+    notes = Column(Text)
 
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
+    # Confidence
+    confidence_score = Column(Integer, default=50)
+    confidence = Column(String(20), default='medium')
+
     # Relationships
-    pai = relationship('Pessoa', foreign_keys=[pai_id], remote_side=[id])
-    mae = relationship('Pessoa', foreign_keys=[mae_id], remote_side=[id])
-    conjuge = relationship('Pessoa', foreign_keys=[conjuge_id], remote_side=[id])
-    empresas = relationship('Empresa', back_populates='responsavel')
+    father = relationship('Person', foreign_keys=[father_id], remote_side=[id])
+    mother = relationship('Person', foreign_keys=[mother_id], remote_side=[id])
+    spouse = relationship('Person', foreign_keys=[spouse_id], remote_side=[id])
+    companies = relationship('Company', back_populates='owner')
 
     __table_args__ = (
-        Index('idx_pessoas_nome', 'nome_completo'),
-        Index('idx_pessoas_cpf', 'cpf'),
-        Index('idx_pessoas_geracao', 'geracao'),
+        Index('idx_people_full_name', 'full_name'),
+        Index('idx_people_cpf', 'cpf'),
+        Index('idx_people_generation', 'generation'),
     )
 
 
-class Relacionamento(Base):
+class Relationship(Base):
     """Relationship between two people."""
-    __tablename__ = 'relacionamentos'
+    __tablename__ = 'relationships'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
-    pessoa_de = Column(Integer, ForeignKey('pessoas.id'), nullable=False)
-    pessoa_para = Column(Integer, ForeignKey('pessoas.id'), nullable=False)
-
-    tipo = Column(String(20), nullable=False)
-    confirmado = Column(Integer, default=0)  # 0=speculative, 1=confirmed
-    fonte = Column(String(255))
-    observacao = Column(Text)
-
+    person1_id = Column(Integer, ForeignKey('people.id'), nullable=False)
+    person2_id = Column(Integer, ForeignKey('people.id'), nullable=False)
+    relationship_type = Column(String(30), nullable=False)
+    confirmed = Column(Integer, default=0)
+    source = Column(String(255))
+    notes = Column(Text)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     __table_args__ = (
-        CheckConstraint(
-            tipo.in_([
-                'pai', 'mae', 'filho', 'filha',
-                'irmao', 'irma', 'conjuge',
-                'tio', 'tia', 'sobrinho', 'sobrinha',
-                'avo_pai', 'avo_mae', 'neto', 'neta',
-                'primo', 'prima', 'genro', 'nora',
-                'sogro', 'sogra', 'cunhado', 'cunhada'
-            ]),
-            name='ck_relacionamento_tipo'
-        ),
+        Index('idx_relationships_type', 'relationship_type'),
     )
 
 
@@ -114,101 +105,101 @@ class Relacionamento(Base):
 # ASSETS — COMPANIES & PROPERTIES
 # =============================================================================
 
-class Empresa(Base):
+class Company(Base):
     """Company linked to a family member."""
-    __tablename__ = 'empresas_familia'
+    __tablename__ = 'companies'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
     cnpj = Column(String(18), unique=True, nullable=False)
-    nome_fantasia = Column(String(255))
-    razao_social = Column(String(255))
-    natureza_juridica = Column(String(255))
+    trade_name = Column(String(255))
+    legal_name = Column(String(255))
+    legal_nature = Column(String(255))
 
     # Address
-    endereco = Column(Text)
-    cidade = Column(String(100))
-    uf = Column(String(2), default='MG')
+    address = Column(Text)
+    city = Column(String(100))
+    state = Column(String(2))
 
     # Partners (JSON string)
-    socios = Column(Text)
+    partners = Column(Text)
 
     # Status
-    status_jucemg = Column(String(20))
-    data_abertura = Column(String(10))
-    data_baixa = Column(String(10))
+    registration_status = Column(String(20))
+    opening_date = Column(String(10))
+    closing_date = Column(String(10))
     capital = Column(Float)
 
     # Link to family
-    pessoa_id = Column(Integer, ForeignKey('pessoas.id'))
+    person_id = Column(Integer, ForeignKey('people.id'))
 
-    fonte = Column(String(255))
-    observacoes = Column(Text)
+    source = Column(String(255))
+    notes = Column(Text)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    source_confidence = Column(Integer, default=50)
 
-    responsavel = relationship('Pessoa', back_populates='empresas')
+    owner = relationship('Person', back_populates='companies')
 
     __table_args__ = (
-        Index('idx_empresas_cnpj', 'cnpj'),
-        Index('idx_empresas_pessoa', 'pessoa_id'),
+        Index('idx_companies_cnpj', 'cnpj'),
+        Index('idx_companies_person', 'person_id'),
     )
 
 
-class Imovel(Base):
-    """Real estate property (apartments, houses, land)."""
-    __tablename__ = 'imoveis'
+class Property(Base):
+    """Real estate property."""
+    __tablename__ = 'properties'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
-    # Property type and location
-    property_type = Column(String(50))           # e.g. "Apartamento"
-    address = Column(String(500))                # Full street address
-    city = Column(String(100))                   # e.g. "Belo Horizonte"
-    state = Column(String(2))                    # e.g. "MG"
-    neighborhood = Column(String(100))            # e.g. "Savassi"
-    registration = Column(String(50))             # Matrícula do cartório
-    cartorio = Column(String(255))                # Nome do cartório
-    cnm = Column(String(50))                      # Código Nacional da Matrícula
+    property_type = Column(String(50))
+    address = Column(String(500))
+    city = Column(String(100))
+    state = Column(String(2))
+    neighborhood = Column(String(100))
+    registration = Column(String(50))
+    notary_office = Column(String(255))
+    cnm = Column(String(50))
 
     # Building details
-    building_name = Column(String(255))          # Nome do edifício
-    floor = Column(String(20))                   # Andar / apartamento
+    building_name = Column(String(255))
+    floor = Column(String(20))
 
-    # Areas (in square meters)
-    area_sqm = Column(Float)                      # Área privativa
-    area_common = Column(Float)                  # Área comum
-    area_total = Column(Float)                   # Área total
+    # Areas (sqm)
+    area_sqm = Column(Float)
+    area_common = Column(Float)
+    area_total = Column(Float)
 
     # Rooms
-    bedrooms = Column(Integer)                   # Número de quartos
-    parking_spaces = Column(Integer)             # Número de vagas
-    parking_boxes = Column(String(100))           # Identificação das vagas
+    bedrooms = Column(Integer)
+    parking_spaces = Column(Integer)
+    parking_boxes = Column(String(100))
 
-    # Ownership (JSON list of owner names)
+    # Ownership (JSON list)
     owners = Column(Text)
 
     # Financial
-    purchase_date = Column(String(20))            # Date of purchase
-    purchase_value = Column(Float)               # Valor de compra
-    financing_value = Column(Float)               # Valor do financiamento (SFH)
-    itbi = Column(Float)                         # Valor do ITBI
-    fiscal_value = Column(Float)                  # Valor fiscal (IPTU base)
-    current_value = Column(Float)                # Valor estimado de mercado
+    purchase_date = Column(String(20))
+    purchase_value = Column(Float)
+    financing_value = Column(Float)
+    itbi = Column(Float)
+    fiscal_value = Column(Float)
+    current_value = Column(Float)
 
     # Status
-    status = Column(String(50))                  # e.g. "paid_off", "mortgaged"
-    description = Column(Text)                   # Additional notes
+    status = Column(String(50))
+    description = Column(Text)
 
     # Provenance
-    fonte = Column(String(255))
-    annotations = Column(Text)                   # JSON metadata
-    raw_data = Column(Text)                      # JSON original data
-    collected_at = Column(DateTime)              # When data was collected
+    source = Column(String(255))
+    annotations = Column(Text)
+    raw_data = Column(Text)
+    collected_at = Column(DateTime)
 
     __table_args__ = (
-        Index('idx_imoveis_endereco', 'address'),
-        Index('idx_imoveis_cidade', 'city'),
-        Index('idx_imoveis_matricula', 'registration'),
+        Index('idx_properties_address', 'address'),
+        Index('idx_properties_city', 'city'),
+        Index('idx_properties_registration', 'registration'),
     )
 
 
@@ -216,31 +207,29 @@ class Imovel(Base):
 # LEGAL
 # =============================================================================
 
-class ProcessoJudicial(Base):
+class LegalCase(Base):
     """Judicial process involving a family member."""
-    __tablename__ = 'legal_processes'
+    __tablename__ = 'legal_cases'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
-    process_number = Column(String(50))          # Número do processo
-    court = Column(String(50))                   # Tribunal (TJMG, TRT3, etc.)
-    subject = Column(Text)                       # Tema (Trabalhista, Paternidade, etc.)
-    parties = Column(Text)                       # JSON — {autores: [], reus: [], papel_rgvl: ''}
-    status = Column(String(100))                # Concluído, Em andamento, etc.
-    value = Column(Float)                        # Valor da causa
+    process_number = Column(String(50))
+    court = Column(String(50))
+    subject = Column(Text)
+    parties = Column(Text)
+    status = Column(String(100))
+    value = Column(Float)
+    filings = Column(Text)
 
-    # Filings / andamentos
-    filings = Column(Text)                        # JSON array of {date, description}
-
-    # Provenance
-    fonte = Column(String(255))
-    raw_data = Column(Text)                       # JSON original
+    source = Column(String(255))
+    raw_data = Column(Text)
     collected_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    source_confidence = Column(Integer, default=50)
 
     __table_args__ = (
-        Index('idx_processos_numero', 'process_number'),
-        Index('idx_processos_court', 'court'),
+        Index('idx_legal_cases_number', 'process_number'),
+        Index('idx_legal_cases_court', 'court'),
     )
 
 
@@ -248,115 +237,90 @@ class ProcessoJudicial(Base):
 # DOCUMENTS & CONTACTS
 # =============================================================================
 
-class Documento(Base):
-    """Document related to a family member (RG, CPF, certidões, etc.)."""
-    __tablename__ = 'documentos'
+class Document(Base):
+    """Document related to a family member."""
+    __tablename__ = 'documents'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
-    doc_type = Column(String(50))               # rg, cpf, birth_certificate, escritura, etc.
-    title = Column(String(255))                 # Title/label
-    description = Column(Text)                   # Description
-    file_path = Column(String(500))              # Local file path
-    issue_date = Column(DateTime)                # Data de emissão
-    expiry_date = Column(DateTime)               # Data de expiração (se aplicável)
+    doc_type = Column(String(50))
+    title = Column(String(255))
+    description = Column(Text)
+    file_path = Column(String(500))
+    issue_date = Column(DateTime)
+    expiry_date = Column(DateTime)
 
-    # Provenance
-    fonte = Column(String(50))                   # Source (father_drive, cartorio, etc.)
-    raw_data = Column(Text)                      # JSON original
+    source = Column(String(50))
+    raw_data = Column(Text)
     collected_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     __table_args__ = (
-        Index('idx_documentos_tipo', 'doc_type'),
+        Index('idx_documents_type', 'doc_type'),
     )
 
 
-class Contato(Base):
+class Contact(Base):
     """Contact (lawyers, relatives, institutions)."""
-    __tablename__ = 'contatos'
+    __tablename__ = 'contacts'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
-    nome = Column(String(255))                  # Nome completo
-    role = Column(String(100))                   # Papel (Advogado, Cartório, etc.)
-    empresa = Column(String(255))                # Empresa/Instituição
-
-    # Contact info
-    telefone = Column(String(30))
+    name = Column(String(255))
+    role = Column(String(100))
+    company = Column(String(255))
+    phone = Column(String(30))
     email = Column(String(255))
 
-    # Metadata
     is_primary = Column(Boolean, default=False)
     notes = Column(Text)
-    fonte = Column(String(50))                   # Source (father_drive, INTEL, etc.)
-
-    # Provenance
-    raw_data = Column(Text)                      # JSON original
+    source = Column(String(50))
+    raw_data = Column(Text)
     collected_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     __table_args__ = (
-        Index('idx_contatos_nome', 'nome'),
-        Index('idx_contatos_role', 'role'),
+        Index('idx_contacts_name', 'name'),
+        Index('idx_contacts_role', 'role'),
     )
 
 
 # =============================================================================
-# OFFICIAL GAZETTES & PROFILES
+# SOCIAL PROFILES
 # =============================================================================
 
-class DiarioOficial(Base):
-    """Publication in an official gazette (Diário Oficial)."""
-    __tablename__ = 'diarios_oficiais'
+class SocialProfile(Base):
+    """Online profile (Instagram, LinkedIn, etc.)."""
+    __tablename__ = 'social_profiles'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
-    source = Column(String(20))                 # Diário Oficial da União, Estado de MG, etc.
-    publication_date = Column(DateTime)         # Data de publicação
-    edition = Column(String(20))                 # Edição/número
-    section = Column(String(50))                # Seção (Economia, Pessoal, etc.)
-    page = Column(String(20))                   # Página
-    title = Column(String(500))                 # Título da publicação
-    content = Column(Text)                      # Conteúdo resumido
-    url = Column(String(500))                   # Link para publicação
+    person_id = Column(Integer, ForeignKey('people.id'))
+    source = Column(String(50))
+    username = Column(String(100))
+    profile_url = Column(String(500))
+    full_name = Column(String(255))
+    bio = Column(Text)
+    location = Column(String(255))
+    company = Column(String(255))
+    profession = Column(String(255))
 
-    # Tags
-    tags = Column(Text)                          # JSON array of strings
+    followers_count = Column(Integer)
+    following_count = Column(Integer)
+    posts_count = Column(Integer)
+    profile_picture_url = Column(String(500))
+    is_verified = Column(Boolean, default=False)
+    is_private = Column(Boolean, default=False)
 
-    # Provenance
-    fonte = Column(String(50))
-    raw_data = Column(Text)                      # JSON original
+    birth_date = Column(String(10))
+    email = Column(String(255))
+    phone = Column(String(30))
+
+    last_scraped_at = Column(DateTime)
     collected_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    raw_data = Column(Text)
 
     __table_args__ = (
-        Index('idx_diarios_data', 'publication_date'),
-        Index('idx_diarios_source', 'source'),
-    )
-
-
-class Perfil(Base):
-    """Online profile found during research (LinkedIn, FamilySearch, etc.)."""
-    __tablename__ = 'profiles'
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-
-    source = Column(String(50))                  # Source platform (father_drive, LinkedIn, FamilySearch, etc.)
-    external_id = Column(String(100))            # External ID on that platform
-    name = Column(String(255))                  # Full name on the platform
-    bio = Column(Text)                          # Bio/description
-    location = Column(String(255))              # Location
-    empresa = Column(String(255))               # Current company
-    email = Column(String(255))                 # Email (if public)
-    avatar_url = Column(String(500))            # Profile picture URL
-    profile_url = Column(String(500))           # Direct URL to profile
-
-    # Provenance
-    raw_data = Column(Text)                      # JSON original
-    collected_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
-
-    __table_args__ = (
-        Index('idx_profiles_source', 'source'),
-        Index('idx_profiles_name', 'name'),
+        Index('idx_social_profiles_source', 'source'),
+        Index('idx_social_profiles_person', 'person_id'),
     )
 
 
@@ -364,27 +328,26 @@ class Perfil(Base):
 # EVENTS
 # =============================================================================
 
-class Evento(Base):
+class TimelineEvent(Base):
     """Life event (birth, death, marriage, career milestone)."""
-    __tablename__ = 'events'
+    __tablename__ = 'timeline_events'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
-    person_id = Column(Integer, ForeignKey('pessoas.id'), nullable=True)
-    event_type = Column(String(50))                         # birth, death, marriage, company, etc.
-    event_date = Column(String(20))                         # YYYY-MM-DD or YYYY
-    description = Column(Text)                               # Human-readable description
+    person_id = Column(Integer, ForeignKey('people.id'), nullable=True)
+    event_type = Column(String(50))
+    event_date = Column(String(20))
+    description = Column(Text)
 
-    # Provenance
-    reference_table = Column(String(50))                     # Source table (pessoas, empresas, etc.)
-    reference_id = Column(Integer)                          # Source row ID
-    confidence = Column(String(20))                         # high, medium, low
-    source = Column(String(100))                            # Source of the event data
+    reference_table = Column(String(50))
+    reference_id = Column(Integer)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    confidence = Column(Integer, default=80)
+    source = Column(String(100))
 
     __table_args__ = (
-        Index('idx_eventos_pessoa', 'person_id'),
-        Index('idx_eventos_tipo', 'event_type'),
+        Index('idx_timeline_events_person', 'person_id'),
+        Index('idx_timeline_events_type', 'event_type'),
     )
 
 
@@ -392,65 +355,104 @@ class Evento(Base):
 # RESEARCH TRACKING
 # =============================================================================
 
-class BuscaRealizada(Base):
-    """Record of a search performed against a data source."""
-    __tablename__ = 'buscas_realizadas'
+class OfficialGazette(Base):
+    """Publication in an official gazette."""
+    __tablename__ = 'official_gazettes'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
-    fonte = Column(String(100), nullable=False)  # FamilySearch, JUCEMG, Receita Federal, etc.
-    query_usada = Column(Text)
-    resultado = Column(Text)                     # JSON
-    status = Column(String(20), default='pendente')
-    data_busca = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    proxima_tentativa = Column(DateTime)
+    source = Column(String(20))
+    publication_date = Column(DateTime)
+    edition = Column(String(20))
+    section = Column(String(50))
+    page = Column(String(20))
+    title = Column(String(500))
+    content = Column(Text)
+    url = Column(String(500))
+    tags = Column(Text)
+    data_source = Column(String(50))  # was 'fonte' in old schema
+    raw_data = Column(Text)
+    collected_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     __table_args__ = (
-        Index('idx_buscas_fonte', 'fonte'),
+        Index('idx_official_gazettes_date', 'publication_date'),
     )
 
 
-class TarefaPesquisa(Base):
-    """A pending research task."""
-    __tablename__ = 'tarefas_pesquisa'
+class CollectionRun(Base):
+    """Record of a collector execution."""
+    __tablename__ = 'collection_runs'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    source = Column(String(100))
+    type = Column(String(50))
+    original_query = Column(Text)
+    result = Column(Text)
+    new_records = Column(Integer)
+    updated_records = Column(Integer)
+    status = Column(String(20))
+    error_message = Column(Text)
+    executed_at = Column(DateTime)
+    duration_ms = Column(Integer)
+
+
+class SearchHistory(Base):
+    """Record of a search performed against a data source."""
+    __tablename__ = 'search_history'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
-    tarefa = Column(Text, nullable=False)
-    prioridade = Column(String(10))
-    pessoa_alvo = Column(String(255))
-    fontes_sugeridas = Column(Text)
-    status = Column(String(20), default='pendente')
-    resultado = Column(Text)
+    source = Column(String(100), nullable=False)
+    query_used = Column(Text)
+    result = Column(Text)
+    status = Column(String(20), default='pending')
+    search_date = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    next_attempt = Column(DateTime)
+
+    __table_args__ = (
+        Index('idx_search_history_source', 'source'),
+    )
+
+
+class ResearchTask(Base):
+    """A pending research task."""
+    __tablename__ = 'research_tasks'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+
+    task = Column(Text, nullable=False)
+    priority = Column(String(10))
+    target_person = Column(String(255))
+    suggested_sources = Column(Text)
+    status = Column(String(20), default='pending')
+    result = Column(Text)
 
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
 
-class Note(Base):
-    """Research note from collectors. Stores findings, observations, and raw data."""
-    __tablename__ = 'notes'
+class ResearchNote(Base):
+    """Research note from collectors."""
+    __tablename__ = 'research_notes'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
     title = Column(String(500))
     content = Column(Text)
-    category = Column(String(100))          # web_mention, legal_finding, person_data, etc.
-    source = Column(String(100))            # collector name: web_search, x_search, etc.
-    tags = Column(Text)                     # JSON array of tags
-    importance = Column(Integer, default=2) # 1=critical, 2=normal, 3=low
-    raw_data = Column(Text)                 # JSON original response
-
-    person_id = Column(Integer)             # Link to pessoa if applicable
+    category = Column(String(100))
+    source = Column(String(100))
+    tags = Column(Text)
+    importance = Column(Integer, default=2)
+    raw_data = Column(Text)
+    person_id = Column(Integer)
     confidence = Column(Integer, default=50)
-
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
 
-class Insight(Base):
+class ResearchInsight(Base):
     """Research insight extracted from data sources."""
-    __tablename__ = 'insights'
+    __tablename__ = 'research_insights'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
@@ -461,4 +463,5 @@ class Insight(Base):
     discovered_at = Column(DateTime)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     tags = Column(Text)
+
 

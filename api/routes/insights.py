@@ -8,13 +8,13 @@ insights_bp = Blueprint('insights', __name__)
 def list_insights():
     db = get_session()
     try:
-        rows = db.execute(text("SELECT id, category, title, description, source FROM insights")).fetchall()
+        rows = db.execute(text("SELECT id, category, title, description, source FROM research_insights")).fetchall()
         return jsonify([{
-            'id': r.id,
-            'category': r.category,
-            'title': r.title,
-            'description': r.description,
-            'source': r.source
+            'id': r[0],
+            'category': r[1],
+            'title': r[2],
+            'description': r[3],
+            'source': r[4]
         } for r in rows])
     finally:
         db.close()

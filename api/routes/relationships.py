@@ -9,18 +9,18 @@ def list_relationships():
     db = get_session()
     try:
         rows = db.execute(text("""
-            SELECT id, pessoa_de, pessoa_para, tipo,
-                   confirmado, fonte, observacao
-            FROM relacionamentos
+            SELECT id, person1_id, person2_id, relationship_type,
+                   confirmed, source, notes
+            FROM relationships
         """)).fetchall()
         return jsonify([{
-            'id': r.id,
-            'pessoa_de': r.pessoa_de,
-            'pessoa_para': r.pessoa_para,
-            'tipo': r.tipo,
-            'confirmado': r.confirmado,
-            'fonte': r.fonte,
-            'observacao': r.observacao
+            'id': r[0],
+            'person1_id': r[1],
+            'person2_id': r[2],
+            'relationship_type': r[3],
+            'confirmed': r[4],
+            'source': r[5],
+            'notes': r[6]
         } for r in rows])
     finally:
         db.close()

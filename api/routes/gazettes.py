@@ -10,20 +10,20 @@ def list_gazettes():
     try:
         rows = db.execute(text("""
             SELECT id, source, publication_date, edition, section,
-                   page, title, url, tags, fonte
-            FROM diarios_oficiais
+                   page, title, url, tags, data_source
+            FROM official_gazettes
         """)).fetchall()
         return jsonify([{
-            'id': r.id,
-            'source': r.source,
-            'publication_date': r.publication_date,
-            'edition': r.edition,
-            'section': r.section,
-            'page': r.page,
-            'title': r.title,
-            'url': r.url,
-            'tags': r.tags,
-            'fonte': r.fonte
+            'id': r[0],
+            'source': r[1],
+            'publication_date': r[2],
+            'edition': r[3],
+            'section': r[4],
+            'page': r[5],
+            'title': r[6],
+            'url': r[7],
+            'tags': r[8],
+            'data_source': r[9]
         } for r in rows])
     finally:
         db.close()

@@ -1,9 +1,9 @@
 """
-RGVL API - Family routes (persons, relationships, events)
+RGVL API - Family routes (persons, relationships, events, timeline)
 """
 from flask import Blueprint, jsonify, request
 from api.db import get_session
-from api.models import Pessoa, Relacionamento, Evento
+from api.models import Person, Relationship, TimelineEvent
 from api.utils import model_to_dict, models_to_list
 
 family_bp = Blueprint('family', __name__, url_prefix='/api/family')
@@ -14,7 +14,7 @@ def get_person(person_id):
     """Get a person by ID."""
     db = get_session()
     try:
-        person = db.query(Pessoa).filter(Pessoa.id == person_id).first()
+        person = db.query(Person).filter(Person.id == person_id).first()
         if not person:
             return jsonify({'error': 'Person not found'}), 404
         return jsonify(model_to_dict(person))
@@ -27,7 +27,7 @@ def get_family_tree(person_id):
     """Get full family tree for a person (up to 5 generations)."""
     db = get_session()
     try:
-        person = db.query(Pessoa).filter(Pessoa.id == person_id).first()
+        person = db.query(Person).filter(Person.id == person_id).first()
         if not person:
             return jsonify({'error': 'Person not found'}), 404
 
@@ -35,41 +35,41 @@ def get_family_tree(person_id):
             if depth >= max_depth or not p:
                 return None
             result = model_to_dict(p)
-            if p.pai_id:
-                result['pai'] = get_ancestors(db.query(Pessoa).get(p.pai_id), depth+1, max_depth)
-            if p.mae_id:
-                result['mae'] = get_ancestors(db.query(Pessoa).get(p.mae_id), depth+1, max_depth)
-            if p.conjuge_id:
-                result['conjuge'] = model_to_dict(db.query(Pessoa).get(p.conjuge_id))
+            if p.father_id:
+                result['father'] = get_ancestors(db.query(Person).get(p.father_id), depth+1, max_depth)
+            if p.mother_id:
+                result['mother'] = get_ancestors(db.query(Person).get(p.mother_id), depth+1, max_depth)
+            if p.spouse_id:
+                result['spouse'] = model_to_dict(db.query(Person).get(p.spouse_id))
             return result
 
-        child_rels = db.query(Relacionamento).filter(
-            Relacionamento.pessoa_de == person_id,
-            Relacionamento.tipo.in_(['filho', 'filha'])
+        child_rels = db.query(Relationship).filter(
+            Relationship.person1_id == person_id,
+            Relationship.relationship_type.in_(['filho', 'filha'])
         ).all()
-        child_ids = [r.pessoa_para for r in child_rels]
-        children_map = {p.id: p for p in db.query(Pessoa).filter(Pessoa.id.in_(child_ids)).all()} if child_ids else {}
+        child_ids = [r.person2_id for r in child_rels]
+        children_map = {p.id: p for p in db.query(Person).filter(Person.id.in_(child_ids)).all()} if child_ids else {}
         children = [model_to_dict(children_map[cid]) for cid in child_ids if cid in children_map]
 
         sibling_ids = set()
-        if person.pai_id:
-            siblings_via_pai = db.query(Pessoa).filter(
-                Pessoa.pai_id == person.pai_id,
-                Pessoa.id != person_id
+        if person.father_id:
+            siblings_via_father = db.query(Person).filter(
+                Person.father_id == person.father_id,
+                Person.id != person_id
             ).all()
-            sibling_ids.update(s.id for s in siblings_via_pai)
-        if person.mae_id:
-            siblings_via_mae = db.query(Pessoa).filter(
-                Pessoa.mae_id == person.mae_id,
-                Pessoa.id != person_id
+            sibling_ids.update(s.id for s in siblings_via_father)
+        if person.mother_id:
+            siblings_via_mother = db.query(Person).filter(
+                Person.mother_id == person.mother_id,
+                Person.id != person_id
             ).all()
-            sibling_ids.update(s.id for s in siblings_via_mae)
-        siblings_map = {p.id: p for p in db.query(Pessoa).filter(Pessoa.id.in_(sibling_ids)).all()} if sibling_ids else {}
+            sibling_ids.update(s.id for s in siblings_via_mother)
+        siblings_map = {p.id: p for p in db.query(Person).filter(Person.id.in_(sibling_ids)).all()} if sibling_ids else {}
         siblings = [model_to_dict(siblings_map[sid]) for sid in sibling_ids if sid in siblings_map]
 
         tree = get_ancestors(person)
-        tree['filhos'] = children
-        tree['irmaos'] = siblings
+        tree['children'] = children
+        tree['siblings'] = siblings
         return jsonify(tree)
     finally:
         db.close()
@@ -80,25 +80,25 @@ def get_relatives(person_id):
     """Get all relatives of a person."""
     db = get_session()
     try:
-        person = db.query(Pessoa).filter(Pessoa.id == person_id).first()
+        person = db.query(Person).filter(Person.id == person_id).first()
         if not person:
             return jsonify({'error': 'Person not found'}), 404
 
-        rels = db.query(Relacionamento).filter(
-            (Relacionamento.pessoa_de == person_id) |
-            (Relacionamento.pessoa_para == person_id)
+        rels = db.query(Relationship).filter(
+            (Relationship.person1_id == person_id) |
+            (Relationship.person2_id == person_id)
         ).all()
 
         relatives = []
         for r in rels:
-            other_id = r.pessoa_para if r.pessoa_de == person_id else r.pessoa_de
-            other = db.query(Pessoa).get(other_id)
+            other_id = r.person2_id if r.person1_id == person_id else r.person1_id
+            other = db.query(Person).get(other_id)
             if other:
                 relatives.append({
-                    'pessoa': model_to_dict(other),
-                    'tipo': r.tipo,
-                    'confirmado': bool(r.confirmado),
-                    'fonte': r.fonte,
+                    'person': model_to_dict(other),
+                    'type': r.relationship_type,
+                    'confirmed': bool(r.confirmed),
+                    'source': r.source,
                 })
 
         return jsonify(relatives)
@@ -111,7 +111,7 @@ def get_generation(n):
     """Get all people in a given generation."""
     db = get_session()
     try:
-        people = db.query(Pessoa).filter(Pessoa.geracao == n).order_by(Pessoa.nome_completo).all()
+        people = db.query(Person).filter(Person.generation == n).order_by(Person.full_name).all()
         return jsonify(models_to_list(people))
     finally:
         db.close()
@@ -122,14 +122,14 @@ def get_summary():
     """Family summary statistics."""
     db = get_session()
     try:
-        total = db.query(Pessoa).count()
-        confirmed = db.query(Relacionamento).filter(Relacionamento.confirmado == 1).count()
-        speculative = db.query(Relacionamento).filter(Relacionamento.confirmado == 0).count()
+        total = db.query(Person).count()
+        confirmed = db.query(Relationship).filter(Relationship.confirmed == 1).count()
+        speculative = db.query(Relationship).filter(Relationship.confirmed == 0).count()
         return jsonify({
-            'total_pessoas': total,
-            'total_relacionamentos': confirmed + speculative,
-            'relacionamentos_confirmados': confirmed,
-            'relacionamentos_espericulativos': speculative,
+            'total_people': total,
+            'total_relationships': confirmed + speculative,
+            'confirmed_relationships': confirmed,
+            'speculative_relationships': speculative,
         })
     finally:
         db.close()
@@ -137,10 +137,10 @@ def get_summary():
 
 @family_bp.route('/events')
 def get_events():
-    """List all family events (births, deaths, marriages, career)."""
+    """List all family events."""
     db = get_session()
     try:
-        events = db.query(Evento).order_by(Evento.event_date).all()
+        events = db.query(TimelineEvent).order_by(TimelineEvent.event_date).all()
         return jsonify(models_to_list(events))
     finally:
         db.close()
@@ -148,39 +148,39 @@ def get_events():
 
 @family_bp.route('/sources')
 def get_sources():
-    """Get data sources summary - counts records by fonte."""
+    """Get data sources summary — counts records by source across English tables."""
     from sqlalchemy import text
     db = get_session()
     try:
         query = text("""
-            SELECT 'pessoas' as tbl, fonte, COUNT(*) as cnt FROM pessoas WHERE fonte IS NOT NULL AND fonte != '' GROUP BY fonte
+            SELECT 'people' as tbl, source, COUNT(*) as cnt FROM people WHERE source IS NOT NULL AND source != '' GROUP BY source
             UNION ALL
-            SELECT 'empresas_familia', fonte, COUNT(*) FROM empresas_familia WHERE fonte IS NOT NULL AND fonte != '' GROUP BY fonte
+            SELECT 'companies', source, COUNT(*) FROM companies WHERE source IS NOT NULL AND source != '' GROUP BY source
             UNION ALL
-            SELECT 'imoveis', fonte, COUNT(*) FROM imoveis WHERE fonte IS NOT NULL AND fonte != '' GROUP BY fonte
+            SELECT 'properties', source, COUNT(*) FROM properties WHERE source IS NOT NULL AND source != '' GROUP BY source
             UNION ALL
-            SELECT 'legal_processes', fonte, COUNT(*) FROM legal_processes WHERE fonte IS NOT NULL AND fonte != '' GROUP BY fonte
+            SELECT 'legal_cases', source, COUNT(*) FROM legal_cases WHERE source IS NOT NULL AND source != '' GROUP BY source
             UNION ALL
-            SELECT 'contatos', fonte, COUNT(*) FROM contatos WHERE fonte IS NOT NULL AND fonte != '' GROUP BY fonte
+            SELECT 'contacts', source, COUNT(*) FROM contacts WHERE source IS NOT NULL AND source != '' GROUP BY source
             UNION ALL
-            SELECT 'documentos', fonte, COUNT(*) FROM documentos WHERE fonte IS NOT NULL AND fonte != '' GROUP BY fonte
+            SELECT 'documents', source, COUNT(*) FROM documents WHERE source IS NOT NULL AND source != '' GROUP BY source
             UNION ALL
-            SELECT 'relacionamentos', fonte, COUNT(*) FROM relacionamentos WHERE fonte IS NOT NULL AND fonte != '' GROUP BY fonte
+            SELECT 'relationships', source, COUNT(*) FROM relationships WHERE source IS NOT NULL AND source != '' GROUP BY source
         """)
         result = db.execute(query).fetchall()
-        
+
         sources = {}
         for row in result:
-            tbl, fonte, cnt = row[0], row[1], row[2]
-            if fonte not in sources:
-                sources[fonte] = {'count': 0, 'tables': [], 'types': []}
-            sources[fonte]['count'] += cnt
-            if tbl not in sources[fonte]['tables']:
-                sources[fonte]['tables'].append(tbl)
-            sources[fonte]['types'].append(fonte)
-        
+            tbl, src, cnt = row[0], row[1], row[2]
+            if src not in sources:
+                sources[src] = {'count': 0, 'tables': [], 'types': []}
+            sources[src]['count'] += cnt
+            if tbl not in sources[src]['tables']:
+                sources[src]['tables'].append(tbl)
+            sources[src]['types'].append(src)
+
         sorted_sources = dict(sorted(sources.items(), key=lambda x: x[1]['count'], reverse=True))
-        
+
         return jsonify({
             'total_sources': len(sorted_sources),
             'sources': sorted_sources
@@ -191,13 +191,10 @@ def get_sources():
 
 @family_bp.route('/timeline')
 def get_timeline():
-    """List all events from both events and eventos tables with person names.
-    Normalizes dates, deduplicates, and sorts chronologically.
-    """
+    """List all events with person names. Normalizes dates, deduplicates, sorts chronologically."""
     from sqlalchemy import text
     db = get_session()
     try:
-        # Translation: event_type -> English label
         TYPE_LABELS = {
             'birth': 'birth', 'nascimento': 'birth',
             'death': 'death', 'falecimento': 'death',
@@ -210,7 +207,6 @@ def get_timeline():
         }
 
         def normalize_date(edate):
-            """Normalize date to YYYY-MM-DD for sorting. ~ prefix means approximate."""
             raw = str(edate) if edate else ''
             approx = False
             if raw.startswith('~'):
@@ -226,7 +222,6 @@ def get_timeline():
             else:
                 return raw, approx
 
-        # Single seen dict for cross-table deduplication
         seen = {}
         def process_rows(rows, source):
             out = []
@@ -234,14 +229,12 @@ def get_timeline():
                 pid, pname, etype, edate, desc = r[1], r[2], r[3], r[4], r[5]
                 norm_type = TYPE_LABELS.get(etype, etype)
                 norm_date, approx = normalize_date(edate)
-                
-                # Skip: no date known (null date)
+
                 if norm_date is None:
                     continue
-                # Skip: research events
                 if norm_type == 'research':
                     continue
-                
+
                 key = (pid, norm_date, norm_type)
                 if key not in seen:
                     seen[key] = True
@@ -254,18 +247,18 @@ def get_timeline():
                         'norm_date': norm_date or '9999-12-31',
                         'approx': approx,
                         'description': desc,
-                        'source': r[6] if len(r) > 6 else source, 'confidence': r[7] if len(r) > 7 else 'medium'
+                        'source': r[6] if len(r) > 6 else source,
+                        'confidence': r[7] if len(r) > 7 else 'medium'
                     })
             return out
 
-        # Query both tables
         events_q = text("""
-        SELECT e.id, e.person_id, p.nome_completo, e.event_type, e.event_date, e.description, e.source, e.confidence
-        FROM events e LEFT JOIN pessoas p ON e.person_id = p.id
+        SELECT e.id, e.person_id, p.full_name, e.event_type, e.event_date, e.description, e.source, e.confidence
+        FROM timeline_events e LEFT JOIN people p ON e.person_id = p.id
         """)
         rows_e = db.execute(events_q).fetchall()
 
-        timeline = process_rows(rows_e, 'events')
+        timeline = process_rows(rows_e, 'timeline_events')
         timeline.sort(key=lambda x: x['norm_date'])
 
         return jsonify(timeline)

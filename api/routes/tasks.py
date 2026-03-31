@@ -9,18 +9,18 @@ def list_tasks():
     db = get_session()
     try:
         rows = db.execute(text("""
-            SELECT id, tarefa, prioridade, pessoa_alvo,
-                   fontes_sugeridas, status, resultado
-            FROM tarefas_pesquisa
+            SELECT id, task, priority, target_person,
+                   suggested_sources, status, result
+            FROM research_tasks
         """)).fetchall()
         return jsonify([{
-            'id': r.id,
-            'tarefa': r.tarefa,
-            'prioridade': r.prioridade,
-            'pessoa_alvo': r.pessoa_alvo,
-            'fontes_sugeridas': r.fontes_sugeridas,
-            'status': r.status,
-            'resultado': r.resultado
+            'id': r[0],
+            'task': r[1],
+            'priority': r[2],
+            'target_person': r[3],
+            'suggested_sources': r[4],
+            'status': r[5],
+            'result': r[6]
         } for r in rows])
     finally:
         db.close()

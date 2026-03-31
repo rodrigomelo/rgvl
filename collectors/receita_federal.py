@@ -103,17 +103,17 @@ class ReceitaFederalCollector(BaseCollector):
         models = self._get_models()
 
         # Get all companies from DB
-        companies = session.query(models.Empresa).all()
+        companies = session.query(models.Company).all()
         client = httpx.Client(headers=self.HEADERS, follow_redirects=True, timeout=20)
 
         try:
             for company in companies:
                 cnpj = company.cnpj if hasattr(company, 'cnpj') else None
                 if not cnpj or cnpj.startswith("00.000.000"):
-                    self.log(f"Skipping {company.nome_fantasia or company.id} — no valid CNPJ", "warn")
+                    self.log(f"Skipping {company.trade_name or company.id} — no valid CNPJ", "warn")
                     continue
 
-                self.log(f"Querying CNPJ: {cnpj} ({company.nome_fantasia or ''})")
+                self.log(f"Querying CNPJ: {cnpj} ({company.trade_name or ''})")
 
                 data = self._query_cnpj(client, cnpj)
                 if data:
@@ -130,7 +130,7 @@ class ReceitaFederalCollector(BaseCollector):
 
                     # Update company record if possible
                     if data.get("situacao_cadastral"):
-                        company.status = data["situacao_cadastral"]
+                        company.registration_status = data["situacao_cadastral"]
 
                     # Save socios as profiles
                     for socio in data.get("socios", []):

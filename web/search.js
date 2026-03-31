@@ -35,22 +35,22 @@
             const t = D.tree || {};
 
             // People
-            if (t.nome_completo && t.nome_completo.toLowerCase().includes(q))
-                items.push({icon:'👤',title:t.nome_completo,sub:t.profissao||'',section:'pessoa',id:'person'});
-            if (t.conjuge && t.conjuge.nome_completo && t.conjuge.nome_completo.toLowerCase().includes(q))
-                items.push({icon:'👩',title:t.conjuge.nome_completo,sub:'Cônjuge',section:'família',id:'family'});
+            if (t.full_name && t.full_name.toLowerCase().includes(q))
+                items.push({icon:'👤',title:t.full_name,sub:t.profession||'',section:'pessoa',id:'person'});
+            if (t.spouse && t.spouse.full_name && t.spouse.full_name.toLowerCase().includes(q))
+                items.push({icon:'👩',title:t.spouse.full_name,sub:'Cônjuge',section:'família',id:'family'});
             (D.paisTios||[]).forEach(function(s) {
-                if (s.nome_completo && s.nome_completo.toLowerCase().includes(q))
-                    items.push({icon:'👨',title:s.nome_completo,sub:'Geração 3',section:'família',id:'family'});
+                if (s.full_name && s.full_name.toLowerCase().includes(q))
+                    items.push({icon:'👨',title:s.full_name,sub:'Geração 3',section:'família',id:'family'});
             });
             (D.primos||[]).forEach(function(s) {
-                if (s.nome_completo && s.nome_completo.toLowerCase().includes(q))
-                    items.push({icon:'👧',title:s.nome_completo,sub:'Geração 4',section:'família',id:'family'});
+                if (s.full_name && s.full_name.toLowerCase().includes(q))
+                    items.push({icon:'👧',title:s.full_name,sub:'Geração 4',section:'família',id:'family'});
             });
 
             // Companies
             (D.companies||[]).forEach(function(c) {
-                var name = c.nome_fantasia || c.razao_social || '';
+                var name = c.trade_name || c.legal_name || '';
                 if (name.toLowerCase().includes(q) || (c.cnpj||'').includes(q))
                     items.push({icon:'🏢',title:name,sub:c.cnpj||'',section:'empresas',id:'companies'});
             });
@@ -71,9 +71,9 @@
 
             // Contacts
             (D.contacts||[]).forEach(function(c) {
-                var txt = (c.nome||'')+(c.email||'')+(c.empresa||'');
+                var txt = (c.name||'')+(c.email||'')+(c.company||'');
                 if (txt.toLowerCase().includes(q))
-                    items.push({icon:'📞',title:c.nome||'',sub:c.role||c.empresa||'',section:'contatos',id:'contacts'});
+                    items.push({icon:'📞',title:c.name||'',sub:c.role||c.company||'',section:'contatos',id:'contacts'});
             });
 
             // Timeline

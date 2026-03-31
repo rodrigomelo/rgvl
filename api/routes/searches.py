@@ -9,18 +9,18 @@ def list_searches():
     db = get_session()
     try:
         rows = db.execute(text("""
-            SELECT id, fonte, query_usada, resultado, status,
-                   data_busca, proxima_tentativa
-            FROM buscas_realizadas
+            SELECT id, source, query_used, result, status,
+                   search_date, next_attempt
+            FROM search_history
         """)).fetchall()
         return jsonify([{
-            'id': r.id,
-            'fonte': r.fonte,
-            'query_usada': r.query_usada,
-            'resultado': r.resultado,
-            'status': r.status,
-            'data_busca': r.data_busca,
-            'proxima_tentativa': r.proxima_tentativa
+            'id': r[0],
+            'source': r[1],
+            'query_used': r[2],
+            'result': r[3],
+            'status': r[4],
+            'search_date': r[5],
+            'next_attempt': r[6]
         } for r in rows])
     finally:
         db.close()

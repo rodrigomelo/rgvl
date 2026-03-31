@@ -10,18 +10,18 @@ def list_documents():
     try:
         rows = db.execute(text("""
             SELECT id, doc_type, title, description, file_path,
-                   issue_date, expiry_date, fonte
-            FROM documentos
+                   issue_date, expiry_date, source
+            FROM documents
         """)).fetchall()
         return jsonify([{
-            'id': r.id,
-            'doc_type': r.doc_type,
-            'title': r.title,
-            'description': r.description,
-            'file_path': r.file_path,
-            'issue_date': r.issue_date,
-            'expiry_date': r.expiry_date,
-            'fonte': r.fonte
+            'id': r[0],
+            'doc_type': r[1],
+            'title': r[2],
+            'description': r[3],
+            'file_path': r[4],
+            'issue_date': r[5],
+            'expiry_date': r[6],
+            'source': r[7]
         } for r in rows])
     finally:
         db.close()

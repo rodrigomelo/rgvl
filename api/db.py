@@ -38,7 +38,7 @@ def session_scope():
 
     Usage:
         with session_scope() as db:
-            results = db.query(Pessoa).all()
+            results = db.query(Person).all()
     """
     session = get_session()
     try:

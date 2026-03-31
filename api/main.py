@@ -187,23 +187,23 @@ def health():
 @app.route('/api/stats')
 def get_stats():
     from api.db import get_session
-    from api.models import Pessoa, Relacionamento, Empresa, Imovel, ProcessoJudicial, Documento, Contato, Evento, BuscaRealizada, TarefaPesquisa
+    from api.models import Person, Relationship, Company, Property, LegalCase, Document, Contact, TimelineEvent, SearchHistory, ResearchTask
 
     db = get_session()
     try:
         return jsonify({
-            'pessoas': db.query(Pessoa).count(),
-            'relacionamentos': db.query(Relacionamento).count(),
-            'empresas': db.query(Empresa).count(),
-            'imoveis': db.query(Imovel).count(),
-            'processos': db.query(ProcessoJudicial).count(),
-            'documentos': db.query(Documento).count(),
-            'eventos': db.query(Evento).count(),
-            'contatos': db.query(Contato).count(),
-            'buscas': db.query(BuscaRealizada).count(),
-            'tarefas': db.query(TarefaPesquisa).count(),
-            'tarefas_pendentes': db.query(TarefaPesquisa).filter(
-                TarefaPesquisa.status == 'pendente'
+            'people': db.query(Person).count(),
+            'relationships': db.query(Relationship).count(),
+            'companies': db.query(Company).count(),
+            'properties': db.query(Property).count(),
+            'legal_cases': db.query(LegalCase).count(),
+            'documents': db.query(Document).count(),
+            'events': db.query(TimelineEvent).count(),
+            'contacts': db.query(Contact).count(),
+            'searches': db.query(SearchHistory).count(),
+            'tasks': db.query(ResearchTask).count(),
+            'tasks_pending': db.query(ResearchTask).filter(
+                ResearchTask.status == 'pendente'
             ).count(),
         })
     finally:
@@ -220,44 +220,44 @@ def global_search():
         return jsonify({'error': 'Query parameter q is required'}), 400
 
     from api.db import get_session
-    from api.models import Pessoa, Empresa, TarefaPesquisa, Imovel
+    from api.models import Person, Company, ResearchTask, Property
 
     db = get_session()
     try:
         like = f'%{q}%'
 
-        people = db.query(Pessoa).filter(
-            (Pessoa.nome_completo.ilike(like)) |
-            (Pessoa.empresa.ilike(like)) |
-            (Pessoa.observacoes.ilike(like))
+        people = db.query(Person).filter(
+            (Person.full_name.ilike(like)) |
+            (Person.company.ilike(like)) |
+            (Person.notes.ilike(like))
         ).limit(20).all()
 
-        companies = db.query(Empresa).filter(
-            (Empresa.nome_fantasia.ilike(like)) |
-            (Empresa.razao_social.ilike(like)) |
-            (Empresa.cnpj.ilike(like))
+        companies = db.query(Company).filter(
+            (Company.trade_name.ilike(like)) |
+            (Company.legal_name.ilike(like)) |
+            (Company.cnpj.ilike(like))
         ).limit(20).all()
 
-        tasks = db.query(TarefaPesquisa).filter(
-            (TarefaPesquisa.tarefa.ilike(like)) |
-            (TarefaPesquisa.pessoa_alvo.ilike(like))
+        tasks = db.query(ResearchTask).filter(
+            (ResearchTask.task.ilike(like)) |
+            (ResearchTask.target_person.ilike(like))
         ).limit(20).all()
 
-        properties = db.query(Imovel).filter(
-            (Imovel.address.ilike(like)) |
-            (Imovel.building_name.ilike(like)) |
-            (Imovel.neighborhood.ilike(like)) |
-            (Imovel.owners.ilike(like))
+        properties = db.query(Property).filter(
+            (Property.address.ilike(like)) |
+            (Property.building_name.ilike(like)) |
+            (Property.neighborhood.ilike(like)) |
+            (Property.owners.ilike(like))
         ).limit(20).all()
 
         from api.utils import model_to_dict
         return jsonify({
             'query': q,
             'results': {
-                'pessoas': [model_to_dict(p) for p in people],
-                'empresas': [model_to_dict(c) for c in companies],
-                'tarefas': [model_to_dict(t) for t in tasks],
-                'imoveis': [model_to_dict(p) for p in properties],
+                'people': [model_to_dict(p) for p in people],
+                'companies': [model_to_dict(c) for c in companies],
+                'tasks': [model_to_dict(t) for t in tasks],
+                'properties': [model_to_dict(p) for p in properties],
             },
             'total': len(people) + len(companies) + len(tasks) + len(properties),
         })

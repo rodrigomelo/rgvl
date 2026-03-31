@@ -109,28 +109,28 @@ class BaseCollector(ABC):
         models = self._get_models()
         session = self._get_session()
 
-        existing = session.query(models.Perfil).filter(
-            models.Perfil.source == source,
-            models.Perfil.external_id == external_id
+        existing = session.query(models.SocialProfile).filter(
+            models.SocialProfile.source == source,
+            models.SocialProfile.username == external_id
         ).first()
 
         if existing:
-            if name: existing.name = name
+            if name: existing.full_name = name
             if bio: existing.bio = bio
             if url: existing.profile_url = url
-            if avatar_url: existing.avatar_url = avatar_url
+            if avatar_url: existing.profile_picture_url = avatar_url
             if raw_data: existing.raw_data = json.dumps(raw_data, ensure_ascii=False)
-            existing.updated_at = datetime.now(timezone.utc)
+            existing.last_scraped_at = datetime.now(timezone.utc)
             self.results["updated"] += 1
             self.log(f"Updated {source}: {external_id}", "success")
         else:
-            profile = models.Perfil(
+            profile = models.SocialProfile(
                 source=source,
-                external_id=external_id,
-                name=name,
+                username=external_id,
+                full_name=name,
                 bio=bio,
                 profile_url=url,
-                avatar_url=avatar_url,
+                profile_picture_url=avatar_url,
                 raw_data=json.dumps(raw_data, ensure_ascii=False) if raw_data else None,
             )
             session.add(profile)
@@ -144,18 +144,18 @@ class BaseCollector(ABC):
         models = self._get_models()
         session = self._get_session()
 
-        existing = session.query(models.Evento).filter(
-            models.Evento.person_id == person_id,
-            models.Evento.event_type == event_type,
-            models.Evento.event_date == event_date,
-            models.Evento.description == description
+        existing = session.query(models.TimelineEvent).filter(
+            models.TimelineEvent.person_id == person_id,
+            models.TimelineEvent.event_type == event_type,
+            models.TimelineEvent.event_date == event_date,
+            models.TimelineEvent.description == description
         ).first()
 
         if existing:
             self.results["skipped"] += 1
             return existing
 
-        event = models.Evento(
+        event = models.TimelineEvent(
             person_id=person_id,
             event_type=event_type,
             event_date=event_date,
@@ -175,19 +175,19 @@ class BaseCollector(ABC):
         models = self._get_models()
         session = self._get_session()
 
-        existing = session.query(models.Documento).filter(
-            models.Documento.title == title
+        existing = session.query(models.Document).filter(
+            models.Document.title == title
         ).first()
 
         if existing:
             self.results["skipped"] += 1
             return existing
 
-        doc = models.Documento(
+        doc = models.Document(
             doc_type=doc_type,
             title=title,
             description=description,
-            fonte=fonte,
+            source=fonte,
             issue_date=issue_date,
             file_path=file_path,
             raw_data=json.dumps(raw_data, ensure_ascii=False) if raw_data else None,
@@ -204,7 +204,7 @@ class BaseCollector(ABC):
         session = self._get_session()
         models = self._get_models()
 
-        insight = models.Insight(
+        insight = models.ResearchInsight(
             category=category,
             title=title,
             description=content,  # DB column is 'description'

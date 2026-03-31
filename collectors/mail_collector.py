@@ -112,13 +112,13 @@ class GmailCollector(BaseCollector):
             session = self._get_session()
             models = self._get_models()
 
-            existing = session.query(models.Insight).filter(
-                models.Insight.title == subject,
-                models.Insight.source == "gmail"
+            existing = session.query(models.ResearchInsight).filter(
+                models.ResearchInsight.title == subject,
+                models.ResearchInsight.source == "gmail"
             ).first()
 
             if not existing:
-                insight = models.Insight(
+                insight = models.ResearchInsight(
                     category="email_thread",
                     title=subject,
                     description=content[:500],
@@ -147,7 +147,7 @@ class GmailCollector(BaseCollector):
                         # Save as note
                         session = self._get_session()
                         models = self._get_models()
-                        note = models.Note(
+                        note = models.ResearchNote(
                             title=f"Gmail data extraction: {subj[:60]}",
                             content=json.dumps(person_data, ensure_ascii=False),
                             category="person_data",

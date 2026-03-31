@@ -1278,8 +1278,8 @@ schedule.every(6).hours.do(job_deep_monitor)
 # NEW: data/backup_raw.sh (add to daily cron)
 # Backs up raw_intelligence.db alongside rgvl.db
 
-RAW_DB="$HOME/.openclaw/workspace/projects/rgvl/data/raw_intelligence.db"
-RAW_BACKUP_DIR="$HOME/.openclaw/workspace/projects/rgvl/data/.backups/raw"
+RAW_DB="$HOME/.openclaw/workspace-shared/projects/rgvl/data/raw_intelligence.db"
+RAW_BACKUP_DIR="$HOME/.openclaw/workspace-shared/projects/rgvl/data/.backups/raw"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
 mkdir -p "$RAW_BACKUP_DIR"

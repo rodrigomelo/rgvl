@@ -23,19 +23,19 @@ EXPORT_DIR = PROJECT_ROOT / 'data' / 'exports'
 
 # Tables to export (order matters for foreign key dependencies)
 TABLES = [
-    'pessoas',
-    'empresas_familia',
-    'relacionamentos',
-    'events',
-    'legal_processes',
-    'imoveis',
-    'documentos',
-    'contatos',
-    'profiles',
-    'insights',
-    'tarefas_pesquisa',
-    'buscas_realizadas',
-    'diarios_oficiais',
+    'people',
+    'companies',
+    'relationships',
+    'timeline_events',
+    'legal_cases',
+    'properties',
+    'documents',
+    'contacts',
+    'social_profiles',
+    'research_insights',
+    'research_tasks',
+    'search_history',
+    'official_gazettes',
 ]
 
 

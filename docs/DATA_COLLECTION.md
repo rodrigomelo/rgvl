@@ -9,7 +9,7 @@
 
 All collectors live in `data/collectors/`. Each is a standalone Python script that can be run independently or triggered via cron.
 
-**Collector location:** `~/.openclaw/workspace/projects/rgvl/data/collectors/`
+**Collector location:** `~/.openclaw/workspace-shared/projects/rgvl/data/collectors/`
 
 ---
 
@@ -458,7 +458,7 @@ Params: q=<query>, count=<count>
 Any collector can be run manually:
 
 ```bash
-cd ~/.openclaw/workspace/projects/rgvl
+cd ~/.openclaw/workspace-shared/projects/rgvl
 
 # Run a specific collector
 python3 -m data.collectors.email
@@ -493,7 +493,7 @@ Currently **not implemented**. Potential future triggers:
 |---------|-----------|----------------|
 | Gmail | `gog` CLI session | `gog auth add` (stores in OS keychain) |
 | X/Twitter | `xurl` OAuth2 | `xurl auth oauth2` |
-| Brave Search | `BRAVE_API_KEY` | `~/.openclaw/workspace/projects/rgvl/.env` |
+| Brave Search | `BRAVE_API_KEY` | `~/.openclaw/workspace-shared/projects/rgvl/.env` |
 | Google Workspace | `gog` session | `gog auth` (keyring) |
 
 ---
@@ -615,7 +615,7 @@ Both plists use `KeepAlive: true`, meaning launchd auto-restarts the service aft
 
 Both services share the venv at:
 ```
-~/.openclaw/workspace/projects/rgvl/.venv/bin/python
+~/.openclaw/workspace-shared/projects/rgvl/.venv/bin/python
 ```
 
 ---
@@ -636,7 +636,7 @@ curl -s http://localhost:5004/
 ### View Logs
 
 ```
-~/.openclaw/workspace/projects/rgvl/.logs/
+~/.openclaw/workspace-shared/projects/rgvl/.logs/
 ```
 
 | File | Contents |
@@ -647,9 +647,9 @@ curl -s http://localhost:5004/
 | `health-check.log` | Timestamped health check results |
 
 ```bash
-tail -f ~/.openclaw/workspace/projects/rgvl/.logs/api.log
-tail -50 ~/.openclaw/workspace/projects/rgvl/.logs/web.log
-cat ~/.openclaw/workspace/projects/rgvl/.logs/rgvl-health.log
+tail -f ~/.openclaw/workspace-shared/projects/rgvl/.logs/api.log
+tail -50 ~/.openclaw/workspace-shared/projects/rgvl/.logs/web.log
+cat ~/.openclaw/workspace-shared/projects/rgvl/.logs/rgvl-health.log
 ```
 
 ### Restart Services Manually
@@ -711,7 +711,7 @@ launchctl load ~/Library/LaunchAgents/com.rgvl.api.plist
 ### Health Check Script
 
 ```
-~/.openclaw/workspace/projects/rgvl/scripts/monitor.sh
+~/.openclaw/workspace-shared/projects/rgvl/scripts/monitor.sh
 ```
 
 ### How It Works
@@ -728,8 +728,8 @@ If a port fails, it unloads the corresponding launchd service, waits, reloads it
 ### Verify Health Check Is Working
 
 ```bash
-~/.openclaw/workspace/projects/rgvl/scripts/monitor.sh
-cat ~/.openclaw/workspace/projects/rgvl/.logs/rgvl-health.log
+~/.openclaw/workspace-shared/projects/rgvl/scripts/monitor.sh
+cat ~/.openclaw/workspace-shared/projects/rgvl/.logs/rgvl-health.log
 ```
 
 Example healthy output:
@@ -740,7 +740,7 @@ Sun Mar 22 06:54:53 -03 2026: RG VL services health check - RESTARTED services, 
 ### Set Up Periodic Health Checks (Cron)
 
 ```cron
-*/5 * * * * /Users/rodrigomelo/.openclaw/workspace/projects/rgvl/scripts/monitor.sh >> /Users/rodrigomelo/.openclaw/workspace/projects/rgvl/.logs/health-check.log 2>&1
+*/5 * * * * /Users/rodrigomelo/.openclaw/workspace-shared/projects/rgvl/scripts/monitor.sh >> /Users/rodrigomelo/.openclaw/workspace-shared/projects/rgvl/.logs/health-check.log 2>&1
 ```
 
 ---
@@ -749,35 +749,35 @@ Sun Mar 22 06:54:53 -03 2026: RG VL services health check - RESTARTED services, 
 
 ### Backup Scripts
 
-- Python: `~/.openclaw/workspace/projects/rgvl/data/backup.py`
-- Shell: `~/.openclaw/workspace/projects/rgvl/data/backup.sh`
+- Python: `~/.openclaw/workspace-shared/projects/rgvl/data/backup.py`
+- Shell: `~/.openclaw/workspace-shared/projects/rgvl/data/backup.sh`
 
 ### Backup Directory
 
 ```
-~/.openclaw/workspace/projects/rgvl/data/backups/
+~/.openclaw/workspace-shared/projects/rgvl/data/backups/
 ```
 
 ### Manual Backup
 
 ```bash
 # Simple (keeps all)
-python ~/.openclaw/workspace/projects/rgvl/data/backup.py
+python ~/.openclaw/workspace-shared/projects/rgvl/data/backup.py
 
 # Compress + keep last 7
-python ~/.openclaw/workspace/projects/rgvl/data/backup.py --compress --keep 7
+python ~/.openclaw/workspace-shared/projects/rgvl/data/backup.py --compress --keep 7
 
 # Via shell script
-~/.openclaw/workspace/projects/rgvl/data/backup.sh
+~/.openclaw/workspace-shared/projects/rgvl/data/backup.sh
 
 # List backups
-python ~/.openclaw/workspace/projects/rgvl/data/backup.py --list
+python ~/.openclaw/workspace-shared/projects/rgvl/data/backup.py --list
 ```
 
 ### Automatic Daily Backup (Cron)
 
 ```cron
-0 2 * * * /Users/rodrigomelo/.openclaw/workspace/projects/rgvl/data/backup.sh >> /Users/rodrigomelo/.openclaw/workspace/projects/rgvl/.logs/backup.log 2>&1
+0 2 * * * /Users/rodrigomelo/.openclaw/workspace-shared/projects/rgvl/data/backup.sh >> /Users/rodrigomelo/.openclaw/workspace-shared/projects/rgvl/.logs/backup.log 2>&1
 ```
 
 Runs daily at 2 AM using SQLite's transaction-safe `.backup` command. Keeps last 7 backups.
@@ -786,8 +786,8 @@ Runs daily at 2 AM using SQLite's transaction-safe `.backup` command. Keeps last
 
 ```bash
 # List then restore
-python ~/.openclaw/workspace/projects/rgvl/data/backup.py --list
-python ~/.openclaw/workspace/projects/rgvl/data/backup.py --restore rgvl_20260320_020000.db
+python ~/.openclaw/workspace-shared/projects/rgvl/data/backup.py --list
+python ~/.openclaw/workspace-shared/projects/rgvl/data/backup.py --restore rgvl_20260320_020000.db
 ```
 
 Or manually:
@@ -797,8 +797,8 @@ launchctl unload ~/Library/LaunchAgents/com.rgvl.api.plist
 launchctl unload ~/Library/LaunchAgents/com.rgvl.web.plist
 
 # Copy backup over live DB
-cp ~/.openclaw/workspace/projects/rgvl/data/backups/rgvl_YYYYMMDD_HHMMSS.db \
-   ~/.openclaw/workspace/projects/rgvl/data/rgvl.db
+cp ~/.openclaw/workspace-shared/projects/rgvl/data/backups/rgvl_YYYYMMDD_HHMMSS.db \
+   ~/.openclaw/workspace-shared/projects/rgvl/data/rgvl.db
 
 # Restart
 launchctl load ~/Library/LaunchAgents/com.rgvl.api.plist
@@ -834,7 +834,7 @@ The web service runs on **5004**, not 5002. If you're seeing unexpected behavior
 
 ```bash
 launchctl list | grep rgvl
-tail -30 ~/.openclaw/workspace/projects/rgvl/.logs/api.log
+tail -30 ~/.openclaw/workspace-shared/projects/rgvl/.logs/api.log
 
 # Reload the plist
 launchctl unload ~/Library/LaunchAgents/com.rgvl.api.plist
@@ -845,16 +845,16 @@ launchctl load ~/Library/LaunchAgents/com.rgvl.api.plist
 
 ```bash
 # Check API log
-tail -50 ~/.openclaw/workspace/projects/rgvl/.logs/api.log
+tail -50 ~/.openclaw/workspace-shared/projects/rgvl/.logs/api.log
 
 # Test health endpoint
 curl http://localhost:5003/api/health
 
 # Verify database integrity
-sqlite3 ~/.openclaw/workspace/projects/rgvl/data/rgvl.db "PRAGMA integrity_check;"
+sqlite3 ~/.openclaw/workspace-shared/projects/rgvl/data/rgvl.db "PRAGMA integrity_check;"
 
 # Check DB file permissions
-ls -la ~/.openclaw/workspace/projects/rgvl/data/rgvl.db
+ls -la ~/.openclaw/workspace-shared/projects/rgvl/data/rgvl.db
 ```
 
 ### JSON Decode Errors in SQLite Columns
@@ -873,7 +873,7 @@ If `JSONDecodeError` appears in logs:
 1. Identify the failing column from the stack trace
 2. Inspect the raw data:
    ```bash
-   sqlite3 ~/.openclaw/workspace/projects/rgvl/data/rgvl.db \
+   sqlite3 ~/.openclaw/workspace-shared/projects/rgvl/data/rgvl.db \
      "SELECT id, <column> FROM <table> LIMIT 5;"
    ```
 3. Fix the value directly:
@@ -885,7 +885,7 @@ If `JSONDecodeError` appears in logs:
 
 SQLite allows one writer at a time. If `database is locked`:
 ```bash
-lsof ~/.openclaw/workspace/projects/rgvl/data/rgvl.db
+lsof ~/.openclaw/workspace-shared/projects/rgvl/data/rgvl.db
 ```
 Wait for pending writes, or restart the API service.
 
@@ -897,7 +897,7 @@ Wait for pending writes, or restart the API service.
 
 Collectors live in:
 ```
-~/.openclaw/workspace/projects/rgvl/data/collectors/
+~/.openclaw/workspace-shared/projects/rgvl/data/collectors/
 ```
 
 Name the file after the source: `tjsp.py`, `jucesp.py`, `receita.py`, etc.
@@ -945,15 +945,15 @@ finally:
 For periodic collection:
 ```cron
 # Run JUCEMG every 6 hours
-0 */6 * * * cd ~/.openclaw/workspace/projects/rgvl/data && python collectors/jucemg.py >> ~/.openclaw/workspace/projects/rgvl/.logs/collector_jucemg.log 2>&1
+0 */6 * * * cd ~/.openclaw/workspace-shared/projects/rgvl/data && python collectors/jucemg.py >> ~/.openclaw/workspace-shared/projects/rgvl/.logs/collector_jucemg.log 2>&1
 
 # Run TJSP every 12 hours
-0 */12 * * * cd ~/.openclaw/workspace/projects/rgvl/data && python collectors/tjsp.py >> ~/.openclaw/workspace/projects/rgvl/.logs/collector_tjsp.log 2>&1
+0 */12 * * * cd ~/.openclaw/workspace-shared/projects/rgvl/data && python collectors/tjsp.py >> ~/.openclaw/workspace-shared/projects/rgvl/.logs/collector_tjsp.log 2>&1
 ```
 
 For ad-hoc collection:
 ```bash
-cd ~/.openclaw/workspace/projects/rgvl/data
+cd ~/.openclaw/workspace-shared/projects/rgvl/data
 python collectors/tjsp.py
 ```
 
@@ -1076,7 +1076,7 @@ Arquivos:
 ### Script de Monitoramento
 
 ```
-~/.openclaw/workspace/projects/rgvl/scripts/monitor.sh
+~/.openclaw/workspace-shared/projects/rgvl/scripts/monitor.sh
 ```
 
 ### O que ele faz
@@ -1089,7 +1089,7 @@ Arquivos:
 
 ```bash
 # Executar manualmente
-~/.openclaw/workspace/projects/rgvl/scripts/monitor.sh
+~/.openclaw/workspace-shared/projects/rgvl/scripts/monitor.sh
 
 # Ver logs
 cat /tmp/rgvl-monitor.log
@@ -1127,10 +1127,10 @@ cat /tmp/rgvl-api.log
 cat /tmp/rgvl-web.log
 
 # Verificar se imports estão funcionando
-cd ~/.openclaw/workspace/projects/rgvl/data
+cd ~/.openclaw/workspace-shared/projects/rgvl/data
 python3 -c "from api.main import app; print('API OK')"
 
-cd ~/.openclaw/workspace/projects/rgvl/web
+cd ~/.openclaw/workspace-shared/projects/rgvl/web
 python3 -c "from server import app; print('Web OK')"
 ```
 
@@ -1144,7 +1144,7 @@ tail -50 /tmp/rgvl-api.log
 curl http://localhost:5003/api/health
 
 # Verificar integridade do banco
-sqlite3 ~/.openclaw/workspace/projects/rgvl/data/rgvl.db "PRAGMA integrity_check;"
+sqlite3 ~/.openclaw/workspace-shared/projects/rgvl/data/rgvl.db "PRAGMA integrity_check;"
 ```
 
 ### Erro "Module Not Found: flask"
@@ -1160,7 +1160,7 @@ Depois reiniciar os serviços.
 ### Database Locked
 
 ```bash
-lsof ~/.openclaw/workspace/projects/rgvl/data/rgvl.db
+lsof ~/.openclaw/workspace-shared/projects/rgvl/data/rgvl.db
 ```
 
 Esperar ou reiniciar a API.
@@ -1180,7 +1180,7 @@ elif isinstance(value, str) and value.startswith('['):
 Se aparecer `JSONDecodeError` nos logs, inspecionar:
 
 ```bash
-sqlite3 ~/.openclaw/workspace/projects/rgvl/data/rgvl.db \
+sqlite3 ~/.openclaw/workspace-shared/projects/rgvl/data/rgvl.db \
   "SELECT id, <coluna> FROM <tabela> LIMIT 5;"
 ```
 
@@ -1196,7 +1196,7 @@ sqlite3 ~/.openclaw/workspace/projects/rgvl/data/rgvl.db \
 ### Diretório de Backups
 
 ```
-~/.openclaw/workspace/projects/rgvl/data/backups/
+~/.openclaw/workspace-shared/projects/rgvl/data/backups/
 ```
 
 Formato: `rgvl_YYYYMMDD_HHMMSS.db`
@@ -1220,7 +1220,7 @@ python data/backup.py --list
 ### Backup Automático (Cron)
 
 ```cron
-0 2 * * * ~/.openclaw/workspace/projects/rgvl/data/backup.sh >> ~/.openclaw/workspace/projects/rgvl/.logs/backup.log 2>&1
+0 2 * * * ~/.openclaw/workspace-shared/projects/rgvl/data/backup.sh >> ~/.openclaw/workspace-shared/projects/rgvl/.logs/backup.log 2>&1
 ```
 
 Executa diariamente às 2h usando `.backup` do SQLite. Mantém últimos 7.
@@ -1299,13 +1299,13 @@ finally:
 
 ```cron
 # A cada 12h
-0 */12 * * * cd ~/.openclaw/workspace/projects/rgvl/data && python collectors/novo.py >> ~/.openclaw/workspace/projects/rgvl/.logs/collector_novo.log 2>&1
+0 */12 * * * cd ~/.openclaw/workspace-shared/projects/rgvl/data && python collectors/novo.py >> ~/.openclaw/workspace-shared/projects/rgvl/.logs/collector_novo.log 2>&1
 ```
 
 ### Passo 5: Testar
 
 ```bash
-cd ~/.openclaw/workspace/projects/rgvl/data
+cd ~/.openclaw/workspace-shared/projects/rgvl/data
 python collectors/novo.py
 ```
 
@@ -1360,7 +1360,7 @@ https://github.com/rodrigomelo/rgvl
 ### Antes de Commitar
 
 ```bash
-cd ~/.openclaw/workspace/projects/rgvl
+cd ~/.openclaw/workspace-shared/projects/rgvl
 
 # Pull antes de push
 git pull --rebase origin main

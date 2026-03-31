@@ -9,20 +9,20 @@ def list_contacts():
     db = get_session()
     try:
         rows = db.execute(text("""
-            SELECT id, nome, role, empresa, telefone, email,
-                   is_primary, notes, fonte
-            FROM contatos
+            SELECT id, name, role, company, phone, email,
+                   is_primary, notes, source
+            FROM contacts
         """)).fetchall()
         return jsonify([{
-            'id': r.id,
-            'nome': r.nome,
-            'role': r.role,
-            'empresa': r.empresa,
-            'telefone': r.telefone,
-            'email': r.email,
-            'is_primary': r.is_primary,
-            'notes': r.notes,
-            'fonte': r.fonte
+            'id': r[0],
+            'name': r[1],
+            'role': r[2],
+            'company': r[3],
+            'phone': r[4],
+            'email': r[5],
+            'is_primary': r[6],
+            'notes': r[7],
+            'source': r[8]
         } for r in rows])
     finally:
         db.close()

@@ -187,7 +187,7 @@ def update_db(profiles):
     api_db = importlib.import_module("api.db")
     api_models = importlib.import_module("api.models")
     SessionLocal = api_db.SessionLocal
-    Perfil = api_models.Perfil
+    Perfil = api_models.SocialProfile
     session = SessionLocal()
     try:
         for p in profiles:
@@ -198,20 +198,20 @@ def update_db(profiles):
 
             existing = session.query(Perfil).filter(
                 Perfil.source == platform,
-                Perfil.external_id == username
+                Perfil.username == username
             ).first()
 
             if existing:
                 existing.raw_data = json.dumps(p, ensure_ascii=False)
-                existing.updated_at = datetime.now()
+                existing.last_scraped_at = datetime.now()
                 print(f"  Updated {platform}: {username}")
             else:
                 perfil = Perfil(
                     source=platform,
-                    external_id=username,
-                    name=p.get("og_title", ""),
+                    username=username,
+                    full_name=p.get("og_title", ""),
                     bio=p.get("og_description", ""),
-                    avatar_url=p.get("profile_pic_url", ""),
+                    profile_picture_url=p.get("profile_pic_url", ""),
                     profile_url=p.get("url", ""),
                     raw_data=json.dumps(p, ensure_ascii=False),
                 )
