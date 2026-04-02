@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RGVL - Dados Pessoais</title>
+    <title>RGVL - Personal Data</title>
+
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon16.png">
@@ -406,17 +407,17 @@
     </header>
     <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
     <nav class="sidebar" id="sidebar">
-        <a class="nav-item active" data-section="overview">📊 Visão Geral</a>
-        <a class="nav-item" data-section="patrimony">💰 Patrimônio Estimado</a>
-        <a class="nav-item" data-section="family">🌳 Árvore Genealógica</a>
-        <a class="nav-item" data-section="person">👤 Dados Pessoais</a>
-        <a class="nav-item" data-section="companies">🏢 Empresas</a>
-        <a class="nav-item" data-section="properties">🏠 Imóveis</a>
-        <a class="nav-item" data-section="legal">⚖️ Processos Judiciais</a>
-        <a class="nav-item" data-section="contacts">📞 Contatos</a>
-        <a class="nav-item" data-section="documents">📄 Documentos</a>
-        <a class="nav-item" data-section="timeline">📅 Linha do Tempo</a>
-        <a class="nav-item" data-section="sources">📜 Fontes dos Dados</a>
+        <a class="nav-item active" data-section="overview">📊 Overview</a>
+        <a class="nav-item" data-section="patrimony">💰 Estimated Patrimony</a>
+        <a class="nav-item" data-section="family">🌳 Family Tree</a>
+        <a class="nav-item" data-section="person">👤 Personal Data</a>
+        <a class="nav-item" data-section="companies">🏢 Companies</a>
+        <a class="nav-item" data-section="properties">🏠 Properties</a>
+        <a class="nav-item" data-section="legal">⚖️ Legal Cases</a>
+        <a class="nav-item" data-section="contacts">📞 Contacts</a>
+        <a class="nav-item" data-section="documents">📄 Documents</a>
+        <a class="nav-item" data-section="timeline">📅 Timeline</a>
+        <a class="nav-item" data-section="sources">📜 Data Sources</a>
     </nav>
     <!-- Person Detail Drawer -->
     <div class="person-drawer-overlay" id="person-drawer-overlay" onclick="window.__closePersonDrawer(event)">
@@ -437,16 +438,16 @@
         <div class="search-box">
             <div class="search-input-wrap">
                 <span class="icon">🔍</span>
-                <input class="search-input" id="search-input" type="text" placeholder="Buscar pessoas, empresas, processos..." autocomplete="off">
+                <input class="search-input" id="search-input" type="text" placeholder="Search people, companies, legal cases..." autocomplete="off">
                 <span class="search-kbd">ESC</span>
             </div>
             <div class="search-results" id="search-results">
-                <div class="search-empty">Digite para buscar...</div>
+                <div class="search-empty">Type to search...</div>
             </div>
             <div class="search-hint">
-                <span><kbd>↑↓</kbd> navegar</span>
-                <span><kbd>Enter</kbd> abrir</span>
-                <span><kbd>Ctrl+K</kbd> fechar</span>
+                <span><kbd>↑↓</kbd> navigate</span>
+                <span><kbd>Enter</kbd> open</span>
+                <span><kbd>Ctrl+K</kbd> close</span>
             </div>
         </div>
     </div>
@@ -454,10 +455,10 @@
     <div id="login-screen" style="display:none;position:fixed;inset:0;background:var(--bg);justify-content:center;align-items:center;z-index:1000">
         <div style="text-align:center;background:white;padding:48px;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.15);max-width:400px;width:90%">
             <div style="font-size:48px;margin-bottom:16px">🔐</div>
-            <h2 style="color:var(--primary);margin-bottom:8px">Acesso Restrito</h2>
-            <p style="color:var(--text-muted);margin-bottom:24px;font-size:14px">Entre com sua conta para acessar os dados genealógicos da família Lanna.</p>
-            <button onclick="login()" style="background:var(--primary);color:white;border:none;padding:14px 28px;border-radius:8px;font-size:16px;cursor:pointer;width:100%">🔐 Entrar com Auth0</button>
-            <p style="color:var(--text-muted);margin-top:16px;font-size:12px">Plataforma segura de autenticação</p>
+            <h2 style="color:var(--primary);margin-bottom:8px">Restricted Access</h2>
+            <p style="color:var(--text-muted);margin-bottom:24px;font-size:14px">Sign in to access the Lanna family genealogical data.</p>
+            <button onclick="login()" style="background:var(--primary);color:white;border:none;padding:14px 28px;border-radius:8px;font-size:16px;cursor:pointer;width:100%">🔐 Sign in with Auth0</button>
+            <p style="color:var(--text-muted);margin-top:16px;font-size:12px">Secure authentication platform</p>
         </div>
     </div>
 
@@ -515,7 +516,7 @@
         GMAIL:'GMAIL', GOOGLE_DRIVE:'GOOGLE DRIVE', TJMG:'TJMG', TJSP:'TJSP',
         JUCEMG:'JUCEMG', JUCEP:'JUCEP', CARTORIO:'CART.', WEB_SEARCH:'WEB SEARCH',
         FAMILYSEARCH:'FAMILYSEARCH', MANUAL:'MANUAL', CREA:'CREA', LINKEDIN:'LINKEDIN',
-        ESCADADOR:'ESCAVADOR', INTEL:'PESQUISA', TIMELINE:'OUTRO', COMPANIES:'Empresas', DEFAULT:'OUTRO'
+        ESCADADOR:'ESCAVADOR', INTEL:'RESEARCH', TIMELINE:'OTHER', COMPANIES:'Companies', DEFAULT:'OTHER'
     };
 
     function sourceBadgeHTML(type, size) {
@@ -524,7 +525,7 @@
             return `<span class="source-badge source-unknown ${size||''}">🔗 SEM FONTE</span>`;
         }
         const emoji = SOURCE_EMOJI[t] || '🔗';
-        const label = SOURCE_LABELS[t] || SOURCE_LABELS[t.toUpperCase()] || SOURCE_LABELS['default'] || SOURCE_LABELS.DEFAULT || 'OUTRO';
+        const label = SOURCE_LABELS[t] || SOURCE_LABELS[t.toUpperCase()] || SOURCE_LABELS['default'] || SOURCE_LABELS.DEFAULT || 'OTHER';
         return `<span class="source-badge source-${t} ${size||''}">${emoji} ${label}</span>`;
     }
 
@@ -563,9 +564,9 @@
                 <button class="source-panel-close" onclick="this.closest('.source-panel-overlay').remove()">×</button>
             </div>
             <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px">
-                <strong>${source.count || 0}</strong> registros · Última coleta: ${source.last_collected || '—'}
+                <strong>${source.count || 0}</strong> records · Last collected: ${source.last_collected || '—'}
             </div>
-            ${recordsList || '<div class="source-panel-empty">Nenhum registro detalhado disponível</div>'}
+            ${recordsList || '<div class="source-panel-empty">No detailed records available</div>'}
         </div>`;
         document.body.appendChild(overlay);
 
@@ -591,7 +592,7 @@
             confPct.className = 'sources-confidence-pct ' + cls;
             confFill.style.width = pct + '%';
             confFill.className = 'sources-confidence-fill ' + cls;
-            confLabel.textContent = `${data.total_records} registros com fonte identificada de ~${data.total_estimated} total`;
+            confLabel.textContent = `${data.total_records} records with identified source out of ~${data.total_estimated} total`;
         } else {
             confEl.style.display = 'none';
         }
@@ -599,7 +600,7 @@
         // Dashboard grid
         const sources = (data.sources || []).filter(s => s && s.count > 0);
         if (sources.length === 0) {
-            container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:40px;font-size:13px">Nenhuma fonte com dados ainda</div>';
+            container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:40px;font-size:13px">No sources with data yet</div>';
             return;
         }
         container.innerHTML = sources.map(s => {
@@ -629,10 +630,10 @@
         // recordsData is the D.sources object which has summary data
         // We need to fetch the /api/sources/records endpoint
         const records = (recordsData && recordsData.records) ? recordsData.records : (recordsData || []);
-                totalEl.textContent = `${records.length} registros`;
+                totalEl.textContent = `${records.length} records`;
 
                 if (records.length === 0) {
-                    container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px">Nenhum registro encontrado</div>';
+                    container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px">No records found</div>';
                     return;
                 }
 
@@ -647,7 +648,7 @@
                 const persons = Object.entries(byPerson).sort((a,b) => a[0].localeCompare(b[0]));
                 container.innerHTML = persons.map(([name, recs]) => `
                     <div class="sources-person-group">
-                        <div class="sources-person-name">${esc(name)} <span style="color:var(--text-muted);font-weight:400">(${recs.length} registros)</span></div>
+                        <div class="sources-person-name">${esc(name)} <span style="color:var(--text-muted);font-weight:400">(${recs.length} records)</span></div>
                         <div class="sources-person-records">
                             ${recs.map(r => `
                                 <div class="sources-record-item">
@@ -751,10 +752,10 @@
         const t = D.tree || {};
         const p = t || {};
         const spouse = t.spouse || null;
-        const children = t.filhos || [];
-        const siblings = t.irmaos || [];
-        const pai = t.pai || null;
-        const mae = t.mae || null;
+        const children = (t.children || D.primos || []).filter(p => p.id !== PAI_ID);
+        const siblings = []; // uncles/aunts — computed from relationships, not in tree
+        const pai = t.father || null;
+        const mae = t.mother || null;
 
         // Split primos by parent
         const primosHenrique = D.primos.filter(c => c.notes && c.notes.includes('Henrique'));
@@ -769,14 +770,14 @@
         document.getElementById('app').innerHTML = `
         <!-- Overview -->
         <div class="section" id="overview">
-            <div class="section-title">📊 Visão Geral</div>
+            <div class="section-title">📊 Overview</div>
             <div class="stats">
-                <div class="stat"><div class="stat-value">${D.summary.total_people || 0}</div><div class="stat-label">Pessoas</div></div>
-                <div class="stat"><div class="stat-value">${siblings.length}</div><div class="stat-label">Tios</div></div>
-                <div class="stat"><div class="stat-value">${D.primos.length}</div><div class="stat-label">Geração 4 — Você e Primos</div></div>
-                <div class="stat"><div class="stat-value">${(D.companies||[]).length}</div><div class="stat-label">Empresas</div></div>
-                <div class="stat"><div class="stat-value">${(D.properties||[]).length}</div><div class="stat-label">Imóveis</div></div>
-                <div class="stat"><div class="stat-value">${D.summary.confirmed_relationships || 0}</div><div class="stat-label">Vínculos Confirmados</div></div>
+                <div class="stat"><div class="stat-value">${D.summary.total_people || 0}</div><div class="stat-label">People</div></div>
+                <div class="stat"><div class="stat-value">${siblings.length}</div><div class="stat-label">Uncles/Aunts</div></div>
+                <div class="stat"><div class="stat-value">${D.primos.length}</div><div class="stat-label">Generation 4 — You and Cousins</div></div>
+                <div class="stat"><div class="stat-value">${(D.companies||[]).length}</div><div class="stat-label">Companies</div></div>
+                <div class="stat"><div class="stat-value">${(D.properties||[]).length}</div><div class="stat-label">Properties</div></div>
+                <div class="stat"><div class="stat-value">${D.summary.confirmed_relationships || 0}</div><div class="stat-label">Confirmed Relationships</div></div>
             </div>
             ${(() => {
                 const persons = D.allPersons || [];
@@ -789,30 +790,30 @@
                 const pct = Math.round(((withBirth + withCPF + withRG + withCity) / (total * 4)) * 100);
                 const color = pct >= 75 ? '#2E7D32' : pct >= 50 ? '#F57F17' : '#C62828';
                 const missing = [];
-                if (withBirth < total) missing.push(`${total - withBirth} sem data de nascimento`);
-                if (withCPF < total) missing.push(`${total - withCPF} sem CPF`);
-                if (withRG < total) missing.push(`${total - withRG} sem RG`);
-                if (withCity < total) missing.push(`${total - withCity} sem local de nascimento`);
+                if (withBirth < total) missing.push(`${total - withBirth} missing birth date`);
+                if (withCPF < total) missing.push(`${total - withCPF} missing CPF`);
+                if (withRG < total) missing.push(`${total - withRG} missing RG`);
+                if (withCity < total) missing.push(`${total - withCity} missing birth place`);
                 return `<div style="margin-top:16px;padding:16px;background:var(--bg);border-radius:10px;border:1px solid var(--border)">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-                        <span style="font-size:13px;font-weight:600;color:var(--text)">📋 Completude dos Dados</span>
+                        <span style="font-size:13px;font-weight:600;color:var(--text)">📋 Data Completeness</span>
                         <span style="font-size:22px;font-weight:800;color:${color}">${pct}%</span>
                     </div>
                     <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden">
                         <div style="width:${pct}%;height:100%;background:${color};border-radius:4px;transition:width 0.5s"></div>
                     </div>
-                    ${missing.length ? `<div style="margin-top:8px;font-size:11px;color:var(--text-muted)">${missing.join(' · ')}</div>` : '<div style="margin-top:8px;font-size:11px;color:#2E7D32">✅ Todos os dados completos!</div>'}
+                    ${missing.length ? `<div style="margin-top:8px;font-size:11px;color:var(--text-muted)">${missing.join(' · ')}</div>` : '<div style="margin-top:8px;font-size:11px;color:#2E7D32">✅ All data complete!</div>'}
                 </div>`;
             })()}
         </div>
 
         <!-- Patrimony -->
         <div class="section" id="patrimony">
-            <div class="section-title">💰 Patrimônio Estimado</div>
+            <div class="section-title">💰 Estimated Patrimony</div>
             <div class="stats">
                 <div class="stat" style="border:2px solid var(--primary);background:#F0F4FA">
                     <div class="stat-value" style="color:var(--primary);font-size:26px;font-weight:800">${fmtMoney(totalWealth)}</div>
-                    <div class="stat-label">Patrimônio Total</div>
+                    <div class="stat-label">Total Patrimony</div>
                 </div>
                 <div class="stat" style="background:#E3F2FD;border-color:var(--primary-light)">
                     <div class="stat-value" style="color:var(--primary-light)">${fmtMoney(totalCapital)}</div>
@@ -820,19 +821,19 @@
                 </div>
                 <div class="stat" style="background:#E8F5E9;border-color:#2E7D32">
                     <div class="stat-value" style="color:#2E7D32">${fmtMoney(totalProperties)}</div>
-                    <div class="stat-label">Patrimônio Imóveis</div>
+                    <div class="stat-label">Properties Value</div>
                 </div>
             </div>
         </div>
 
         <!-- Family Tree -->
         <div class="section" id="family">
-            <div class="section-title">🌳 Árvore Genealógica (${D.summary.total_people || 0} pessoas)</div>
+            <div class="section-title">🌳 Family Tree (${D.summary.total_people || 0} people)</div>
             <div class="tree">
 
-                <!-- Bisavós -->
+                <!-- Great-Grandparents -->
                 <div class="gen">
-                    <div class="gen-label">Geração 1 — Bisavós</div>
+                    <div class="gen-label">Generation 1 — Great-Grandparents</div>
                     <div class="gen-row">
                         <div class="node grandparent" data-person-id="1">
                             <div class="node-name">Edmundo Mariano da Costa Lanna</div>
@@ -843,9 +844,9 @@
                 </div>
                 <div class="connector"></div>
 
-                <!-- Avós -->
+                <!-- Grandparents -->
                 <div class="gen">
-                    <div class="gen-label">Geração 2 — Avós</div>
+                    <div class="gen-label">Generation 2 — Grandparents</div>
                     <div class="gen-row">
                         ${pai ? `<div class="node grandparent" data-person-id="${pai.id}">
                             <div class="node-name">${esc(pai.full_name)}</div>
@@ -860,9 +861,9 @@
                 </div>
                 <div class="connector"></div>
 
-                <!-- Pais + Tios -->
+                <!-- Parents + Uncles -->
                 <div class="gen">
-                    <div class="gen-label">Geração 3 — Pais + Tios</div>
+                    <div class="gen-label">Generation 3 — Parents + Uncles</div>
                     <div class="gen-row">
                         ${siblings.map(s => `
                             <div class="node sibling" data-person-id="${s.id}">
@@ -892,9 +893,9 @@
                 </div>
                 <div class="connector"></div>
 
-                <!-- Você + Primos (all Gen 4) -->
+                <!-- You + Cousins (all Gen 4) -->
                 <div class="gen">
-                    <div class="gen-label">Geração 4 — Você e Primos (${D.primos.length})</div>
+                    <div class="gen-label">Generation 4 — You and Cousins (${D.primos.length})</div>
 
                     <div style="margin-bottom:16px">
                         <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">⚡ Você</div>
@@ -954,7 +955,7 @@
 
         <!-- Person -->
         <div class="section" id="person">
-            <div class="section-title">👤 ${esc(p.full_name || 'Dados Pessoais')}</div>
+            <div class="section-title">👤 ${esc(p.full_name || 'Personal Data')}</div>
             <div class="info-grid">
                 <div class="info-card">
                     <h3>Identificação</h3>
@@ -968,9 +969,9 @@
                 </div>
                 <div class="info-card">
                     <h3>Pessoal</h3>
-                    <div class="row"><span class="label">Nascimento</span><span class="value">${esc(p.birth_date || '-')}</span></div>
+                    <div class="row"><span class="label">Birth</span><span class="value">${esc(p.birth_date || '-')}</span></div>
                     <div class="row"><span class="label">Local</span><span class="value">${esc(p.birth_place || '-')}</span></div>
-                    <div class="row"><span class="label">Geração</span><span class="value">${p.generation || '-'}</span></div>
+                    <div class="row"><span class="label">Generation</span><span class="value">${p.generation || '-'}</span></div>
                     <div class="row"><span class="label">Status</span><span class="value">${esc(p.status || '-')}</span></div>
                 </div>
                 <div class="info-card">
@@ -983,23 +984,23 @@
                 <div class="info-card">
                     <h3>👨 Pai</h3>
                     <div class="row"><span class="label">Nome</span><span class="value">${esc(pai.full_name)}</span></div>
-                    <div class="row"><span class="label">Nascimento</span><span class="value">${esc(pai.birth_date || '-')}</span></div>
-                    <div class="row"><span class="label">Falecimento</span><span class="value">${esc(pai.death_date || '-')}</span></div>
+                    <div class="row"><span class="label">Birth</span><span class="value">${esc(pai.birth_date || '-')}</span></div>
+                    <div class="row"><span class="label">Death</span><span class="value">${esc(pai.death_date || '-')}</span></div>
                     <div class="row"><span class="label">Profissão</span><span class="value">${esc(pai.profession || '-')}</span></div>
                 </div>` : ''}
                 ${mae ? `
                 <div class="info-card">
                     <h3>👩 Mãe</h3>
                     <div class="row"><span class="label">Nome</span><span class="value">${esc(mae.full_name)}</span></div>
-                    <div class="row"><span class="label">Nascimento</span><span class="value">${esc(mae.birth_date || '-')}</span></div>
-                    <div class="row"><span class="label">Falecimento</span><span class="value">${esc(mae.death_date || '-')}</span></div>
+                    <div class="row"><span class="label">Birth</span><span class="value">${esc(mae.birth_date || '-')}</span></div>
+                    <div class="row"><span class="label">Death</span><span class="value">${esc(mae.death_date || '-')}</span></div>
                 </div>` : ''}
             </div>
         </div>
 
         <!-- Companies -->
         <div class="section" id="companies">
-            <div class="section-title">🏢 Empresas (${(D.companies||[]).length})</div>
+            <div class="section-title">🏢 Companies (${(D.companies||[]).length})</div>
             <div class="info-grid">
                 ${D.companies.map(c => `
                     <div class="company">
@@ -1022,7 +1023,7 @@
 
         <!-- Properties -->
         <div class="section" id="properties">
-            <div class="section-title">🏠 Imóveis (${(D.properties||[]).length})</div>
+            <div class="section-title">🏠 Properties (${(D.properties||[]).length})</div>
             <div class="info-grid">
                 ${D.properties.map(p => {
                     let owners = [];
@@ -1056,9 +1057,9 @@
 
         <!-- Legal -->
         <div class="section" id="legal">
-            <div class="section-title">⚖️ Processos Judiciais (${(D.legal||[]).length})</div>
+            <div class="section-title">⚖️ Legal Cases (${(D.legal||[]).length})</div>
             <div class="info-grid">
-                ${(D.legal||[]).length === 0 ? '<div class="empty-state"><span class="empty-icon">⚖️</span><span class="empty-msg">Nenhum processo judicial encontrado</span><div>Os dados serão adicionados quando disponíveis</div></div>' : D.legal.map(p => `
+                ${(D.legal||[]).length === 0 ? '<div class="empty-state"><span class="empty-icon">⚖️</span><span class="empty-msg">No legal cases found</span><div>Data will be added when available</div></div>' : D.legal.map(p => `
                     <div class="company">
                         <div class="company-name">${esc(p.process_number || '-')}</div>
                         <div class="row"><span class="label">Tribunal</span><span class="value">${esc(p.court || '-')}</span></div>
@@ -1074,9 +1075,9 @@
 
         <!-- Contacts -->
         <div class="section" id="contacts">
-            <div class="section-title">📞 Contatos (${(D.contacts||[]).length})</div>
+            <div class="section-title">📞 Contacts (${(D.contacts||[]).length})</div>
             <div class="info-grid">
-                ${(D.contacts||[]).length === 0 ? '<div class="empty-state"><span class="empty-icon">📞</span><span class="empty-msg">Nenhum contato cadastrado</span><div>Contatos serão adicionados conforme a pesquisa avança</div></div>' : D.contacts.map(c => `
+                ${(D.contacts||[]).length === 0 ? '<div class="empty-state"><span class="empty-icon">📞</span><span class="empty-msg">No contacts registered</span><div>Contacts will be added as research progresses</div></div>' : D.contacts.map(c => `
                     <div class="company">
                         <div class="company-name">${esc(c.name || '-')}</div>
                         <div class="row"><span class="label">Função</span><span class="value">${esc(c.role || '-')}</span></div>
@@ -1090,11 +1091,11 @@
 
         
 
-        <!-- Documentos -->
+        <!-- Documents -->
         <div class="section" id="documents">
-            <div class="section-title">📄 Documentos (${(D.documents||[]).length})</div>
+            <div class="section-title">📄 Documents (${(D.documents||[]).length})</div>
             <div class="info-grid">
-                ${(D.documents||[]).length === 0 ? '<div class="empty-state"><span class="empty-icon">📄</span><span class="empty-msg">Nenhum documento disponível</span><div>Documentos serão adicionados à medida que forem coletados</div></div>' : (D.documents||[]).map(d => `
+                ${(D.documents||[]).length === 0 ? '<div class="empty-state"><span class="empty-icon">📄</span><span class="empty-msg">No documents available</span><div>Documents will be added as they are collected</div></div>' : (D.documents||[]).map(d => `
                     <div class="company">
                         <div class="company-name">${esc(d.title || '-')}</div>
                         <div class="row"><span class="label">Tipo</span><span class="value">${esc(d.doc_type || '-')}</span></div>
@@ -1106,10 +1107,10 @@
 
         <!-- Timeline -->
         <div class="section timeline-section" id="timeline">
-            <div class="section-title">📅 Linha do Tempo</div>
+            <div class="section-title">📅 Timeline</div>
             <div class="timeline-filters" id="timeline-filters">
-                <div class="timeline-filter-group" id="tl-filter-types"><span class="timeline-filter-label">Tipo:</span></div>
-                <div class="timeline-filter-group" id="tl-filter-sources"><span class="timeline-filter-label">Fonte:</span></div>
+                <div class="timeline-filter-group" id="tl-filter-types"><span class="timeline-filter-label">Type:</span></div>
+                <div class="timeline-filter-group" id="tl-filter-sources"><span class="timeline-filter-label">Source:</span></div>
             </div>
             <div class="timeline-filter-active-bar" id="tl-active-bar" style="display:none"></div>
             <div class="timeline" id="timeline-container">
@@ -1119,7 +1120,7 @@
 
         <!-- Sources -->
         <div class="section" id="sources">
-            <div class="section-title">📜 Fontes dos Dados</div>
+            <div class="section-title">📜 Data Sources</div>
 
             <!-- Confidence bar -->
             <div class="sources-confidence" id="sources-confidence" style="display:none">
@@ -1175,7 +1176,7 @@
             searchInput.addEventListener('input', function() {
                 const q = this.value.trim().toLowerCase();
                 const results = document.getElementById('search-results');
-                if (!q) { results.innerHTML = '<div class="search-empty">Digite para buscar...</div>'; return; }
+                if (!q) { results.innerHTML = '<div class="search-empty">Type to search....</div>'; return; }
                 const data = window.__rgvl_data;
                 if (!data) return;
                 const hits = [];
@@ -1211,7 +1212,7 @@
                     const desc = ((e.description||e.person_name)||'').toLowerCase();
                     if (desc.includes(q)) hits.push({type:'timeline', label:e.person_name||'', sub:e.description||'', icon:'📅'});
                 });
-                if (hits.length === 0) { results.innerHTML = '<div class="search-empty">Nenhum resultado</div>'; return; }
+                if (hits.length === 0) { results.innerHTML = '<div class="search-empty">No results</div>'; return; }
                 results.innerHTML = hits.slice(0,12).map((h,i) => `
                     <div class="search-result" data-index="${i}" data-type="${h.type}" data-id="${h.id||''}" data-section="${h.section||''}" onclick="window.__searchNavigate(this)">
                         <span class="search-result-icon">${h.icon}</span>
@@ -1250,10 +1251,10 @@
             html += '<div class="person-drawer-section-title">Identificação</div>';
             if (person.cpf) html += `<div class="person-drawer-row"><span class="label">CPF</span><span class="value">${esc(person.cpf)}</span></div>`;
             if (person.rg) html += `<div class="person-drawer-row"><span class="label">RG</span><span class="value">${esc(person.rg)}</span></div>`;
-            if (person.birth_date) html += `<div class="person-drawer-row"><span class="label">Nascimento</span><span class="value">${esc(person.birth_date)}</span></div>`;
+            if (person.birth_date) html += `<div class="person-drawer-row"><span class="label">Birth</span><span class="value">${esc(person.birth_date)}</span></div>`;
             if (person.birth_place) html += `<div class="person-drawer-row"><span class="label">Local</span><span class="value">${esc(person.birth_place)}</span></div>`;
-            if (person.death_date) html += `<div class="person-drawer-row"><span class="label">Falecimento</span><span class="value">${esc(person.death_date)}</span></div>`;
-            if (person.generation) html += `<div class="person-drawer-row"><span class="label">Geração</span><span class="value">${person.generation}ª</span></div>`;
+            if (person.death_date) html += `<div class="person-drawer-row"><span class="label">Death</span><span class="value">${esc(person.death_date)}</span></div>`;
+            if (person.generation) html += `<div class="person-drawer-row"><span class="label">Generation</span><span class="value">${person.generation}ª</span></div>`;
             if (person.status) html += `<div class="person-drawer-row"><span class="label">Status</span><span class="value">${esc(person.status)}</span></div>`;
             html += '</div>';
             // Parents
@@ -1322,10 +1323,10 @@
                 const t = e.event_type || 'default';
                 if (t !== 'research') { typeCounts[t] = (typeCounts[t] || 0) + 1; }
                 const raw = e.source_type || e.source || '';
-                const s = raw.startsWith('intel') ? 'INTEL' : (raw && raw !== 'timeline.md' ? raw.replace('.md','').toUpperCase() : 'OUTRO');
+                const s = raw.startsWith('intel') ? 'INTEL' : (raw && raw !== 'timeline.md' ? raw.replace('.md','').toUpperCase() : 'OTHER');
                 if (s && s !== 'EVENTOS') { srcCounts[s] = (srcCounts[s] || 0) + 1; }
             });
-            const typeLabels = {birth:'👶 NASCIMENTO',death:'⚰️ FALECIMENTO',marriage:'💍 CASAMENTO',company:'🏢 EMPRESA',career:'💼 CARREIRA',name_change:'✏️ NOME',paternity:'🤝 PATERNIDADE',legal:'⚖️ LEGAL',family_contact:'📞 CONTATO',default:'📋 OUTRO'};
+            const typeLabels = {birth:'👶 BIRTH',death:'⚰️ DEATH',marriage:'💍 MARRIAGE',company:'🏢 COMPANY',career:'💼 CAREER',name_change:'✏️ NAME CHANGE',paternity:'🤝 PATERNITY',legal:'⚖️ LEGAL',family_contact:'📞 CONTACT',default:'📋 OTHER'};
             const typeGroup = document.getElementById('tl-filter-types');
             if (typeGroup) {
                 Object.keys(typeCounts).sort().forEach(t => {
@@ -1345,7 +1346,7 @@
             const srcGroup = document.getElementById('tl-filter-sources');
             if (srcGroup) {
                 Object.keys(srcCounts).sort().forEach(raw => {
-                    const s = raw.startsWith('intel') ? 'INTEL' : (raw && raw !== 'timeline.md' ? raw.replace('.md','').toUpperCase() : 'OUTRO');
+                    const s = raw.startsWith('intel') ? 'INTEL' : (raw && raw !== 'timeline.md' ? raw.replace('.md','').toUpperCase() : 'OTHER');
                     const srcLabel = SOURCE_LABELS[s] || SOURCE_LABELS[s.toLowerCase()] || s;
                     const btn = document.createElement('button');
                     btn.className = 'timeline-filter-tag source-tag';
@@ -1384,13 +1385,13 @@
             bar.style.display = 'flex';
             let html = '<span class="timeline-filter-active-label">Filtros:</span>';
             types.forEach(t => {
-                const typeLabels = {birth:'👶 NASCIMENTO',death:'⚰️ FALECIMENTO',marriage:'💍 CASAMENTO',company:'🏢 EMPRESA',career:'💼 CARREIRA',name_change:'✏️ NOME',paternity:'🤝 PATERNIDADE',legal:'⚖️ LEGAL',family_contact:'📞 CONTATO',default:'📋 OUTRO'};
+                const typeLabels = {birth:'👶 BIRTH',death:'⚰️ DEATH',marriage:'💍 MARRIAGE',company:'🏢 COMPANY',career:'💼 CAREER',name_change:'✏️ NAME CHANGE',paternity:'🤝 PATERNITY',legal:'⚖️ LEGAL',family_contact:'📞 CONTACT',default:'📋 OTHER'};
                 html += `<button class="timeline-filter-active-tag type-${t}" style="background:var(--primary);color:white;border:1px solid var(--primary)"><span>${typeLabels[t]||t}</span> <span class="tl-close" onclick="(function(){window.__tl_filters.types.delete('${t}');window.__updateActiveFilterBar();window.__renderTimelineFiltered(window.__tl_data.timeline)})()">✕</span></button>`;
             });
             sources.forEach(s => {
                 html += `<button class="timeline-filter-active-tag" style="background:var(--primary);color:white;border:1px solid var(--primary)"><span>${SOURCE_LABELS[s]||SOURCE_LABELS[s.toLowerCase()]||s}</span> <span class="tl-close" onclick="(function(){window.__tl_filters.sources.delete('${s}');window.__updateActiveFilterBar();window.__renderTimelineFiltered(window.__tl_data.timeline)})()">✕</span></button>`;
             });
-            html += `<button class="timeline-clear-all" onclick="(function(){window.__tl_filters.types.clear();window.__tl_filters.sources.clear();window.__updateActiveFilterBar();window.__renderTimelineFiltered(window.__tl_data.timeline)})()">Limpar tudo</button>`;
+            html += `<button class="timeline-clear-all" onclick="(function(){window.__tl_filters.types.clear();window.__tl_filters.sources.clear();window.__updateActiveFilterBar();window.__renderTimelineFiltered(window.__tl_data.timeline)})()">Clear all</button>`;
             bar.innerHTML = html;
         }
 
@@ -1404,10 +1405,10 @@
             const active = types.size > 0 || sources.size > 0;
             const filtered = active ? events.filter(e => {
                 if (types.size > 0 && !types.has(e.event_type || 'default')) return false;
-                if (sources.size > 0) { const raw = e.source_type || e.source || ''; const s = raw.startsWith('intel') ? 'INTEL' : (raw && raw !== 'timeline.md' ? raw.replace('.md','').toUpperCase() : 'OUTRO'); if (!sources.has(s)) return false; }
+                if (sources.size > 0) { const raw = e.source_type || e.source || ''; const s = raw.startsWith('intel') ? 'INTEL' : (raw && raw !== 'timeline.md' ? raw.replace('.md','').toUpperCase() : 'OTHER'); if (!sources.has(s)) return false; }
                 return true;
             }) : events;
-            if (filtered.length === 0) { tl.innerHTML = '<div class="timeline-empty-filtered">Nenhum evento para os filtros selecionados</div>'; return; }
+            if (filtered.length === 0) { tl.innerHTML = '<div class="timeline-empty-filtered">No events for selected filters</div>'; return; }
             const typeClasses = {'birth':'birth','death':'death','marriage':'marriage','company':'company','legal':'legal','research':'research','family_contact':'family_contact','paternity':'paternity','name_change':'name_change','career':'career','default':'default'};
             const TL_EMOJI = {'birth':'👶','death':'⚰️','marriage':'💍','company':'🏢','name_change':'✏️','paternity':'🤝','career':'💼','legal':'⚖️','family_contact':'📞','default':'📋'};
             tl.innerHTML = filtered.map(e => {
@@ -1415,10 +1416,10 @@
                 if (e.event_date) { const raw = String(e.event_date); dateDisplay = raw.startsWith('~') ? fmtDate(raw.substring(1)) + ' <span style="color:var(--text-muted);font-size:11px">(aprox.)</span>' : fmtDate(raw); }
                 const typeKey = e.event_type || 'default', cssClass = typeClasses[typeKey] || 'default';
                 const tlEmoji = TL_EMOJI[typeKey] || '';
-                const TL_LABELS = {birth:'NASCIMENTO',death:'FALECIMENTO',marriage:'CASAMENTO',company:'EMPRESA',career:'CARREIRA',name_change:'NOME',paternity:'PATERNIDADE',legal:'LEGAL',family_contact:'CONTATO',default:'OUTRO'};
+                const TL_LABELS = {birth:'BIRTH',death:'DEATH',marriage:'MARRIAGE',company:'COMPANY',career:'CAREER',name_change:'NAME CHANGE',paternity:'PATERNITY',legal:'LEGAL',family_contact:'CONTACT',default:'OTHER'};
                 const tlLabel = TL_LABELS[typeKey] || typeKey;
                 let sourceBadge = ''; const rawFonte = e.source_type || e.source || '';
-                const fonteKey = rawFonte.startsWith('intel') ? 'INTEL' : (rawFonte && rawFonte !== 'timeline.md' ? rawFonte.replace('.md','').toUpperCase() : 'OUTRO');
+                const fonteKey = rawFonte.startsWith('intel') ? 'INTEL' : (rawFonte && rawFonte !== 'timeline.md' ? rawFonte.replace('.md','').toUpperCase() : 'OTHER');
                 if (fonteKey && fonteKey !== 'EVENTOS') sourceBadge = ' ' + sourceBadgeHTML(fonteKey, 'sm');
                 return `<div class="timeline-event"><div class="timeline-date">${dateDisplay}</div><div class="timeline-person">${esc(e.person_name||'Unknown')}</div><span class="timeline-type ${cssClass}">${tlEmoji} ${esc(tlLabel)}</span>${sourceBadge}<div class="timeline-desc">${esc(e.description||'')}</div></div>`;
             }).join('');
@@ -1436,7 +1437,7 @@
         if (tl && D.timeline && D.timeline.length > 0) {
             window.__renderTimelineFiltered(D.timeline);
         } else if (tl) {
-            tl.innerHTML = '<div class="timeline-empty"><span class="empty-icon">📅</span><span class="empty-msg">Nenhum evento na linha do tempo</span><div>Eventos serão adicionados conforme a pesquisa avança</div></div>';
+            tl.innerHTML = '<div class="timeline-empty"><span class="empty-icon">📅</span><span class="empty-msg">No events in timeline</span><div>Events will be added as research progresses</div></div>';
         }
 
 

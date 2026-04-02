@@ -59,27 +59,27 @@ def migrate():
 
     # 5. Timeline events
     events = [
-        (6, 'DADOS_PESSOAIS', '2015-07-28', 'Dados pessoais confirmados em email judicial', 'gmail', 90),
-        (6, 'DADOS_PESSOAIS', '2018-12-16', 'Dados do pai enviados por Rodrigo (email "Dados do meu pai")', 'gmail', 95),
-        (11, 'PROCESSO_JUDICIAL', '2016-11-19', 'Inicio do caso de investigacao de paternidade (advogado: Rodrigo da Cunha Pereira)', 'gmail', 95),
-        (11, 'ESCRITURA', '2017-02-01', 'Escritura de Reconhecimento de Paternidade preparada pelo cartorio (advogado: Caio Cesar Brasil Ferreira)', 'gmail', 95),
-        (11, 'ESCRITURA', '2017-02-08', 'Dados pessoais enviados para escritura de paternidade. Nome escolhido: Rodrigo Melo Lanna', 'gmail', 95),
-        (11, 'PROCESSO_JUDICIAL', '2018-12-05', 'Caso de abandono paterno afetivo discutido com advogado Rodrigo da Cunha Pereira', 'gmail', 90),
-        (11, 'PROCESSO_JUDICIAL', '2025-11-10', 'Solicitada copia integral do processo de reconhecimento de paternidade', 'gmail', 85),
-        (11, 'IMOVEL', '2021-11-14', 'Contrato de financiamento imobiliario Bradesco #9078107', 'gmail', 95),
-        (11, 'IMOVEL', '2024-07-12', 'Exclusao de mutuaria Lissandra Mity Norichika Onoe do financiamento #9078107 (dissolucao uniao estavel)', 'gmail', 95),
-        (11, 'IMOVEL', '2019-03-14', 'Compra apartamento Mobi Frei Caneca - Unidade 1511, FGTS a vista', 'gmail', 95),
-        (11, 'IMOVEL', '2019-05-31', 'Contrato Mobi Frei Caneca 1511 registrado e disponivel para retirada', 'gmail', 90),
-        (11, 'IMOVEL', '2024-09-18', 'Exclusao de mutuaria registrada no 10 RISP - Contrato Bradesco 9078107', 'gmail', 90),
-        (11, 'IMOVEL', '2024-10-07', 'Registro cessao fiduciante e dissolucao uniao estavel no cartorio 10 RISP', 'gmail', 90),
-        (11, 'NOME', '2025-08-25', 'Requerimento administrativo de alteracao de sobrenome (exclusao de da Silva)', 'gmail_drive', 95),
-        (11, 'PROCESSO_JUDICIAL', '2012-06-26', 'Primeiro contato com Dra. Claudia sobre investigacao de paternidade em MG', 'gmail', 85),
+        (6, 'personal_data', '2015-07-28', 'Personal data confirmed in judicial email', 'gmail', 90),
+        (6, 'personal_data', '2018-12-16', 'Father data sent by Rodrigo (email "Dados do meu pai")', 'gmail', 95),
+        (11, 'legal_case', '2016-11-19', 'Start of paternity investigation case (lawyer: Rodrigo da Cunha Pereira)', 'gmail', 95),
+        (11, 'deed', '2017-02-01', 'Paternity Recognition Deed prepared at notary office (lawyer: Caio Cesar Brasil Ferreira)', 'gmail', 95),
+        (11, 'deed', '2017-02-08', 'Personal data sent for paternity deed. Chosen name: Rodrigo Melo Lanna', 'gmail', 95),
+        (11, 'legal_case', '2018-12-05', 'Emotional abandonment case discussed with lawyer Rodrigo da Cunha Pereira', 'gmail', 90),
+        (11, 'legal_case', '2025-11-10', 'Full copy of paternity recognition process requested', 'gmail', 85),
+        (11, 'property', '2021-11-14', 'Bradesco real estate financing contract #9078107', 'gmail', 95),
+        (11, 'property', '2024-07-12', 'Removal of Lissandra Mity Norichika Onoe from financing #9078107 (domestic partnership dissolution)', 'gmail', 95),
+        (11, 'property', '2019-03-14', 'Purchase of Mobi Frei Caneca apartment - Unit 1511, FGTS upfront', 'gmail', 95),
+        (11, 'property', '2019-05-31', 'Mobi Frei Caneca 1511 contract registered and available for pickup', 'gmail', 90),
+        (11, 'property', '2024-09-18', 'Registered fiduciary assignment and domestic partnership dissolution at 10 RISP notary - Bradesco Contract 9078107', 'gmail', 90),
+        (11, 'property', '2024-10-07', 'Fiduciary assignment registration and domestic partnership dissolution at 10 RISP', 'gmail', 90),
+        (11, 'name_change', '2025-08-25', 'Administrative surname change request (removal of "da Silva")', 'gmail_drive', 95),
+        (11, 'legal_case', '2012-06-26', 'First contact with Dr. Claudia about paternity investigation in MG', 'gmail', 85),
     ]
     evt_count = 0
     for e in events:
-        c.execute('SELECT id FROM events WHERE person_id=? AND event_date=? AND description=?', (e[0], e[2], e[3]))
+        c.execute('SELECT id FROM timeline_events WHERE person_id=? AND event_date=? AND description=?', (e[0], e[2], e[3]))
         if not c.fetchone():
-            c.execute('INSERT INTO events (person_id, event_type, event_date, description, source, confidence) VALUES (?,?,?,?,?,?)', e)
+            c.execute('INSERT INTO timeline_events (person_id, event_type, event_date, description, source, confidence) VALUES (?,?,?,?,?,?)', e)
             evt_count += 1
     print(f"[5] Events: {evt_count} added")
 

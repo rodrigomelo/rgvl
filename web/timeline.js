@@ -16,7 +16,7 @@
             if (types.size > 0 && !types.has(e.event_type || 'default')) return false;
             if (sources.size > 0) {
                 var raw = e.source_type || e.source || '';
-                var s = raw.startsWith('intel') ? 'INTEL' : (raw && raw !== 'timeline.md' ? raw.replace('.md','').toUpperCase() : 'OUTRO');
+                var s = raw.startsWith('intel') ? 'INTEL' : (raw && raw !== 'timeline.md' ? raw.replace('.md','').toUpperCase() : 'OTHER');
                 if (!sources.has(s)) return false;
             }
             return true;
@@ -29,7 +29,7 @@
 
         var typeClasses = {'birth':'birth','death':'death','marriage':'marriage','company':'company','legal':'legal','research':'research','family_contact':'family_contact','paternity':'paternity','name_change':'name_change','career':'career','default':'default'};
         var TL_EMOJI = {'birth':'\uD83D\uDC76','death':'\u26B0\uFE0F','marriage':'\uD83D\uDC8D','company':'\uD83C\uDFE2','name_change':'\u270F\uFE0F','paternity':'\uD83E\uDD1D','career':'\uD83D\uDCBC','legal':'\u2696\uFE0F','family_contact':'\uD83D\uDCDE','default':'\uD83D\uDCCB'};
-        var TL_LABELS = {'birth':'NASCIMENTO','death':'FALECIMENTO','marriage':'CASAMENTO','company':'EMPRESA','career':'CARREIRA','name_change':'NOME','paternity':'PATERNIDADE','legal':'LEGAL','family_contact':'CONTATO','default':'OUTRO'};
+        var TL_LABELS = {'birth':'BIRTH','death':'DEATH','marriage':'MARRIAGE','company':'COMPANY','career':'CAREER','name_change':'NAME CHANGE','paternity':'PATERNITY','legal':'LEGAL','family_contact':'CONTACT','default':'OTHER'};
 
         // Group by year
         var yearGroups = {};
@@ -71,7 +71,7 @@
                 var tlLabel = TL_LABELS[typeKey] || typeKey;
                 var sourceBadge = '';
                 var rawFonte = e.source_type || e.source || '';
-                var fonteKey = rawFonte.startsWith('intel') ? 'INTEL' : (rawFonte && rawFonte !== 'timeline.md' ? rawFonte.replace('.md','').toUpperCase() : 'OUTRO');
+                var fonteKey = rawFonte.startsWith('intel') ? 'INTEL' : (rawFonte && rawFonte !== 'timeline.md' ? rawFonte.replace('.md','').toUpperCase() : 'OTHER');
                 if (fonteKey && fonteKey !== 'EVENTOS') sourceBadge = ' ' + sourceBadgeHTML(fonteKey, 'sm');
                 html += '<div class="timeline-event"><div class="timeline-date">' + dateDisplay + '</div><div class="timeline-person">' + esc(e.person_name||'Unknown') + '</div><span class="timeline-type ' + cssClass + '">' + tlEmoji + ' ' + esc(tlLabel) + '</span>' + sourceBadge + '<div class="timeline-desc">' + esc(e.description||'') + '</div></div>';
             });

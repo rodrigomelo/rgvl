@@ -9,7 +9,7 @@
         overlay.classList.add('open');
         input.value = '';
         input.focus();
-        results.innerHTML = '<div class="search-empty">Digite para buscar...</div>';
+        results.innerHTML = '<div class="search-empty">Type to search....</div>';
         selectedIdx = -1;
     }
     function closeSearch() { overlay.classList.remove('open'); }
@@ -24,7 +24,7 @@
 
     function searchAll(query) {
         if (!query || query.length < 2) {
-            results.innerHTML = '<div class="search-empty">Digite pelo menos 2 caracteres...</div>';
+            results.innerHTML = '<div class="search-empty">Type at least 2 characters....</div>';
             return;
         }
         const q = query.toLowerCase();
@@ -36,56 +36,56 @@
 
             // People
             if (t.full_name && t.full_name.toLowerCase().includes(q))
-                items.push({icon:'👤',title:t.full_name,sub:t.profession||'',section:'pessoa',id:'person'});
+                items.push({icon:'👤',title:t.full_name,sub:t.profession||'',section:'person',id:'person'});
             if (t.spouse && t.spouse.full_name && t.spouse.full_name.toLowerCase().includes(q))
-                items.push({icon:'👩',title:t.spouse.full_name,sub:'Cônjuge',section:'família',id:'family'});
+                items.push({icon:'👩',title:t.spouse.full_name,sub:'Spouse',section:'family',id:'family'});
             (D.paisTios||[]).forEach(function(s) {
                 if (s.full_name && s.full_name.toLowerCase().includes(q))
-                    items.push({icon:'👨',title:s.full_name,sub:'Geração 3',section:'família',id:'family'});
+                    items.push({icon:'👨',title:s.full_name,sub:'Generation 3',section:'family',id:'family'});
             });
             (D.primos||[]).forEach(function(s) {
                 if (s.full_name && s.full_name.toLowerCase().includes(q))
-                    items.push({icon:'👧',title:s.full_name,sub:'Geração 4',section:'família',id:'family'});
+                    items.push({icon:'👧',title:s.full_name,sub:'Generation 4',section:'family',id:'family'});
             });
 
             // Companies
             (D.companies||[]).forEach(function(c) {
                 var name = c.trade_name || c.legal_name || '';
                 if (name.toLowerCase().includes(q) || (c.cnpj||'').includes(q))
-                    items.push({icon:'🏢',title:name,sub:c.cnpj||'',section:'empresas',id:'companies'});
+                    items.push({icon:'🏢',title:name,sub:c.cnpj||'',section:'companies',id:'companies'});
             });
 
             // Properties
             (D.properties||[]).forEach(function(p) {
                 var addr = p.address || p.building_name || '';
                 if (addr.toLowerCase().includes(q))
-                    items.push({icon:'🏠',title:p.building_name||addr,sub:p.city||'',section:'imóveis',id:'properties'});
+                    items.push({icon:'🏠',title:p.building_name||addr,sub:p.city||'',section:'properties',id:'properties'});
             });
 
             // Legal
             (D.legal||[]).forEach(function(p) {
                 var txt = (p.process_number||'')+(p.subject||'')+(p.parties||'');
                 if (txt.toLowerCase().includes(q))
-                    items.push({icon:'⚖️',title:p.process_number||p.subject||'Processo',sub:p.parties||'',section:'processos',id:'legal'});
+                    items.push({icon:'⚖️',title:p.process_number||p.subject||'Legal Case',sub:p.parties||'',section:'legal',id:'legal'});
             });
 
             // Contacts
             (D.contacts||[]).forEach(function(c) {
                 var txt = (c.name||'')+(c.email||'')+(c.company||'');
                 if (txt.toLowerCase().includes(q))
-                    items.push({icon:'📞',title:c.name||'',sub:c.role||c.company||'',section:'contatos',id:'contacts'});
+                    items.push({icon:'📞',title:c.name||'',sub:c.role||c.company||'',section:'contacts',id:'contacts'});
             });
 
             // Timeline
             (D.timeline||[]).forEach(function(e) {
                 var txt = (e.description||'')+(e.person_name||'');
                 if (txt.toLowerCase().includes(q))
-                    items.push({icon:'📅',title:e.person_name||'Evento',sub:(e.description||'').substring(0,60),section:'timeline',id:'timeline'});
+                    items.push({icon:'📅',title:e.person_name||'Event',sub:(e.description||'').substring(0,60),section:'timeline',id:'timeline'});
             });
         }
 
         if (items.length === 0) {
-            results.innerHTML = '<div class="search-empty">Nenhum resultado para "' + escS(query) + '"</div>';
+            results.innerHTML = '<div class="search-empty">No results for "' + escS(query) + '"</div>';
             return;
         }
 
