@@ -111,7 +111,7 @@
         .timeline-type::before, .timeline-type::after { content: none !important; }
         /* Colors only */
         .timeline-type.birth { background: #D1FAE5; color: #065F46; }
-        .timeline-type.death, .timeline-type.falecimento { background: #E5E7EB; color: #374151; }
+        .timeline-type.death { background: #E5E7EB; color: #374151; }
         .timeline-type.marriage { background: #FEF3C7; color: #92400E; }
         .timeline-type.company { background: #DBEAFE; color: #1D4ED8; }
         .timeline-type.name_change { background: #EDE9FE; color: #6D28D9; }
@@ -120,6 +120,11 @@
         .timeline-type.family_contact { background: #E0E7FF; color: #3730A3; }
         .timeline-type.research, .timeline-event.research { display: none !important; }
         .timeline-type.career { background: #D1FAE5; color: #065F46; }
+        .timeline-type.personal_data { background: #E0E7FF; color: #3730A3; }
+        .timeline-type.legal_case { background: #FEE2E2; color: #991B1B; }
+        .timeline-type.deed { background: #FEF9C3; color: #854D0E; }
+        .timeline-type.property { background: #CCFBF1; color: #115E59; }
+        .timeline-type.business { background: #DBEAFE; color: #1E40AF; }
         .timeline-desc { font-size: 14px; color: var(--text); line-height: 1.5; }
         .timeline-empty { text-align: center; color: var(--text-muted); padding: 40px; }
         /* Timeline filters */
@@ -1331,7 +1336,7 @@
                 const s = raw.startsWith('intel') ? 'INTEL' : (raw && raw !== 'timeline.md' ? raw.replace('.md','').toUpperCase() : 'OTHER');
                 if (s && s !== 'EVENTOS') { srcCounts[s] = (srcCounts[s] || 0) + 1; }
             });
-            const typeLabels = {birth:'👶 BIRTH',death:'⚰️ DEATH',marriage:'💍 MARRIAGE',company:'🏢 COMPANY',career:'💼 CAREER',name_change:'✏️ NAME CHANGE',paternity:'🤝 PATERNITY',legal:'⚖️ LEGAL',family_contact:'📞 CONTACT',default:'📋 OTHER'};
+            const typeLabels = {birth:'👶 BIRTH',death:'⚰️ DEATH',marriage:'💍 MARRIAGE',company:'🏢 COMPANY',career:'💼 CAREER',name_change:'✏️ NAME CHANGE',paternity:'🤝 PATERNITY',legal:'⚖️ LEGAL',family_contact:'📞 CONTACT',personal_data:'📋 PERSONAL DATA',legal_case:'⚖️ LEGAL CASE',deed:'📜 DEED',property:'🏠 PROPERTY',business:'🏢 BUSINESS',default:'📋 OTHER'};
             const typeGroup = document.getElementById('tl-filter-types');
             if (typeGroup) {
                 Object.keys(typeCounts).sort().forEach(t => {
@@ -1390,7 +1395,7 @@
             bar.style.display = 'flex';
             let html = '<span class="timeline-filter-active-label">Filtros:</span>';
             types.forEach(t => {
-                const typeLabels = {birth:'👶 BIRTH',death:'⚰️ DEATH',marriage:'💍 MARRIAGE',company:'🏢 COMPANY',career:'💼 CAREER',name_change:'✏️ NAME CHANGE',paternity:'🤝 PATERNITY',legal:'⚖️ LEGAL',family_contact:'📞 CONTACT',default:'📋 OTHER'};
+                const typeLabels = {birth:'👶 BIRTH',death:'⚰️ DEATH',marriage:'💍 MARRIAGE',company:'🏢 COMPANY',career:'💼 CAREER',name_change:'✏️ NAME CHANGE',paternity:'🤝 PATERNITY',legal:'⚖️ LEGAL',family_contact:'📞 CONTACT',personal_data:'📋 PERSONAL DATA',legal_case:'⚖️ LEGAL CASE',deed:'📜 DEED',property:'🏠 PROPERTY',business:'🏢 BUSINESS',default:'📋 OTHER'};
                 html += `<button class="timeline-filter-active-tag type-${t}" style="background:var(--primary);color:white;border:1px solid var(--primary)"><span>${typeLabels[t]||t}</span> <span class="tl-close" onclick="(function(){window.__tl_filters.types.delete('${t}');window.__updateActiveFilterBar();window.__renderTimelineFiltered(window.__tl_data.timeline)})()">✕</span></button>`;
             });
             sources.forEach(s => {
@@ -1415,7 +1420,7 @@
             }) : events;
             if (filtered.length === 0) { tl.innerHTML = '<div class="timeline-empty-filtered">No events for selected filters</div>'; return; }
             const typeClasses = {'birth':'birth','death':'death','marriage':'marriage','company':'company','legal':'legal','research':'research','family_contact':'family_contact','paternity':'paternity','name_change':'name_change','career':'career','default':'default'};
-            const TL_EMOJI = {'birth':'👶','death':'⚰️','marriage':'💍','company':'🏢','name_change':'✏️','paternity':'🤝','career':'💼','legal':'⚖️','family_contact':'📞','default':'📋'};
+            const TL_EMOJI = {'birth':'👶','death':'⚰️','marriage':'💍','company':'🏢','name_change':'✏️','paternity':'🤝','career':'💼','legal':'⚖️','family_contact':'📞','personal_data':'📋','legal_case':'⚖️','deed':'📜','property':'🏠','business':'🏢','default':'📋'};
             tl.innerHTML = filtered.map(e => {
                 let dateDisplay = '-';
                 if (e.event_date) { const raw = String(e.event_date); dateDisplay = raw.startsWith('~') ? fmtDate(raw.substring(1)) + ' <span style="color:var(--text-muted);font-size:11px">(aprox.)</span>' : fmtDate(raw); }
