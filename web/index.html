@@ -753,7 +753,7 @@
         const p = t || {};
         const spouse = t.spouse || null;
         const children = (t.children || []).filter(c => c.id !== PAI_ID);
-        const siblings = t.siblings || []; // paternal uncles/aunts — siblings of the root's father
+        const uncles = t.uncles || []; // paternal uncles/aunts — siblings of the root's father
         const pai = t.father || null;     // paternal grandfather
         const mae = t.mother || null;     // paternal grandmother
 
@@ -773,7 +773,7 @@
             <div class="section-title">📊 Overview</div>
             <div class="stats">
                 <div class="stat"><div class="stat-value">${D.summary.total_people || 0}</div><div class="stat-label">People</div></div>
-                <div class="stat"><div class="stat-value">${siblings.length}</div><div class="stat-label">Uncles/Aunts</div></div>
+                <div class="stat"><div class="stat-value">${uncles.length}</div><div class="stat-label">Uncles/Aunts</div></div>
                 <div class="stat"><div class="stat-value">${D.primos.length}</div><div class="stat-label">Generation 4 — You and Cousins</div></div>
                 <div class="stat"><div class="stat-value">${(D.companies||[]).length}</div><div class="stat-label">Companies</div></div>
                 <div class="stat"><div class="stat-value">${(D.properties||[]).length}</div><div class="stat-label">Properties</div></div>
@@ -865,7 +865,7 @@
                 <div class="gen">
                     <div class="gen-label">Generation 3 — You and Siblings</div>
                     <div class="gen-row">
-                        ${siblings.map(s => `
+                        ${uncles.map(s => `
                             <div class="node sibling" data-person-id="${s.id}">
                                 <div class="node-name">${esc(s.full_name)}</div>
                                 <div class="node-detail">${esc((s.notes || '').substring(0, 70))}${(s.notes||'').length > 70 ? '...' : ''}</div>

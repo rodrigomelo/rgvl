@@ -36,7 +36,9 @@ EVENT_TYPE_ALIASES = {
     'nome': 'name_change',
 }
 
+# Bidirectional: Portuguese → English and English → English (canonical forms)
 RELATIONSHIP_TYPE_ALIASES = {
+    # Portuguese → English
     'pai': 'father',
     'mae': 'mother',
     'filho': 'son',
@@ -60,6 +62,28 @@ RELATIONSHIP_TYPE_ALIASES = {
     'sogra': 'mother_in_law',
     'cunhado': 'brother_in_law',
     'cunhada': 'sister_in_law',
+    # English canonical forms (identity mappings for queries)
+    'father': 'father',
+    'mother': 'mother',
+    'son': 'son',
+    'daughter': 'daughter',
+    'brother': 'brother',
+    'sister': 'sister',
+    'spouse': 'spouse',
+    'uncle': 'uncle',
+    'aunt': 'aunt',
+    'nephew': 'nephew',
+    'niece': 'niece',
+    'grandson': 'grandson',
+    'granddaughter': 'granddaughter',
+    'male_cousin': 'male_cousin',
+    'female_cousin': 'female_cousin',
+    'son_in_law': 'son_in_law',
+    'daughter_in_law': 'daughter_in_law',
+    'father_in_law': 'father_in_law',
+    'mother_in_law': 'mother_in_law',
+    'brother_in_law': 'brother_in_law',
+    'sister_in_law': 'sister_in_law',
 }
 
 CONFIDENCE_ALIASES = {

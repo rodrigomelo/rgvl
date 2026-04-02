@@ -72,13 +72,13 @@ def get_family_tree(person_id):
         if parent_ids:
             uncle_rels = db.query(Relationship).filter(
                 Relationship.person1_id.in_(parent_ids),
-                Relationship.relationship_type.in_(['irmao', 'irma'])
+                Relationship.relationship_type.in_(['brother', 'sister'])
             ).all()
             uncle_ids.update(r.person2_id for r in uncle_rels)
             # Also check if the parent is person2 (parent is the sibling of someone)
             uncle_rels2 = db.query(Relationship).filter(
                 Relationship.person2_id.in_(parent_ids),
-                Relationship.relationship_type.in_(['irmao', 'irma'])
+                Relationship.relationship_type.in_(['brother', 'sister'])
             ).all()
             uncle_ids.update(r.person1_id for r in uncle_rels2)
         uncles_map = {p.id: p for p in db.query(Person).filter(Person.id.in_(uncle_ids)).all()} if uncle_ids else {}
