@@ -1,7 +1,9 @@
 # RGVL - Data Collection Sources & Pipeline
 
-> **Última atualização:** 2026-03-23
-> **Poseidon** 🌊 — Data Architect
+> Historical source inventory. Collector details here may describe older paths and names. For the supported pipeline, use `docs/ETL_FLOW.md` and the root `ARCHITECTURE.md` first.
+
+> **Last updated:** 2026-03-23
+> **Author:** Poseidon - Data Architect
 
 ---
 
@@ -483,7 +485,7 @@ Currently **not implemented**. Potential future triggers:
 | Trigger | Action | Implementation |
 |---------|--------|----------------|
 | New email thread from unknown contact | Run `email.py` | OpenClaw email plugin webhook |
-| Manual request via Discord command | Run selected collectors | Hermes command handler |
+| Manual request via Discord command | Run selected collectors | Atlas command handler |
 
 ---
 

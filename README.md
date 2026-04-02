@@ -2,6 +2,10 @@
 
 Personal data platform for family history research — the Lanna family, spanning 5+ generations.
 
+The active runtime stack is the Flask API in `api/` plus the static web dashboard in `web/`.
+Legacy FastAPI prototypes remain in `src/` for reference only and are not part of the supported runtime.
+The data flow is strictly one-way: unstructured sources feed ETL, ETL writes the database, and the API/UI read from the database.
+
 ## Quick Start
 
 ```bash
@@ -26,10 +30,10 @@ Access:
 
 | Entity | Count | Description |
 |--------|-------|-------------|
-| Pessoas | 26 | People across 5 generations |
-| Relacionamentos | 30 | Family relationships (confirmed + speculative) |
-| Empresas | 7 | Family companies (active + closed) |
-| Tarefas | 5 | Pending research tasks |
+| People | 26 | People across 5 generations |
+| Relationships | 30 | Family relationships (confirmed + speculative) |
+| Companies | 7 | Family companies (active + closed) |
+| Research Tasks | 5 | Pending research tasks |
 
 ## API Endpoints
 
@@ -40,8 +44,8 @@ Access:
 | GET | `/api/family/person/:id/relatives` | All relatives |
 | GET | `/api/family/generation/:n` | People by generation |
 | GET | `/api/family/summary` | Family statistics |
-| GET | `/api/assets/companies` | Companies (filter: `?person_id=X&status=ativa`) |
-| GET | `/api/research/tasks` | Research tasks (filter: `?status=pendente`) |
+| GET | `/api/assets/companies` | Companies (filter: `?person_id=X&status=active`) |
+| GET | `/api/research/tasks` | Research tasks (filter: `?status=pending`) |
 | GET | `/api/research/searches` | Search history |
 | GET | `/api/search?q=` | Global search |
 | GET | `/api/stats` | Database statistics |

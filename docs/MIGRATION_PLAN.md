@@ -1,69 +1,54 @@
-"""
-English Migration Plan — RGVL Database Refactor
-=================================================
+# Migration Plan
 
-Phase 1: Create English tables + migration script
-Phase 2: Update SQLAlchemy models  
-Phase 3: Update API routes
-Phase 4: Update web frontend
-Phase 5: Update collectors
-Phase 6: Drop old tables
+## Status
 
-Table mapping (Portuguese → English):
---------------------------------------
-pessoas              → people
-empresas_familia     → companies
-imoveis              → properties
-contatos             → contacts
-documentos           → documents
-legal_processes      → legal_cases
-events               → timeline_events (already English, rename for clarity)
-relacionamentos      → relationships
-profiles             → social_profiles
-perfis_sociais       → social_profiles (merge with profiles)
-insights             → research_insights
-notes                → research_notes
-coletas              → collection_runs
-buscas_realizadas    → search_history
-dados_eleitorais     → electoral_records
-diarios_oficiais     → official_gazettes
-veiculos             → vehicles
-tarefas_pesquisa     → research_tasks
-tre_dados            → tre_records
+The migration from the older Portuguese and mixed-schema repository state into the current English canonical runtime is complete for the supported application path.
 
-Column mapping (key Portuguese → English):
--------------------------------------------
-nome_completo        → full_name
-nome_anterior        → previous_name
-data_nascimento      → birth_date
-local_nascimento     → birth_place
-data_falecimento     → death_date
-cpf                  → cpf (keep - Brazilian standard)
-cnpj                 → cnpj (keep - Brazilian standard)
-rg                   → rg (keep - Brazilian standard)
-telefone             → phone
-endereco             → address
-profissao            → profession
-cargo                → position
-empresa              → company
-pai_id               → father_id
-mae_id               → mother_id
-conjuge_id           → spouse_id
-data_casamento       → marriage_date
-geracao              → generation
-fonte                → source
-observacoes          → notes
-nome_fantasia        → trade_name
-razao_social         → legal_name
-natureza_juridica    → legal_nature
-cidade               → city
-socios               → partners
-status_jucemg        → registration_status
-data_abertura        → opening_date
-data_baixa           → closing_date
-pessoa_id            → person_id
-collected_at         → collected_at (keep)
-raw_data             → raw_data (keep)
-created_at           → created_at (keep)
-updated_at           → updated_at (keep)
-"""
+Completed areas:
+
+- Canonical ORM schema in `api/models.py`
+- Active Flask API routes and contracts
+- Schema reference in `database/schema.sql`
+- Seeder and seed-related tests
+- Reverse-sync removal and one-way ETL enforcement
+- Primary architecture and README documentation
+
+## Canonical Mapping
+
+| Legacy Name | Canonical Name |
+|-------------|----------------|
+| `pessoas` | `people` |
+| `relacionamentos` | `relationships` |
+| `empresas_familia` | `companies` |
+| `imoveis` | `properties` |
+| `processos_judiciais` / `legal_processes` | `legal_cases` |
+| `documentos` | `documents` |
+| `contatos` | `contacts` |
+| `perfis` / `profiles` | `social_profiles` |
+| `eventos` / `events` | `timeline_events` |
+| `diarios_oficiais` | `official_gazettes` |
+| `buscas_realizadas` | `search_history` |
+| `tarefas_pesquisa` | `research_tasks` |
+| `coletas` | `collection_runs` |
+
+## Architecture Rule
+
+The repository now follows a strict one-way flow:
+
+`INTEL/docs -> ETL -> database -> API/UI`
+
+The database must not write back into INTEL or any other unstructured source.
+
+## Removed Artifacts
+
+The following scripts were removed from the supported runtime because they targeted the obsolete Portuguese-schema or reverse-sync architecture:
+
+- `etl/migrate_to_canonical.py`
+- `etl/003_add_coletas_veiculos_eleitorais_fts.py`
+- `etl/sync_to_intel.py`
+
+See `LEGACY_STATUS.md` for details.
+
+## Remaining Work
+
+The remaining work is documentation and eventual archival removal of historical files that are no longer needed. The supported runtime path itself is already aligned.

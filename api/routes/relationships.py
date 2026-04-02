@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify
 from api.db import get_session
+from api.utils import normalize_relationship_type
 from sqlalchemy import text
 
 relationships_bp = Blueprint('relationships', __name__)
@@ -17,7 +18,7 @@ def list_relationships():
             'id': r[0],
             'person1_id': r[1],
             'person2_id': r[2],
-            'relationship_type': r[3],
+            'relationship_type': normalize_relationship_type(r[3]),
             'confirmed': r[4],
             'source': r[5],
             'notes': r[6]

@@ -2,25 +2,25 @@
 
 **Last Updated:** 2026-03-24
 
-## Estrutura
+## Structure
 
-| Arquivo | Descrição |
+| File | Description |
 |---------|-----------|
-| [timeline.md](./timeline.md) | Eventos (nascimento, casamento, morte, empresa) |
-| [companies.md](./companies.md) | Empresas e participações |
-| [legal.md](./legal.md) | Processos judiciais |
-| [properties.md](./properties.md) | Imóveis e endereços |
-| [family.md](./family.md) | Rede familiar e relacionamentos |
-| [ancestors.md](./ancestors.md) | Avós e ancestrais |
-| [contacts.md](./contacts.md) | Contatos e connections |
+| [timeline.md](./timeline.md) | Events such as birth, marriage, death, and business milestones |
+| [companies.md](./companies.md) | Companies and ownership participations |
+| [legal.md](./legal.md) | Legal cases |
+| [properties.md](./properties.md) | Properties and addresses |
+| [family.md](./family.md) | Family network and relationships |
+| [ancestors.md](./ancestors.md) | Grandparents and ancestors |
+| [contacts.md](./contacts.md) | Contacts and connections |
 
-## Fluxo de Dados
+## Data Flow
 
 ```
 intel/*.md → etl/seed.py → data/rgvl.db → api → web/portal
 ```
 
-**Regra:** Nunca inserir dados direto no DB. Sempre passar pelo INTEL.
+**Rule:** Never insert data directly into the database. Always go through INTEL.
 
 ## Status
 

@@ -4,7 +4,7 @@ RGVL API - Sources routes (provenance tracking)
 from flask import Blueprint, jsonify
 from api.db import get_session
 from api.models import Person, Company, Property, TimelineEvent, LegalCase, Contact, Document
-from api.utils import model_to_dict
+from api.utils import normalize_event_type
 
 sources_bp = Blueprint('sources', __name__, url_prefix='/api/sources')
 
@@ -16,23 +16,23 @@ SOURCE_TYPES = {
     'tjmg':          {'emoji': '🏛️', 'label': 'TJMG',           'bg': '#FEF3C7', 'text': '#92400E'},
     'tjsp':          {'emoji': '⚖️', 'label': 'TJSP',           'bg': '#F3E5F5', 'text': '#6D28D9'},
     'jucemg':        {'emoji': '📋', 'label': 'JUCEMG',          'bg': '#DBEAFE', 'text': '#1D4ED8'},
-    'jucep':         {'emoji': '📋', 'label': 'JUCEP',           'bg': '#DBEAFE', 'text': '#1D4ED8'},
-    'cartorio':      {'emoji': '📜', 'label': 'Cartório',        'bg': '#D1FAE5', 'text': '#065F46'},
+    'jucesp':        {'emoji': '📋', 'label': 'JUCESP',          'bg': '#DBEAFE', 'text': '#1D4ED8'},
+    'notary':        {'emoji': '📜', 'label': 'Notary Office',   'bg': '#D1FAE5', 'text': '#065F46'},
     'web_search':    {'emoji': '🔍', 'label': 'Web Search',      'bg': '#E0E7FF', 'text': '#3730A3'},
     'familysearch':  {'emoji': '👨‍👩‍👧', 'label': 'FamilySearch',   'bg': '#FCE7F3', 'text': '#9D174D'},
     'manual':        {'emoji': '✏️', 'label': 'Manual',          'bg': '#F1F5F9', 'text': '#475569'},
     'crea':          {'emoji': '🏗️', 'label': 'CREA',            'bg': '#FED7AA', 'text': '#9A3412'},
     'linkedin':      {'emoji': '💼', 'label': 'LinkedIn',        'bg': '#E0E7FF', 'text': '#3730A3'},
     'escavador':     {'emoji': '🔎', 'label': 'Escavador',       'bg': '#EDE9FE', 'text': '#6D28D9'},
-    'inteli':        {'emoji': '💡', 'label': 'INTEL',           'bg': '#ECFDF5', 'text': '#065F46'},
-    'default':       {'emoji': '🔗', 'label': 'Outro',           'bg': '#F1F5F9', 'text': '#475569'},
+    'intel':         {'emoji': '💡', 'label': 'INTEL',           'bg': '#ECFDF5', 'text': '#065F46'},
+    'other':         {'emoji': '🔗', 'label': 'Other',           'bg': '#F1F5F9', 'text': '#475569'},
 }
 
 
 def get_source_info(source_str):
     """Parse a source string into structured source info."""
     if not source_str:
-        return {**SOURCE_TYPES['default'], 'type': 'default'}
+        return {**SOURCE_TYPES['other'], 'type': 'other'}
 
     lower = source_str.lower()
 
@@ -46,10 +46,10 @@ def get_source_info(source_str):
         stype = 'tjsp'
     elif 'jucemg' in lower:
         stype = 'jucemg'
-    elif 'jucep' in lower:
-        stype = 'jucep'
+    elif 'jucesp' in lower or 'jucep' in lower:
+        stype = 'jucesp'
     elif 'cartorio' in lower or 'certid' in lower or 'registro' in lower:
-        stype = 'cartorio'
+        stype = 'notary'
     elif 'web' in lower or 'busca' in lower:
         stype = 'web_search'
     elif 'familysearch' in lower:
@@ -61,13 +61,13 @@ def get_source_info(source_str):
     elif 'escavador' in lower:
         stype = 'escavador'
     elif 'inteli' in lower or 'intel' in lower or lower in ('timeline.md', 'companies.md'):
-        stype = 'inteli'
+        stype = 'intel'
     elif 'manual' in lower:
         stype = 'manual'
     else:
-        stype = 'default'
+        stype = 'other'
 
-    info = SOURCE_TYPES.get(stype, SOURCE_TYPES['default']).copy()
+    info = SOURCE_TYPES.get(stype, SOURCE_TYPES['other']).copy()
     info['type'] = stype
     info['raw'] = source_str
     return info
@@ -103,7 +103,7 @@ def get_summary():
     sources = []
     total = 0
     for stype, data in counts.items():
-        info = SOURCE_TYPES.get(stype, SOURCE_TYPES['default']).copy()
+        info = SOURCE_TYPES.get(stype, SOURCE_TYPES['other']).copy()
         info['type'] = stype
         info['count'] = data['count']
         info['records'] = sorted(list(data['records']))
@@ -220,7 +220,7 @@ def get_person_sources(person_id):
         if person.birth_date:
             facts.append({
                 'fact_type': 'birth',
-                'fact_label': 'Nascimento',
+                'fact_label': 'Birth',
                 'date': person.birth_date,
                 'location': person.birth_place,
                 **get_source_info(person.source or '')
@@ -229,7 +229,7 @@ def get_person_sources(person_id):
         if person.death_date:
             facts.append({
                 'fact_type': 'death',
-                'fact_label': 'Falecimento',
+                'fact_label': 'Death',
                 'date': person.death_date,
                 **get_source_info(person.source or '')
             })
@@ -237,7 +237,7 @@ def get_person_sources(person_id):
         if person.marriage_date:
             facts.append({
                 'fact_type': 'marriage',
-                'fact_label': 'Casamento',
+                'fact_label': 'Marriage',
                 'date': person.marriage_date,
                 **get_source_info(person.source or '')
             })
@@ -245,8 +245,8 @@ def get_person_sources(person_id):
         events = db.query(TimelineEvent).filter(TimelineEvent.person_id == person_id).all()
         for e in events:
             facts.append({
-                'fact_type': e.event_type or 'event',
-                'fact_label': e.event_type or 'Evento',
+                'fact_type': normalize_event_type(e.event_type or 'event'),
+                'fact_label': normalize_event_type(e.event_type or 'event').replace('_', ' ').title(),
                 'date': e.event_date,
                 'description': e.description,
                 **get_source_info(e.source or '')
@@ -256,7 +256,7 @@ def get_person_sources(person_id):
         for c in companies:
             facts.append({
                 'fact_type': 'company',
-                'fact_label': c.trade_name or c.legal_name or 'Empresa',
+                'fact_label': c.trade_name or c.legal_name or 'Company',
                 'date': c.opening_date,
                 **get_source_info(c.source or '')
             })
@@ -283,7 +283,7 @@ def get_timeline_with_sources():
             source_info = get_source_info(e.source or '')
             result.append({
                 'id': e.id,
-                'event_type': e.event_type,
+                'event_type': normalize_event_type(e.event_type),
                 'person_id': e.person_id,
                 'person_name': person.full_name if person else 'Unknown',
                 'description': e.description,

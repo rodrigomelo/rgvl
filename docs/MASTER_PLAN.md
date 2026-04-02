@@ -1,5 +1,7 @@
 # RGVL — Research & Collection Master Plan
 
+> Historical planning document. For the current supported runtime and operating rules, use `README.md`, `ARCHITECTURE.md`, and `docs/ETL_FLOW.md` first.
+
 > **Goal:** Build the richest possible repository of information about Rodrigo Gorgulho de Vasconcellos Lanna — father of Rodrigo Melo Lanna.
 >
 > **Principle:** Collect first (any format), structure later, display last.

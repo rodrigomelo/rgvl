@@ -42,14 +42,15 @@ class TestDBSeeder:
         # Create minimal schema
         conn = sqlite3.connect(db_file)
         conn.execute("""
-            CREATE TABLE IF NOT EXISTS pessoas (
+            CREATE TABLE IF NOT EXISTS people (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nome_completo TEXT,
+                full_name TEXT,
                 cpf TEXT,
-                data_nascimento TEXT,
-                observacoes TEXT,
-                fonte TEXT,
-                created_at TEXT
+                birth_date TEXT,
+                notes TEXT,
+                source TEXT,
+                created_at TEXT,
+                updated_at TEXT
             )
         """)
         conn.commit()
@@ -76,18 +77,19 @@ class TestDBSeeder:
         # Create schema with existing person
         conn = sqlite3.connect(db_file)
         conn.execute("""
-            CREATE TABLE IF NOT EXISTS pessoas (
+            CREATE TABLE IF NOT EXISTS people (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nome_completo TEXT,
+                full_name TEXT,
                 cpf TEXT,
-                data_nascimento TEXT,
-                observacoes TEXT,
-                fonte TEXT,
-                created_at TEXT
+                birth_date TEXT,
+                notes TEXT,
+                source TEXT,
+                created_at TEXT,
+                updated_at TEXT
             )
         """)
         conn.execute("""
-            INSERT INTO pessoas (nome_completo, cpf) 
+            INSERT INTO people (full_name, cpf) 
             VALUES ('Test Person', '000.000.000-00')
         """)
         conn.commit()
@@ -105,7 +107,7 @@ class TestDBSeeder:
         assert person_id is not None
         
         # Verify update
-        cursor = seeder.conn.execute("SELECT cpf FROM pessoas WHERE id = ?", (person_id,))
+        cursor = seeder.conn.execute("SELECT cpf FROM people WHERE id = ?", (person_id,))
         result = cursor.fetchone()
         assert result[0] == '123.456.789-00'
         
@@ -118,12 +120,12 @@ class TestDBSeeder:
         # Create minimal schema
         conn = sqlite3.connect(db_file)
         conn.execute("""
-            CREATE TABLE IF NOT EXISTS empresas_familia (
+            CREATE TABLE IF NOT EXISTS companies (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nome_fantasia TEXT,
+                trade_name TEXT,
                 cnpj TEXT UNIQUE,
                 capital REAL,
-                fonte TEXT,
+                source TEXT,
                 created_at TEXT
             )
         """)
@@ -151,17 +153,17 @@ class TestDBSeeder:
         # Create schema with existing company
         conn = sqlite3.connect(db_file)
         conn.execute("""
-            CREATE TABLE IF NOT EXISTS empresas_familia (
+            CREATE TABLE IF NOT EXISTS companies (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nome_fantasia TEXT,
+                trade_name TEXT,
                 cnpj TEXT UNIQUE,
                 capital REAL,
-                fonte TEXT,
+                source TEXT,
                 created_at TEXT
             )
         """)
         conn.execute("""
-            INSERT INTO empresas_familia (nome_fantasia, cnpj, capital) 
+            INSERT INTO companies (trade_name, cnpj, capital) 
             VALUES ('Old Name', '12.345.678/0001-90', 100.0)
         """)
         conn.commit()
@@ -188,23 +190,24 @@ class TestDBSeeder:
         # Create schema
         conn = sqlite3.connect(db_file)
         conn.execute("""
-            CREATE TABLE IF NOT EXISTS pessoas (
+            CREATE TABLE IF NOT EXISTS people (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nome_completo TEXT,
+                full_name TEXT,
                 cpf TEXT,
-                data_nascimento TEXT,
-                observacoes TEXT,
-                fonte TEXT,
-                created_at TEXT
+                birth_date TEXT,
+                notes TEXT,
+                source TEXT,
+                created_at TEXT,
+                updated_at TEXT
             )
         """)
         conn.execute("""
-            CREATE TABLE IF NOT EXISTS empresas_familia (
+            CREATE TABLE IF NOT EXISTS companies (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nome_fantasia TEXT,
+                trade_name TEXT,
                 cnpj TEXT UNIQUE,
                 capital REAL,
-                fonte TEXT,
+                source TEXT,
                 created_at TEXT
             )
         """)
@@ -227,8 +230,8 @@ class TestDBSeeder:
         
         # Verify data was committed
         conn = sqlite3.connect(db_file)
-        person_count = conn.execute("SELECT COUNT(*) FROM pessoas").fetchone()[0]
-        company_count = conn.execute("SELECT COUNT(*) FROM empresas_familia").fetchone()[0]
+        person_count = conn.execute("SELECT COUNT(*) FROM people").fetchone()[0]
+        company_count = conn.execute("SELECT COUNT(*) FROM companies").fetchone()[0]
         conn.close()
         
         assert person_count == 2
@@ -244,14 +247,15 @@ class TestDBSeederEdgeCases:
         
         conn = sqlite3.connect(db_file)
         conn.execute("""
-            CREATE TABLE IF NOT EXISTS pessoas (
+            CREATE TABLE IF NOT EXISTS people (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nome_completo TEXT,
+                full_name TEXT,
                 cpf TEXT,
-                data_nascimento TEXT,
-                observacoes TEXT,
-                fonte TEXT,
-                created_at TEXT
+                birth_date TEXT,
+                notes TEXT,
+                source TEXT,
+                created_at TEXT,
+                updated_at TEXT
             )
         """)
         conn.commit()
@@ -273,9 +277,9 @@ class TestDBSeederEdgeCases:
         
         conn = sqlite3.connect(db_file)
         conn.execute("""
-            CREATE TABLE IF NOT EXISTS pessoas (
+            CREATE TABLE IF NOT EXISTS people (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nome_completo TEXT
+                full_name TEXT
             )
         """)
         conn.commit()
@@ -288,7 +292,7 @@ class TestDBSeederEdgeCases:
         
         # Verify no data was added
         conn = sqlite3.connect(db_file)
-        count = conn.execute("SELECT COUNT(*) FROM pessoas").fetchone()[0]
+        count = conn.execute("SELECT COUNT(*) FROM people").fetchone()[0]
         conn.close()
         
         assert count == 0

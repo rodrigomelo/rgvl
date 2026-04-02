@@ -1,6 +1,8 @@
 """
-RGVL Data API - FastAPI Application
-Modern async API with auto-documentation
+Legacy RGVL FastAPI prototype.
+
+This module is retained for historical reference only.
+The supported runtime is the Flask application in api/main.py.
 """
 
 from fastapi import FastAPI, HTTPException, Query

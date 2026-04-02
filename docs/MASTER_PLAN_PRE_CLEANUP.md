@@ -709,7 +709,7 @@ docs: description — documentation update
 
 ### Rules for All Agents
 1. **Report only** — document findings, don't implement
-2. **Two-layer approval** — Rodrigo → Hermes → Agent
+2. **Two-layer approval** — Rodrigo → Atlas → Agent
 3. **Raw first** — collect unstructured, then structure
 4. **No direct commits** — all changes go through Hermes + Rodrigo approval
 5. **Confidence tags** — every fact needs a confidence level
@@ -717,7 +717,7 @@ docs: description — documentation update
 ---
 
 *Plan version: 1.0 — 2026-03-23*
-*Author: Hermes (Orchestrated with Poseidon, Athena, Hefesto inputs)*
+*Author: Atlas (Orchestrated with Poseidon, Athena, Hefesto inputs)*
 
 ---
 

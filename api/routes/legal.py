@@ -2,16 +2,17 @@
 RGVL API - Legal routes
 """
 from flask import Blueprint, jsonify, request
+from sqlalchemy import func
 from api.db import get_session
 from api.models import LegalCase
-from api.utils import model_to_dict, models_to_list
+from api.utils import model_to_dict, models_to_list, status_filter_values
 
 legal_bp = Blueprint('legal', __name__, url_prefix='/api/legal')
 
 
 @legal_bp.route('/processes')
 def get_processes():
-    """List judicial processes. Optional filter: ?court=TJMG&status=andamento"""
+    """List judicial processes. Optional filter: ?court=TJMG&status=in_progress"""
     db = get_session()
     try:
         query = db.query(LegalCase)
@@ -22,7 +23,10 @@ def get_processes():
 
         status = request.args.get('status')
         if status:
-            query = query.filter(LegalCase.status.ilike(f'%{status}%'))
+            requested_statuses = tuple(status_filter_values(status))
+            query = query.filter(
+                func.lower(LegalCase.status).in_(requested_statuses)
+            )
 
         cases = query.order_by(LegalCase.collected_at.desc()).all()
         return jsonify(models_to_list(cases))

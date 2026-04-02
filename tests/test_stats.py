@@ -23,7 +23,7 @@ class TestStatsEndpoint:
         data = json.loads(response.data)
         
         # Should have counts for all entities
-        expected_fields = ['pessoas', 'empresas', 'imoveis', 'processos', 'documentos']
+        expected_fields = ['people', 'companies', 'properties', 'legal_cases', 'documents']
         for field in expected_fields:
             assert field in data, f"Missing field: {field}"
             assert isinstance(data[field], int), f"{field} should be an integer"

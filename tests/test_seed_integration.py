@@ -36,23 +36,24 @@ Capital Social: R$ 500.000,00
         db_file = tmp_path / "test.db"
         conn = sqlite3.connect(db_file)
         conn.execute("""
-            CREATE TABLE IF NOT EXISTS pessoas (
+            CREATE TABLE IF NOT EXISTS people (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nome_completo TEXT,
+                full_name TEXT,
                 cpf TEXT,
-                data_nascimento TEXT,
-                observacoes TEXT,
-                fonte TEXT,
-                created_at TEXT
+                birth_date TEXT,
+                notes TEXT,
+                source TEXT,
+                created_at TEXT,
+                updated_at TEXT
             )
         """)
         conn.execute("""
-            CREATE TABLE IF NOT EXISTS empresas_familia (
+            CREATE TABLE IF NOT EXISTS companies (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nome_fantasia TEXT,
+                trade_name TEXT,
                 cnpj TEXT UNIQUE,
                 capital REAL,
-                fonte TEXT,
+                source TEXT,
                 created_at TEXT
             )
         """)
@@ -82,7 +83,7 @@ Capital Social: R$ 500.000,00
         
         # Verify DB contents
         conn = sqlite3.connect(db_file)
-        person = conn.execute("SELECT nome_completo FROM pessoas WHERE cpf = ?", 
+        person = conn.execute("SELECT full_name FROM people WHERE cpf = ?", 
                               (cpf_data['cpf'],)).fetchone()
         conn.close()
         
@@ -104,17 +105,18 @@ Situação: REGULAR
         db_file = tmp_path / "test.db"
         conn = sqlite3.connect(db_file)
         conn.execute("""
-            CREATE TABLE IF NOT EXISTS pessoas (
+            CREATE TABLE IF NOT EXISTS people (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nome_completo TEXT,
+                full_name TEXT,
                 cpf TEXT,
-                data_nascimento TEXT,
-                observacoes TEXT,
-                fonte TEXT,
-                created_at TEXT
+                birth_date TEXT,
+                notes TEXT,
+                source TEXT,
+                created_at TEXT,
+                updated_at TEXT
             )
         """)
-        conn.execute("INSERT INTO pessoas (nome_completo, cpf) VALUES ('OLD', '000.000.000-00')")
+        conn.execute("INSERT INTO people (full_name, cpf) VALUES ('OLD', '000.000.000-00')")
         conn.commit()
         conn.close()
         
@@ -132,7 +134,7 @@ Situação: REGULAR
         
         # Verify DB has 2 persons (old + new), not 3
         conn = sqlite3.connect(db_file)
-        count = conn.execute("SELECT COUNT(*) FROM pessoas").fetchone()[0]
+        count = conn.execute("SELECT COUNT(*) FROM people").fetchone()[0]
         conn.close()
         
         assert count == 2
@@ -157,30 +159,34 @@ Situação: REGULAR
         db_file = tmp_path / "test.db"
         conn = sqlite3.connect(db_file)
         conn.execute("""
-            CREATE TABLE pessoas (
+            CREATE TABLE people (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nome_completo TEXT,
+                full_name TEXT,
                 cpf TEXT,
-                data_nascimento TEXT,
-                observacoes TEXT,
-                fonte TEXT,
-                created_at TEXT
+                birth_date TEXT,
+                notes TEXT,
+                source TEXT,
+                created_at TEXT,
+                updated_at TEXT
             )
         """)
         conn.execute("""
-            CREATE TABLE events (
+            CREATE TABLE timeline_events (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 person_id INTEGER,
                 event_type TEXT,
                 description TEXT,
                 event_date TEXT,
-                fonte TEXT,
+                reference_table TEXT,
+                reference_id INTEGER,
+                source TEXT,
+                confidence TEXT,
                 created_at TEXT
             )
         """)
         # Insert person first
         conn.execute("""
-            INSERT INTO pessoas (nome_completo, cpf)
+            INSERT INTO people (full_name, cpf)
             VALUES ('TEST PERSON', '111.111.111-11')
         """)
         conn.commit()
@@ -196,15 +202,15 @@ Situação: REGULAR
         # Insert event with person_id
         person_id = 1  # First person
         seeder.conn.execute("""
-            INSERT INTO events (person_id, event_type, description, event_date, fonte, created_at)
-            VALUES (?, ?, ?, ?, ?, ?)
-        """, (person_id, 'birth', 'Test birth', '01/01/1980', 'INTEL.md', '2024-01-01'))
+            INSERT INTO timeline_events (person_id, event_type, description, event_date, reference_table, reference_id, source, confidence, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (person_id, 'birth', 'Test birth', '01/01/1980', 'INTEL', None, 'INTEL.md', 'medium', '2024-01-01'))
         seeder.conn.commit()
         seeder.close()
         
         # Verify all events have valid person_id
         conn = sqlite3.connect(db_file)
-        null_events = conn.execute("SELECT COUNT(*) FROM events WHERE person_id IS NULL").fetchone()[0]
+        null_events = conn.execute("SELECT COUNT(*) FROM timeline_events WHERE person_id IS NULL").fetchone()[0]
         conn.close()
         
         assert null_events == 0, f"Found {null_events} events with NULL person_id"
@@ -226,23 +232,24 @@ Company Two
         db_file = tmp_path / "test.db"
         conn = sqlite3.connect(db_file)
         conn.execute("""
-            CREATE TABLE IF NOT EXISTS pessoas (
+            CREATE TABLE IF NOT EXISTS people (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nome_completo TEXT,
+                full_name TEXT,
                 cpf TEXT,
-                data_nascimento TEXT,
-                observacoes TEXT,
-                fonte TEXT,
-                created_at TEXT
+                birth_date TEXT,
+                notes TEXT,
+                source TEXT,
+                created_at TEXT,
+                updated_at TEXT
             )
         """)
         conn.execute("""
-            CREATE TABLE IF NOT EXISTS empresas_familia (
+            CREATE TABLE IF NOT EXISTS companies (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nome_fantasia TEXT,
+                trade_name TEXT,
                 cnpj TEXT UNIQUE,
                 capital REAL,
-                fonte TEXT,
+                source TEXT,
                 created_at TEXT
             )
         """)
@@ -264,8 +271,8 @@ Company Two
         
         # Verify counts match
         conn = sqlite3.connect(db_file)
-        person_count = conn.execute("SELECT COUNT(*) FROM pessoas").fetchone()[0]
-        company_count = conn.execute("SELECT COUNT(*) FROM empresas_familia").fetchone()[0]
+        person_count = conn.execute("SELECT COUNT(*) FROM people").fetchone()[0]
+        company_count = conn.execute("SELECT COUNT(*) FROM companies").fetchone()[0]
         conn.close()
         
         assert person_count == 1  # 1 person in INTEL

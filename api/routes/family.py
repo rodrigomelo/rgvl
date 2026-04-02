@@ -4,7 +4,7 @@ RGVL API - Family routes (persons, relationships, events, timeline)
 from flask import Blueprint, jsonify, request
 from api.db import get_session
 from api.models import Person, Relationship, TimelineEvent
-from api.utils import model_to_dict, models_to_list
+from api.utils import model_to_dict, models_to_list, normalize_confidence, normalize_relationship_type
 
 family_bp = Blueprint('family', __name__, url_prefix='/api/family')
 
@@ -96,7 +96,7 @@ def get_relatives(person_id):
             if other:
                 relatives.append({
                     'person': model_to_dict(other),
-                    'type': r.relationship_type,
+                    'type': normalize_relationship_type(r.relationship_type),
                     'confirmed': bool(r.confirmed),
                     'source': r.source,
                 })
@@ -248,7 +248,7 @@ def get_timeline():
                         'approx': approx,
                         'description': desc,
                         'source': r[6] if len(r) > 6 else source,
-                        'confidence': r[7] if len(r) > 7 else 'medium'
+                        'confidence': normalize_confidence(r[7]) if len(r) > 7 else 'medium'
                     })
             return out
 

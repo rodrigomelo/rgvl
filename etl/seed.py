@@ -318,6 +318,31 @@ class DBSeeder:
         self.conn = sqlite3.connect(self.db_path)
         self.conn.execute("PRAGMA foreign_keys = ON")
         self.conn.row_factory = sqlite3.Row
+
+    def _match_person_id(self, person: dict) -> sqlite3.Row | None:
+        cursor = self.conn.cursor()
+        cpf = person.get('cpf')
+        full_name = person.get('full_name', '')
+
+        if cpf:
+            cursor.execute("SELECT id FROM people WHERE cpf = ?", (cpf,))
+            existing = cursor.fetchone()
+            if existing:
+                return existing
+
+        cursor.execute(
+            "SELECT id FROM people WHERE full_name LIKE ?",
+            (f"%{full_name[:20]}%",),
+        )
+        return cursor.fetchone()
+
+    def _match_person_id_by_name(self, full_name: str) -> sqlite3.Row | None:
+        cursor = self.conn.cursor()
+        cursor.execute(
+            "SELECT id FROM people WHERE full_name LIKE ?",
+            (f"%{full_name[:20]}%",),
+        )
+        return cursor.fetchone()
     
     def close(self):
         if self.conn:
@@ -325,87 +350,105 @@ class DBSeeder:
     
     def upsert_person(self, person: dict) -> int:
         cursor = self.conn.cursor()
-        cursor.execute("SELECT id FROM pessoas WHERE nome_completo LIKE ?", 
-                     (f"%{person.get('full_name', '')[:20]}%",))
-        existing = cursor.fetchone()
+        existing = self._match_person_id(person)
         
         if existing:
             cursor.execute("""
-                UPDATE pessoas SET
+                UPDATE people SET
                     cpf = COALESCE(?, cpf),
-                    data_nascimento = COALESCE(?, data_nascimento),
-                    observacoes = COALESCE(?, observacoes)
+                    birth_date = COALESCE(?, birth_date),
+                    notes = COALESCE(?, notes),
+                    source = COALESCE(?, source),
+                    updated_at = ?
                 WHERE id = ?
-            """, (person.get('cpf'), person.get('birth_date'), 
-                  person.get('notes'), existing['id']))
+            """, (
+                person.get('cpf'),
+                person.get('birth_date'),
+                person.get('notes'),
+                person.get('source', 'INTEL'),
+                datetime.now().isoformat(),
+                existing['id'],
+            ))
             return existing['id']
         else:
             cursor.execute("""
-                INSERT INTO pessoas (nome_completo, cpf, data_nascimento, observacoes, fonte, created_at)
-                VALUES (?, ?, ?, ?, ?, ?)
-            """, (person.get('full_name'), person.get('cpf'), 
-                  person.get('birth_date'), person.get('notes'),
-                  person.get('source', 'INTEL'),
-                  datetime.now().isoformat()))
+                INSERT INTO people (full_name, cpf, birth_date, notes, source, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (
+                person.get('full_name'),
+                person.get('cpf'),
+                person.get('birth_date'),
+                person.get('notes'),
+                person.get('source', 'INTEL'),
+                datetime.now().isoformat(),
+                datetime.now().isoformat(),
+            ))
             return cursor.lastrowid
     
     def upsert_company(self, company: dict) -> int:
         cursor = self.conn.cursor()
-        cursor.execute("SELECT id FROM empresas_familia WHERE cnpj = ?", 
+        cursor.execute("SELECT id FROM companies WHERE cnpj = ?", 
                      (company.get('cnpj'),))
         existing = cursor.fetchone()
         
         if existing:
             cursor.execute("""
-                UPDATE empresas_familia SET
-                    nome_fantasia = COALESCE(?, nome_fantasia),
-                    capital = COALESCE(?, capital)
+                UPDATE companies SET
+                    trade_name = COALESCE(?, trade_name),
+                    capital = COALESCE(?, capital),
+                    source = COALESCE(?, source)
                 WHERE id = ?
-            """, (company.get('company_name'), company.get('capital'), 
-                  existing['id']))
+            """, (
+                company.get('company_name'),
+                company.get('capital'),
+                company.get('source', 'INTEL'),
+                existing['id'],
+            ))
             return existing['id']
         else:
             cursor.execute("""
-                INSERT INTO empresas_familia (nome_fantasia, cnpj, capital, fonte, created_at)
+                INSERT INTO companies (trade_name, cnpj, capital, source, created_at)
                 VALUES (?, ?, ?, ?, ?)
-            """, (company.get('company_name'), company.get('cnpj'),
-                  company.get('capital'), company.get('source', 'INTEL'),
-                  datetime.now().isoformat()))
+            """, (
+                company.get('company_name'),
+                company.get('cnpj'),
+                company.get('capital'),
+                company.get('source', 'INTEL'),
+                datetime.now().isoformat(),
+            ))
             return cursor.lastrowid
     
     def upsert_sibling(self, sibling: dict) -> int:
         cursor = self.conn.cursor()
-        cursor.execute("SELECT id FROM pessoas WHERE nome_completo LIKE ?", 
-                     (f"%{sibling.get('name', '')[:20]}%",))
-        existing = cursor.fetchone()
+        existing = self._match_person_id_by_name(sibling.get('name', ''))
         
         if existing:
             return existing['id']
         else:
             cursor.execute("""
-                INSERT INTO pessoas (nome_completo, data_nascimento, geracao, fonte, created_at)
-                VALUES (?, ?, 3, ?, ?)
-            """, (sibling.get('name'), sibling.get('birth_year'),
-                  sibling.get('source', 'INTEL'),
-                  datetime.now().isoformat()))
+                INSERT INTO people (full_name, birth_date, generation, source, created_at, updated_at)
+                VALUES (?, ?, 3, ?, ?, ?)
+            """, (
+                sibling.get('name'),
+                sibling.get('birth_year'),
+                sibling.get('source', 'INTEL'),
+                datetime.now().isoformat(),
+                datetime.now().isoformat(),
+            ))
             return cursor.lastrowid
     
     def upsert_event(self, event: dict, person_id: int = None) -> int:
         cursor = self.conn.cursor()
         
         if person_id is None:
-            desc = event.get('description', '')
-            if 'Rodrigo Melo' in desc or 'RGVL' in desc:
-                cursor.execute("SELECT id FROM pessoas WHERE nome_completo LIKE ?", ('%Rodrigo Gorgulho%',))
-            else:
-                cursor.execute("SELECT id FROM pessoas WHERE nome_completo LIKE ?", ('%Rodrigo Gorgulho%',))
-            
-            result = cursor.fetchone()
+            result = self._match_person_id_by_name(
+                event.get('person_name', 'Rodrigo Gorgulho de Vasconcellos Lanna')
+            )
             person_id = result['id'] if result else None
         
         # Check for duplicate before inserting
         cursor.execute("""
-            SELECT id FROM events 
+            SELECT id FROM timeline_events 
             WHERE person_id = ? AND event_date = ? AND description = ?
         """, (person_id, event.get('event_date'), event.get('description')))
         
@@ -414,30 +457,41 @@ class DBSeeder:
             return existing['id']  # Already exists, skip
         
         cursor.execute("""
-            INSERT INTO events (person_id, event_type, event_date, description, reference_table, reference_id, source, confidence)
+            INSERT INTO timeline_events (person_id, event_type, event_date, description, reference_table, reference_id, source, confidence, created_at)
             VALUES (?, ?, ?, ?, 'INTEL', NULL, ?, ?)
-        """, (person_id, event.get('event_type'), event.get('event_date'),
-              event.get('description'), 
-              event.get('source', 'INTEL'),
-              event.get('confidence', 'medium')))
+        """, (
+            person_id,
+            event.get('event_type'),
+            event.get('event_date'),
+            event.get('description'), 
+            event.get('source', 'INTEL'),
+            event.get('confidence', 'medium'),
+            datetime.now().isoformat(),
+        ))
         return cursor.lastrowid
     
     def upsert_insight(self, insight: dict) -> int:
         cursor = self.conn.cursor()
         
         # Check if insight already exists
-        cursor.execute("SELECT id FROM insights WHERE title = ?", (insight.get('title'),))
+        cursor.execute("SELECT id FROM research_insights WHERE title = ?", (insight.get('title'),))
         existing = cursor.fetchone()
         
         if existing:
             return existing['id']
         else:
             cursor.execute("""
-                INSERT INTO insights (category, title, description, source, discovered_at)
-                VALUES (?, ?, ?, ?, ?)
-            """, (insight.get('category'), insight.get('title'), 
-                  insight.get('description'), insight.get('source'),
-                  insight.get('discovered_at')))
+                INSERT INTO research_insights (category, title, description, source, discovered_at, created_at, tags)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (
+                insight.get('category'),
+                insight.get('title'), 
+                insight.get('description'),
+                insight.get('source'),
+                insight.get('discovered_at'),
+                datetime.now().isoformat(),
+                insight.get('tags'),
+            ))
             return cursor.lastrowid
     
     def seed(self, data: dict, mode: str = 'upsert'):
@@ -459,7 +513,7 @@ class DBSeeder:
             
             if 'events' in data:
                 cursor = self.conn.cursor()
-                cursor.execute("SELECT id FROM pessoas WHERE nome_completo LIKE ?", ('%Rodrigo Gorgulho%',))
+                cursor.execute("SELECT id FROM people WHERE full_name LIKE ?", ('%Rodrigo Gorgulho%',))
                 result = cursor.fetchone()
                 rgvl_id = result['id'] if result else None
                 

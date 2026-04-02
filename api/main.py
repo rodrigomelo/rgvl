@@ -3,6 +3,7 @@ RGVL API - Main application
 Flask REST API for the Lanna family research platform.
 Runs on port 5003.
 """
+import logging
 import os
 import sys
 from pathlib import Path
@@ -16,6 +17,10 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from api.db import engine, DB_PATH
 from api.models import Base
 from api.auth import require_auth, get_token_from_header, verify_token
+from api.utils import status_filter_values
+
+logger = logging.getLogger(__name__)
+_auth_disabled_warning_logged = False
 
 # Create all tables
 Base.metadata.create_all(bind=engine)
@@ -39,6 +44,7 @@ PUBLIC_ROUTES = ['/', '/api/health', '/api/stats', '/api/search']
 def check_auth():
     """Check if route requires authentication"""
     from flask import request, jsonify, g
+    global _auth_disabled_warning_logged
     
     # Always allow OPTIONS requests (CORS preflight)
     if request.method == 'OPTIONS':
@@ -54,8 +60,9 @@ def check_auth():
     
     # Skip auth if AUTH_DISABLED is set (for development/testing)
     if os.getenv('AUTH_DISABLED', 'false').lower() == 'true':
-        import warnings
-        warnings.warn('AUTH DISABLED - DO NOT USE IN PRODUCTION')
+        if not _auth_disabled_warning_logged:
+            logger.warning('AUTH DISABLED - DO NOT USE IN PRODUCTION')
+            _auth_disabled_warning_logged = True
         return None
     
     # Check for token
@@ -203,7 +210,7 @@ def get_stats():
             'searches': db.query(SearchHistory).count(),
             'tasks': db.query(ResearchTask).count(),
             'tasks_pending': db.query(ResearchTask).filter(
-                ResearchTask.status == 'pendente'
+                ResearchTask.status.in_(status_filter_values('pending'))
             ).count(),
         })
     finally:

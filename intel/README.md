@@ -22,6 +22,7 @@ intel/
 3. **Modular format** - Each domain has its own file
 4. **Markdown tables** - Preferred format for structured data
 5. **Dates** - Use ISO format (YYYY-MM-DD) or ~YYYY for approximate
+6. **No reverse sync** - Database content must never be pushed back into INTEL automatically
 
 ## ETL Pipeline
 

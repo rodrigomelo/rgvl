@@ -2,16 +2,17 @@
 RGVL API - Research routes (searches, tasks, documents, contacts)
 """
 from flask import Blueprint, jsonify, request
+from sqlalchemy import func
 from api.db import get_session
 from api.models import SearchHistory, ResearchTask, Document, Contact
-from api.utils import model_to_dict, models_to_list
+from api.utils import models_to_list, priority_filter_values, status_filter_values
 
 research_bp = Blueprint('research', __name__, url_prefix='/api/research')
 
 
 @research_bp.route('/searches')
 def get_searches():
-    """List search history. Optional: ?source=FamilySearch&status=sucesso"""
+    """List search history. Optional: ?source=FamilySearch&status=success"""
     db = get_session()
     try:
         query = db.query(SearchHistory)
@@ -22,7 +23,9 @@ def get_searches():
 
         status = request.args.get('status')
         if status:
-            query = query.filter(SearchHistory.status == status)
+            query = query.filter(
+                func.lower(SearchHistory.status).in_(status_filter_values(status))
+            )
 
         searches = query.order_by(SearchHistory.search_date.desc()).limit(100).all()
         return jsonify(models_to_list(searches))
@@ -32,18 +35,22 @@ def get_searches():
 
 @research_bp.route('/tasks')
 def get_tasks():
-    """List research tasks. Optional: ?status=pendente&priority=ALTA"""
+    """List research tasks. Optional: ?status=pending&priority=high"""
     db = get_session()
     try:
         query = db.query(ResearchTask)
 
         status = request.args.get('status')
         if status:
-            query = query.filter(ResearchTask.status == status)
+            query = query.filter(
+                func.lower(ResearchTask.status).in_(status_filter_values(status))
+            )
 
         priority = request.args.get('priority')
         if priority:
-            query = query.filter(ResearchTask.priority == priority)
+            query = query.filter(
+                func.lower(ResearchTask.priority).in_({value.lower() for value in priority_filter_values(priority)})
+            )
 
         tasks = query.order_by(ResearchTask.created_at.desc()).all()
         return jsonify(models_to_list(tasks))
@@ -70,7 +77,7 @@ def get_documents():
 
 @research_bp.route('/contacts')
 def get_contacts():
-    """List contacts. Optional: ?role=Advogado"""
+    """List contacts. Optional: ?role=Lawyer"""
     db = get_session()
     try:
         query = db.query(Contact)

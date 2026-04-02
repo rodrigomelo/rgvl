@@ -2,9 +2,10 @@
 RGVL API - Assets routes (companies, properties)
 """
 from flask import Blueprint, jsonify, request
+from sqlalchemy import func
 from api.db import get_session
 from api.models import Company, Property
-from api.utils import model_to_dict, models_to_list
+from api.utils import model_to_dict, models_to_list, status_filter_values
 
 assets_bp = Blueprint('assets', __name__, url_prefix='/api/assets')
 
@@ -13,7 +14,7 @@ assets_bp = Blueprint('assets', __name__, url_prefix='/api/assets')
 
 @assets_bp.route('/companies')
 def get_companies():
-    """List companies. Optional filter: ?person_id=X&status=ativa"""
+    """List companies. Optional filter: ?person_id=X&status=active"""
     db = get_session()
     try:
         query = db.query(Company)
@@ -24,7 +25,9 @@ def get_companies():
 
         status = request.args.get('status')
         if status:
-            query = query.filter(Company.registration_status == status)
+            query = query.filter(
+                func.lower(Company.registration_status).in_(status_filter_values(status))
+            )
 
         companies = query.order_by(Company.trade_name).all()
         return jsonify(models_to_list(companies))
