@@ -1,65 +1,65 @@
 -- ================================================
--- RGVL - SEED DATA - Dados Conhecidos
+-- RGVL - SEED DATA - Known Data
 -- ================================================
 
 -- ================================================
--- PESSOAS JÁ IDENTIFICADAS
+-- PEOPLE IDENTIFIED
 -- ================================================
 
--- RGVL (Próprio - referência)
-INSERT INTO pessoas (id, nome_completo, data_nascimento, local_nascimento, cpf, profissao, cargo, empresa, Status, geracao, fonte, observacoes)
-VALUES (1, 'Rodrigo Gorgulho de Vasconcellos Lanna', '1955-12-17', 'Belo Horizonte, MG', '***.516.326-*', 'Engenheiro Civil', 'Diretor de Engenharia', 'Construtora Barbosa Mello S/A', 'ativo', 4, 'INTEL.md', 'Pai do Rodrigo Melo - encontrado');
+-- RGVL (Owner - reference)
+INSERT INTO people (id, full_name, birth_date, birth_place, cpf, profession, position, company, status, generation, source, notes)
+VALUES (1, 'Rodrigo Gorgulho de Vasconcellos Lanna', '1955-12-17', 'Belo Horizonte, MG', '***.516.326-*', 'Civil Engineer', 'Engineering Director', 'Construtora Barbosa Mello S/A', 'active', 4, 'INTEL.md', 'Father of Rodrigo Melo - found');
 
--- Henrique (Irmão - UNICO encontrado)
-INSERT INTO pessoas (id, nome_completo, cpf, profissao, empresa, Status, geracao, fonte, observacoes)
-VALUES (2, 'Henrique Gorgulho de Vasconcellos Lanna', NULL, 'Engenheiro/Agrônomo', 'ERH Lanna Engenharia Ltda (CNPJ 02.835.659/0001-93)', 'ativo', 3, 'INTEL.md', 'Irmão de RGVL - UNICO encontrado. CREA MT13225. Empresa baixa jun/2024. End: Rua Prof Bartira Mourao 546 - Buritis BH');
+-- Henrique (Sibling - ONLY one found)
+INSERT INTO people (id, full_name, cpf, profession, company, status, generation, source, notes)
+VALUES (2, 'Henrique Gorgulho de Vasconcellos Lanna', NULL, 'Engineer/Agronomist', 'ERH Lanna Engenharia Ltda (CNPJ 02.835.659/0001-93)', 'active', 3, 'INTEL.md', 'Sibling of RGVL - ONLY one found. CREA MT13225. Company closed Jun/2024. Address: Rua Prof Bartira Mourao 546 - Buritis BH');
 
--- Rosália (Esposa de RGVL)
-INSERT INTO pessoas (id, nome_completo, empresa, Status, geracao, fonte, observacoes)
-VALUES (3, 'Rosália Fagundes Ladeira', 'F Ladeira Consultoria Ltda (CNPJ 40.203.364/0001-93)', 'ativo', 4, 'INTEL.md', 'Esposa de RGVL (casados 1992). Sócia na F Ladeira Consultoria desde 2020');
+-- Rosalia (RGVL Spouse)
+INSERT INTO people (id, full_name, company, status, generation, source, notes)
+VALUES (3, 'Rosalia Fagundes Ladeira', 'F Ladeira Consultoria Ltda (CNPJ 40.203.364/0001-93)', 'active', 4, 'INTEL.md', 'RGVL spouse (married 1992). Partner at F Ladeira Consultoria since 2020');
 
--- Rodrigo Melo Lanna (Filho)
-INSERT INTO pessoas (id, nome_completo, profissao, Status, geracao, fonte, observacoes)
-VALUES (4, 'Rodrigo Melo Lanna', 'Vice President - J.P. Morgan Asset Management', 'ativo', 5, 'INTEL.md', 'Filho de RGVL. LinkedIn: linkedin.com/in/melorodrigo');
-
--- ================================================
--- RELACIONAMENTOS
--- ================================================
-
--- RGVL é irmão de Henrique
-INSERT INTO relacionamentos (pessoa_de, pessoa_para, tipo, confirmado, fonte)
-VALUES (1, 2, 'irmao', 1, 'INTEL.md - Henrique é irmão confirmado de RGVL');
-
--- RGVL é casado com Rosália
-INSERT INTO relacionamentos (pessoa_de, pessoa_para, tipo, confirmado, fonte)
-VALUES (1, 3, 'conjuge', 1, 'INTEL.md - Casados desde 1992');
-
--- Rodrigo Melo é filho de RGVL
-INSERT INTO relacionamentos (pessoa_de, pessoa_para, tipo, confirmado, fonte)
-VALUES (1, 4, 'filho', 1, 'INTEL.md');
+-- Rodrigo Melo Lanna (Son)
+INSERT INTO people (id, full_name, profession, status, generation, source, notes)
+VALUES (4, 'Rodrigo Melo Lanna', 'Vice President - J.P. Morgan Asset Management', 'active', 5, 'INTEL.md', 'Son of RGVL. LinkedIn: linkedin.com/in/melorodrigo');
 
 -- ================================================
--- EMPRESAS
+-- RELATIONSHIPS
 -- ================================================
 
-INSERT INTO empresas_familia (cnpj, nome_fantasia, socios, endereco, cidade, uf, status_jucemg, data_abertura, data_baixa, pessoa_id, fonte, observacoes)
-VALUES 
-('22.676.938/0001-69', 'RVL Engenharia', '[{"nome": "Rodrigo Gorgulho de Vasconcellos Lanna", "participacao": "100%"}]', NULL, 'Belo Horizonte', 'MG', 'baixa', NULL, NULL, 1, 'INTEL.md', 'Empresa de RGVL - 100% dele - BAIXA'),
+-- RGVL is sibling of Henrique
+INSERT INTO relationships (person1_id, person2_id, relationship_type, confirmed, source)
+VALUES (1, 2, 'sibling', 1, 'INTEL.md - Henrique confirmed as RGVL sibling');
 
-('40.203.364/0001-93', 'F Ladeira Consultoria Ltda', '[{"nome": "Rodrigo Gorgulho de Vasconcellos Lanna", "participacao": "50%"},{"nome": "Rosália Fagundes Ladeira", "participacao": "50%"}]', 'Rua Prof Bartira Mourao 546 - Buritis', 'Belo Horizonte', 'MG', 'ativa', NULL, NULL, 1, 'INTEL.md', 'Ativa - sócios: RGVL + Rosália'),
+-- RGVL is married to Rosalia
+INSERT INTO relationships (person1_id, person2_id, relationship_type, confirmed, source)
+VALUES (1, 3, 'spouse', 1, 'INTEL.md - Married since 1992');
 
-('17.185.786/0001-61', 'Construtora Barbosa Mello S/A', NULL, NULL, NULL, 'MG', 'ativa', NULL, NULL, 1, 'INTEL.md', 'RGVL é Diretor de Engenharia desde 1992'),
-
-('02.835.659/0001-93', 'ERH Lanna Engenharia Ltda', '[{"nome": "Henrique Gorgulho de Vasconcellos Lanna", "participacao": "100%"}]', 'Rua Prof Bartira Mourao 546 - Buritis', 'Belo Horizonte', 'MG', 'baixa', '1998', '2024-06-01', 2, 'INTEL.md', 'Empresa de Henrique - BAIXA em jun/2024. 16 processos no TJMG');
+-- Rodrigo Melo is son of RGVL
+INSERT INTO relationships (person1_id, person2_id, relationship_type, confirmed, source)
+VALUES (1, 4, 'child', 1, 'INTEL.md');
 
 -- ================================================
--- TAREFAS DE PESQUISA - PRIORIDADE ALTA
+-- COMPANIES
 -- ================================================
 
-INSERT INTO tarefas_pesquisa (tarefa, prioridade, pessoa_alvo, fontes_sugeridas, status)
-VALUES 
-('Encontrar os 2 irmãos desconhecidos de RGVL', 'ALTA', 'Irmão(s) de Rodrigo Gorgulho de Vasconcellos Lanna', 'FamilySearch, JUCEMG, Receita Federal, Google, LinkedIn', 'pendente'),
+INSERT INTO companies (cnpj, trade_name, partners, address, city, state, registration_status, opening_date, closing_date, person_id, source, notes)
+VALUES
+('22.676.938/0001-69', 'RVL Engenharia', '[{"name": "Rodrigo Gorgulho de Vasconcellos Lanna", "participation": "100%"}]', NULL, 'Belo Horizonte', 'MG', 'closed', NULL, NULL, 1, 'INTEL.md', 'RGVL company - 100% his - CLOSED'),
 
-('Confirmar se há mais filhos de RGVL além de Rodrigo Melo', 'ALTA', 'Filho(s) desconhecido(s) de RGVL', 'FamilySearch, Google', 'pendente'),
+('40.203.364/0001-93', 'F Ladeira Consultoria Ltda', '[{"name": "Rodrigo Gorgulho de Vasconcellos Lanna", "participation": "50%"},{"name": "Rosalia Fagundes Ladeira", "participation": "50%"}]', 'Rua Prof Bartira Mourao 546 - Buritis', 'Belo Horizonte', 'MG', 'active', NULL, NULL, 1, 'INTEL.md', 'Active - partners: RGVL + Rosalia'),
 
-('Encontrar pais de RGVL (pai de Rodrigo Gorgulho)', 'ALTA', 'Pai de Rodrigo Gorgulho de Vasconcellos Lanna', 'FamilySearch, Receita Federal', 'pendente');
+('17.185.786/0001-61', 'Construtora Barbosa Mello S/A', NULL, NULL, NULL, 'MG', 'active', NULL, NULL, 1, 'INTEL.md', 'RGVL is Engineering Director since 1992'),
+
+('02.835.659/0001-93', 'ERH Lanna Engenharia Ltda', '[{"name": "Henrique Gorgulho de Vasconcellos Lanna", "participation": "100%"}]', 'Rua Prof Bartira Mourao 546 - Buritis', 'Belo Horizonte', 'MG', 'closed', '1998', '2024-06-01', 2, 'INTEL.md', 'Henrique company - CLOSED in Jun/2024. 16 legal cases at TJMG');
+
+-- ================================================
+-- RESEARCH TASKS - HIGH PRIORITY
+-- ================================================
+
+INSERT INTO research_tasks (task, priority, target_person, suggested_sources, status)
+VALUES
+('Find the 2 unknown siblings of RGVL', 'HIGH', 'Sibling(s) of Rodrigo Gorgulho de Vasconcellos Lanna', 'FamilySearch, JUCEMG, Receita Federal, Google, LinkedIn', 'pending'),
+
+('Confirm if there are more children of RGVL besides Rodrigo Melo', 'HIGH', 'Unknown child(ren) of RGVL', 'FamilySearch, Google', 'pending'),
+
+('Find parents of RGVL (Rodrigo Gorgulho father)', 'HIGH', 'Father of Rodrigo Gorgulho de Vasconcellos Lanna', 'FamilySearch, Receita Federal', 'pending');

@@ -21,17 +21,17 @@ def migrate():
     c = conn.cursor()
 
     # 1. Add Lissandra
-    c.execute("INSERT OR IGNORE INTO pessoas (nome_completo, cpf, status, fonte, observacoes) VALUES (?, ?, ?, ?, ?)",
-              ('Lissandra Mity Norichika Onoe', '348.391.958-97', 'ex-parceira', 'gmail_bradesco',
-               'Uniao estavel dissolvida 2024, sem partilha, sem filhos'))
+    c.execute("INSERT OR IGNORE INTO people (full_name, cpf, status, source, notes) VALUES (?, ?, ?, ?, ?)",
+              ('Lissandra Mity Norichika Onoe', '348.391.958-97', 'ex-partner', 'gmail_bradesco',
+               'Domestic partnership dissolved 2024, no asset division, no children'))
     print(f"[1] Lissandra: {'added' if c.rowcount else 'exists'}")
 
     # 2. Update father (id=6)
-    c.execute("UPDATE pessoas SET email='rlanna@cbmsa.com.br', profissao='Engenheiro', endereco='Rua Ceara, 1305, Apto 1202, Bairro Funcionarios, Belo Horizonte, MG' WHERE id=6")
+    c.execute("UPDATE people SET email='rlanna@cbmsa.com.br', profession='Engineer', address='Rua Ceara, 1305, Apto 1202, Bairro Funcionarios, Belo Horizonte, MG' WHERE id=6")
     print(f"[2] Father updated: {c.rowcount} rows")
 
     # 3. Update mother (id=27)
-    c.execute("UPDATE pessoas SET cpf='294.043.982-68', rg='22.999.211-0', local_nascimento='Itaituba, PA' WHERE id=27")
+    c.execute("UPDATE people SET cpf='294.043.982-68', rg='22.999.211-0', birth_place='Itaituba, PA' WHERE id=27")
     print(f"[3] Mother updated: {c.rowcount} rows")
 
     # 4. Documents
@@ -51,9 +51,9 @@ def migrate():
     ]
     doc_count = 0
     for d in docs:
-        c.execute('SELECT id FROM documentos WHERE title=?', (d[1],))
+        c.execute('SELECT id FROM documents WHERE title=?', (d[1],))
         if not c.fetchone():
-            c.execute('INSERT INTO documentos (doc_type, title, description, file_path, issue_date, expiry_date, fonte) VALUES (?,?,?,?,?,?,?)', d)
+            c.execute('INSERT INTO documents (doc_type, title, description, file_path, issue_date, expiry_date, source) VALUES (?,?,?,?,?,?,?)', d)
             doc_count += 1
     print(f"[4] Documents: {doc_count} added")
 
