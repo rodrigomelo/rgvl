@@ -43,14 +43,13 @@ def get_family_tree(person_id):
                 result['spouse'] = model_to_dict(db.query(Person).get(p.spouse_id))
             return result
 
-        child_rels = db.query(Relationship).filter(
-            Relationship.person1_id == person_id,
-            Relationship.relationship_type.in_(['filho', 'filha'])
+        # Children: find people who have this person as their father or mother (via Person table)
+        children_query = db.query(Person).filter(
+            (Person.father_id == person_id) | (Person.mother_id == person_id)
         ).all()
-        child_ids = [r.person2_id for r in child_rels]
-        children_map = {p.id: p for p in db.query(Person).filter(Person.id.in_(child_ids)).all()} if child_ids else {}
-        children = [model_to_dict(children_map[cid]) for cid in child_ids if cid in children_map]
+        children = [model_to_dict(c) for c in children_query]
 
+        # Siblings: people who share the same father or mother (via Person table)
         sibling_ids = set()
         if person.father_id:
             siblings_via_father = db.query(Person).filter(
@@ -67,9 +66,28 @@ def get_family_tree(person_id):
         siblings_map = {p.id: p for p in db.query(Person).filter(Person.id.in_(sibling_ids)).all()} if sibling_ids else {}
         siblings = [model_to_dict(siblings_map[sid]) for sid in sibling_ids if sid in siblings_map]
 
+        # Uncles/Aunts: siblings of the person's parents (via relationships table)
+        uncle_ids = set()
+        parent_ids = [pid for pid in [person.father_id, person.mother_id] if pid]
+        if parent_ids:
+            uncle_rels = db.query(Relationship).filter(
+                Relationship.person1_id.in_(parent_ids),
+                Relationship.relationship_type.in_(['irmao', 'irma'])
+            ).all()
+            uncle_ids.update(r.person2_id for r in uncle_rels)
+            # Also check if the parent is person2 (parent is the sibling of someone)
+            uncle_rels2 = db.query(Relationship).filter(
+                Relationship.person2_id.in_(parent_ids),
+                Relationship.relationship_type.in_(['irmao', 'irma'])
+            ).all()
+            uncle_ids.update(r.person1_id for r in uncle_rels2)
+        uncles_map = {p.id: p for p in db.query(Person).filter(Person.id.in_(uncle_ids)).all()} if uncle_ids else {}
+        uncles = [model_to_dict(uncles_map[uid]) for uid in uncle_ids if uid in uncles_map]
+
         tree = get_ancestors(person)
         tree['children'] = children
         tree['siblings'] = siblings
+        tree['uncles'] = uncles
         return jsonify(tree)
     finally:
         db.close()

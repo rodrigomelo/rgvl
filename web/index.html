@@ -681,8 +681,8 @@
         sections.forEach(section => window.__scrollObserver.observe(section));
     }
 
-    // RGVL pai ID — Rodrigo Gorgulho de Vasconcellos Lanna
-    const PAI_ID = 6;
+    // RGVL pai ID — Rodrigo Melo Lanna (id=11)
+    const PAI_ID = 11;
 
     async function load() {
         try {
@@ -752,10 +752,10 @@
         const t = D.tree || {};
         const p = t || {};
         const spouse = t.spouse || null;
-        const children = (t.children || D.primos || []).filter(p => p.id !== PAI_ID);
-        const siblings = []; // uncles/aunts — computed from relationships, not in tree
-        const pai = t.father || null;
-        const mae = t.mother || null;
+        const children = (t.children || []).filter(c => c.id !== PAI_ID);
+        const siblings = t.siblings || []; // paternal uncles/aunts — siblings of the root's father
+        const pai = t.father || null;     // paternal grandfather
+        const mae = t.mother || null;     // paternal grandmother
 
         // Split primos by parent
         const primosHenrique = D.primos.filter(c => c.notes && c.notes.includes('Henrique'));
@@ -846,7 +846,7 @@
 
                 <!-- Grandparents -->
                 <div class="gen">
-                    <div class="gen-label">Generation 2 — Grandparents</div>
+                    <div class="gen-label">Generation 2 — Parents</div>
                     <div class="gen-row">
                         ${pai ? `<div class="node grandparent" data-person-id="${pai.id}">
                             <div class="node-name">${esc(pai.full_name)}</div>
@@ -863,7 +863,7 @@
 
                 <!-- Parents + Uncles -->
                 <div class="gen">
-                    <div class="gen-label">Generation 3 — Parents + Uncles</div>
+                    <div class="gen-label">Generation 3 — You and Siblings</div>
                     <div class="gen-row">
                         ${siblings.map(s => `
                             <div class="node sibling" data-person-id="${s.id}">
@@ -1181,7 +1181,7 @@
                 if (!data) return;
                 const hits = [];
                 // People
-                const allPeople = [...(data.tree ? [data.tree.person] : []), ...(data.bisavos||[]), ...(data.avos||[]), ...(data.paisTios||[]), ...(data.primos||[])].filter(Boolean);
+                const allPeople = [...(data.tree ? [data.tree] : []), ...(data.bisavos||[]), ...(data.avos||[]), ...(data.paisTios||[]), ...(data.primos||[])].filter(Boolean);
                 allPeople.forEach(p => {
                     if (!p.id) return;
                     const name = (p.full_name||'').toLowerCase();
@@ -1235,7 +1235,7 @@
         window.__openPersonDrawerById = function(id) {
             const data = window.__rgvl_data;
             if (!data || !id) return;
-            const allPeople = [data.tree ? data.tree.person : null, ...(data.bisavos||[]), ...(data.avos||[]), ...(data.paisTios||[]), ...(data.primos||[])].filter(Boolean);
+            const allPeople = [data.tree || null, ...(data.bisavos||[]), ...(data.avos||[]), ...(data.paisTios||[]), ...(data.primos||[])].filter(Boolean);
             const person = allPeople.find(p => p.id === id);
             if (person) window.__openPersonDrawer(person);
         };
@@ -1262,6 +1262,11 @@
             if (data) {
                 const findPerson = (id) => {
                     const all = [...(data.bisavos||[]), ...(data.avos||[]), ...(data.paisTios||[]), ...(data.primos||[])];
+                    // Also check tree's father/mother (not in generation arrays)
+                    if (data.tree) {
+                        if (data.tree.father && data.tree.father.id === id) return data.tree.father;
+                        if (data.tree.mother && data.tree.mother.id === id) return data.tree.mother;
+                    }
                     return all.find(p => p.id === id);
                 };
                 if (person.father_id || person.mother_id) {

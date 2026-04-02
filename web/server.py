@@ -37,6 +37,26 @@ def favicon_png():
     return send_from_directory('.', 'favicon.png')
 
 
+@app.route('/search.js')
+def search_js():
+    return send_from_directory('.', 'search.js')
+
+
+@app.route('/extras.js')
+def extras_js():
+    return send_from_directory('.', 'extras.js')
+
+
+@app.route('/timeline.js')
+def timeline_js():
+    return send_from_directory('.', 'timeline.js')
+
+
+@app.route('/<path:filename>')
+def serve_static(filename):
+    return send_from_directory('.', filename)
+
+
 @app.route('/api/proxy/<path:endpoint>')
 def proxy(endpoint):
     """Proxy requests to RGVL Data API."""
