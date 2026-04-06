@@ -1131,3 +1131,106 @@ INFO:httpx:HTTP Request: GET https://www.hojeemdia.com.br/buscar?q=Nice+Gorgulho
 INFO:httpx:HTTP Request: GET https://www.uai.com.br/busca?q=Nice+Gorgulho "HTTP/1.1 200 OK"
 INFO:httpx:HTTP Request: GET https://www.arisp.com.br/ "HTTP/1.1 301 Moved Permanently"
 INFO:httpx:HTTP Request: GET https://arisp.com.br/ "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/Users/rodrigomelo/.openclaw/workspace-shared/projects/rgvl/data/collectors/base.py", line 229, in run
+    self.collect()
+    ~~~~~~~~~~~~^^
+  File "/Users/rodrigomelo/.openclaw/workspace-shared/projects/rgvl/data/collectors/mail_collector.py", line 84, in collect
+    result = self._gog_search(query)
+  File "/Users/rodrigomelo/.openclaw/workspace-shared/projects/rgvl/data/collectors/mail_collector.py", line 34, in _gog_search
+    result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1038, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1989, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'gog'
+Traceback (most recent call last):
+  File "/Users/rodrigomelo/.openclaw/workspace-shared/projects/rgvl/run_all.py", line 70, in run_collector
+    collector_class = getattr(module, class_name)
+AttributeError: module 'data.collectors.father_drive' has no attribute 'FatherDriveCollector'
+Traceback (most recent call last):
+  File "/Users/rodrigomelo/.openclaw/workspace-shared/projects/rgvl/run_all.py", line 70, in run_collector
+    collector_class = getattr(module, class_name)
+AttributeError: module 'data.collectors.web_search' has no attribute 'WebSearchCollector'
+Traceback (most recent call last):
+  File "/Users/rodrigomelo/.openclaw/workspace-shared/projects/rgvl/run_all.py", line 70, in run_collector
+    collector_class = getattr(module, class_name)
+AttributeError: module 'data.collectors.twitter' has no attribute 'TwitterCollector'
+Traceback (most recent call last):
+  File "/Users/rodrigomelo/.openclaw/workspace-shared/projects/rgvl/run_all.py", line 70, in run_collector
+    collector_class = getattr(module, class_name)
+AttributeError: module 'data.collectors.social_profiles' has no attribute 'SocialProfilesCollector'
+Traceback (most recent call last):
+  File "/Users/rodrigomelo/.openclaw/workspace-shared/projects/rgvl/run_all.py", line 70, in run_collector
+    collector_class = getattr(module, class_name)
+AttributeError: module 'data.collectors.jucemg' has no attribute 'JuceMGCollector'
+Traceback (most recent call last):
+  File "/Users/rodrigomelo/.openclaw/workspace-shared/projects/rgvl/run_all.py", line 70, in run_collector
+    collector_class = getattr(module, class_name)
+AttributeError: module 'data.collectors.jucesp' has no attribute 'JucespCollector'
+Traceback (most recent call last):
+  File "/Users/rodrigomelo/.openclaw/workspace-shared/projects/rgvl/run_all.py", line 70, in run_collector
+    collector_class = getattr(module, class_name)
+AttributeError: module 'data.collectors.tjmg' has no attribute 'TjmgCollector'
+INFO:httpx:HTTP Request: GET https://arpensp.org.br/certidao/nascimento "HTTP/1.0 404 Not Found"
+INFO:httpx:HTTP Request: GET https://arpensp.org.br/certidao/nascimento "HTTP/1.0 404 Not Found"
+INFO:httpx:HTTP Request: GET https://arpensp.org.br/certidao/nascimento "HTTP/1.0 404 Not Found"
+INFO:httpx:HTTP Request: GET https://arpensp.org.br/certidao/nascimento "HTTP/1.0 404 Not Found"
+INFO:httpx:HTTP Request: GET https://arpensp.org.br/certidao/nascimento "HTTP/1.0 404 Not Found"
+INFO:httpx:HTTP Request: GET https://arpensp.org.br/certidao/nascimento "HTTP/1.0 404 Not Found"
+INFO:httpx:HTTP Request: GET https://arpensp.org.br/certidao/obito "HTTP/1.0 404 Not Found"
+INFO:httpx:HTTP Request: GET https://arpensp.org.br/certidao/obito "HTTP/1.0 404 Not Found"
+INFO:httpx:HTTP Request: GET https://www.tre-mg.jus.br/eleitor/situacao-eleitoral "HTTP/1.1 302 Found"
+INFO:httpx:HTTP Request: GET https://www.tre-mg.jus.br/servicos-eleitorais/situacao-eleitoral "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://www.familysearch.org/search/record/results?q=givenName%3D%22Edmundo%22+surname%3D%22Lanna%22&f.collectionCountry=Brasil&f.birthLikeDate.from=1915&f.birthLikeDate.to=1925&f.birthLikePlace=Belo+Horizonte%2C+MG "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://www.familysearch.org/search/record/results?q=givenName%3D%22Edmundo%22+surname%3D%22Lanna%22&f.collectionCountry=Brasil&f.birthLikeDate.from=1915&f.birthLikeDate.to=1925&f.birthLikePlace=Belo+Horizonte%2C+MG "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://www.familysearch.org/search/record/results?q=givenName%3D%22Edmundo%22+surname%3D%22Lanna%22&f.collectionCountry=Brasil&f.birthLikeDate.from=1915&f.birthLikeDate.to=1925&f.birthLikePlace=Belo+Horizonte%2C+MG "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://www.familysearch.org/search/record/results?q=givenName%3D%22Nice%22+surname%3D%22Lanna%22&f.collectionCountry=Brasil&f.birthLikeDate.from=1920&f.birthLikeDate.to=1930&f.birthLikePlace=Belo+Horizonte%2C+MG "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://www.familysearch.org/search/record/results?q=givenName%3D%22Nice%22+surname%3D%22Lanna%22&f.collectionCountry=Brasil&f.birthLikeDate.from=1920&f.birthLikeDate.to=1930&f.birthLikePlace=Belo+Horizonte%2C+MG "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://www.familysearch.org/search/record/results?q=givenName%3D%22Nice%22+surname%3D%22Gorgulho%22&f.collectionCountry=Brasil&f.birthLikeDate.from=1920&f.birthLikeDate.to=1930&f.birthLikePlace=Belo+Horizonte%2C+MG "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://www.familysearch.org/search/record/results?q=givenName%3D%22Edmundo%22+surname%3D%22Lanna%22&f.collectionCountry=Brasil&f.birthLikeDate.from=1945&f.birthLikeDate.to=1955&f.birthLikePlace=Belo+Horizonte%2C+MG "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://www.familysearch.org/search/record/results?q=givenName%3D%22Edmundo%22+surname%3D%22Lanna%22&f.collectionCountry=Brasil&f.birthLikeDate.from=1945&f.birthLikeDate.to=1955&f.birthLikePlace=Belo+Horizonte%2C+MG "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://www.familysearch.org/search/record/results?q=givenName%3D%22Joana%22+surname%3D%22Melo%22&f.collectionCountry=Brasil&f.birthLikeDate.from=1955&f.birthLikeDate.to=1965&f.birthLikePlace=Itaituba%2C+PA "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://www.familysearch.org/search/record/results?q=givenName%3D%22Joana%22+surname%3D%22Melo%22&f.collectionCountry=Brasil&f.birthLikeDate.from=1955&f.birthLikeDate.to=1965&f.birthLikePlace=Itaituba%2C+PA "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://www.familysearch.org/search/record/results?q=givenName%3D%22Jaime%22+surname%3D%22Melo%22&f.collectionCountry=Brasil&f.birthLikeDate.from=1950&f.birthLikeDate.to=1960&f.birthLikePlace=Itaituba%2C+PA "HTTP/1.1 404 Not Found"
+Traceback (most recent call last):
+  File "/Users/rodrigomelo/.openclaw/workspace-shared/projects/rgvl/data/collectors/base.py", line 229, in run
+    self.collect()
+    ~~~~~~~~~~~~^^
+  File "/Users/rodrigomelo/.openclaw/workspace-shared/projects/rgvl/data/collectors/receita_federal.py", line 106, in collect
+    companies = session.query(models.Empresa).all()
+                              ^^^^^^^^^^^^^^
+AttributeError: module 'api.models' has no attribute 'Empresa'
+INFO:httpx:HTTP Request: GET https://www.em.com.br/busca?q=Lanna "HTTP/1.1 301 Moved"
+INFO:httpx:HTTP Request: GET https://www.em.com.br/busca?q=Lanna/ "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://www.hojeemdia.com.br/buscar?q=Lanna "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://www.uai.com.br/busca?q=Lanna "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://www.em.com.br/busca?q=Gorgulho "HTTP/1.1 301 Moved"
+INFO:httpx:HTTP Request: GET https://www.em.com.br/busca?q=Gorgulho/ "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://www.hojeemdia.com.br/buscar?q=Gorgulho "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://www.uai.com.br/busca?q=Gorgulho "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://www.em.com.br/busca?q=Vasconcellos+Lanna "HTTP/1.1 301 Moved"
+INFO:httpx:HTTP Request: GET https://www.em.com.br/busca?q=Vasconcellos+Lanna/ "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://www.hojeemdia.com.br/buscar?q=Vasconcellos+Lanna "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://www.uai.com.br/busca?q=Vasconcellos+Lanna "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://www.em.com.br/busca?q=Edmundo+Mariano+Lanna "HTTP/1.1 301 Moved"
+INFO:httpx:HTTP Request: GET https://www.em.com.br/busca?q=Edmundo+Mariano+Lanna/ "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://www.hojeemdia.com.br/buscar?q=Edmundo+Mariano+Lanna "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://www.uai.com.br/busca?q=Edmundo+Mariano+Lanna "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://www.em.com.br/busca?q=Nice+Gorgulho "HTTP/1.1 301 Moved"
+INFO:httpx:HTTP Request: GET https://www.em.com.br/busca?q=Nice+Gorgulho/ "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://www.hojeemdia.com.br/buscar?q=Nice+Gorgulho "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://www.uai.com.br/busca?q=Nice+Gorgulho "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://www.arisp.com.br/ "HTTP/1.1 301 Moved Permanently"
+INFO:httpx:HTTP Request: GET https://arisp.com.br/ "HTTP/1.1 200 OK"
